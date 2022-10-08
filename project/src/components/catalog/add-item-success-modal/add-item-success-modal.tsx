@@ -9,7 +9,7 @@ function AddItemSuccessModal():JSX.Element {
             <use xlinkHref="#icon-success"></use>
           </svg>
           <div className="modal__buttons">
-            <a className="btn btn--transparent modal__btn" href="!">Продолжить покупки</a>
+            <a className="btn btn--transparent modal__btn" href="#!">Продолжить покупки</a>
             <button className="btn btn--purple modal__btn modal__btn--fit-width">Перейти в корзину</button>
           </div>
           <button className="cross-btn" type="button" aria-label="Закрыть попап">
