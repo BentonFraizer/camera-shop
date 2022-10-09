@@ -1,6 +1,7 @@
 import Icons from '../../components/icons/icons';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
+import { Link } from 'react-router-dom';
 // import ReviewModal from '../../components/product/review-modal/review-modal';
 // import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
 
@@ -18,18 +19,18 @@ function ProductScreen(): JSX.Element {
               <div className="container">
                 <ul className="breadcrumbs__list">
                   <li className="breadcrumbs__item">
-                    <a className="breadcrumbs__link" href="index.html">Главная
+                    <a className="breadcrumbs__link" href="#!">Главная
                       <svg width="5" height="8" aria-hidden="true">
                         <use xlinkHref="#icon-arrow-mini"></use>
                       </svg>
                     </a>
                   </li>
                   <li className="breadcrumbs__item">
-                    <a className="breadcrumbs__link" href="catalog.html">Каталог
+                    <Link className="breadcrumbs__link" to='/'>Каталог
                       <svg width="5" height="8" aria-hidden="true">
                         <use xlinkHref="#icon-arrow-mini"></use>
                       </svg>
-                    </a>
+                    </Link>
                   </li>
                   <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Ретрокамера «Das Auge IV»</span>
                   </li>
