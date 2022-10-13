@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import PromoCamera from '../../types/promo-camera';
+import { PromoCamera } from '../../types';
 
 type BannerProps = {
   promoCamera: PromoCamera | null;
