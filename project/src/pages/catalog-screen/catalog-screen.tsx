@@ -2,7 +2,7 @@ import Icons from '../../components/icons/icons';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import Banner from '../../components/banner/banner';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import React, { useEffect, useState } from 'react';
 import { getCameras, getPromoCamera } from '../../store/site-data/selectors';
@@ -10,6 +10,8 @@ import { fetchCamerasAction, fetchPromoCameraAction } from '../../store/api-acti
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
 import { isEscKeyPressed } from '../../utils/utils';
+import { Camera } from '../../types';
+import Pagination from '../../components/pagination/pagination';
 // import AddItemSuccessModal from '../../components/catalog/add-item-success-modal/add-item-success-modal';
 
 function CatalogScreen(): JSX.Element {
@@ -20,19 +22,41 @@ function CatalogScreen(): JSX.Element {
   const NON_EXISTENT_ID = 0;
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   let dataForAddItemModal;
+  const [showPagination, setShowPagination] = useState(false);
+  const EMPTY_ARRAY_LENGTH = 0;
+  const PRODUCTS_PER_PAGE = 9;
+  const FIRST_PAGE_NUMBER = 1;
+  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
+  const PIXELS_FROM_TOP = 348;
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (window.location.pathname === '/') {
+      navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+      setCurrentPage(FIRST_PAGE_NUMBER);
+    }
+  }, [navigate]);
 
   if (idForAddItemModal !== NON_EXISTENT_ID) {
     dataForAddItemModal = camerasList.find((camera) => camera.id === idForAddItemModal);
   }
 
   useEffect(() => {
+    if (camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE) {
+      setShowPagination(true);
+    } else {
+      setShowPagination(false);
+    }
+  }, [camerasList]);
+
+  useEffect(() => {
     dispatch(fetchCamerasAction());
     dispatch(fetchPromoCameraAction());
   }, [dispatch]);
 
-  // useEffect(() => {
-
-  // });
+  useEffect(() => {
+    window.scrollTo(0, PIXELS_FROM_TOP);
+  }, [currentPage]);
 
   const onBuyButtonClick = (gettedId: number) => {
     if (gettedId !== undefined) {
@@ -56,6 +80,20 @@ function CatalogScreen(): JSX.Element {
       document.body.style.paddingRight = '0';
     }
   };
+
+  const getProductsToRender = (numberOfPage: number, productsList: Camera[], productsPerPage: number ): Camera[] => {
+    const firstProductIndex = (numberOfPage - 1) * productsPerPage;
+    const lastProductIndex = numberOfPage * productsPerPage;
+    const productsToRender = productsList.slice(firstProductIndex, lastProductIndex);
+    return productsToRender;
+  };
+  const productsToRender = (getProductsToRender(currentPage, camerasList, PRODUCTS_PER_PAGE));
+
+  const paginate = (pageNumber:number) => {
+    setCurrentPage(pageNumber);
+  };
+  const onPrevButtonClick = () => setCurrentPage(currentPage - 1);
+  const onNextButtonClick = () => setCurrentPage(currentPage + 1);
 
   return (
     <>
@@ -204,22 +242,20 @@ function CatalogScreen(): JSX.Element {
                     </div>
 
                     <ProductsList
-                      productsList={camerasList}
+                      productsList={productsToRender}
                       onClick={onBuyButtonClick}
                     />
 
-                    <div className="pagination">
-                      <ul className="pagination__list">
-                        <li className="pagination__item"><a className="pagination__link pagination__link--active" href="1">1</a>
-                        </li>
-                        <li className="pagination__item"><a className="pagination__link" href="2">2</a>
-                        </li>
-                        <li className="pagination__item"><a className="pagination__link" href="3">3</a>
-                        </li>
-                        <li className="pagination__item"><a className="pagination__link pagination__link--text" href="2">Далее</a>
-                        </li>
-                      </ul>
-                    </div>
+                    { showPagination &&
+                      <Pagination
+                        productsList={camerasList}
+                        productsPerPage={PRODUCTS_PER_PAGE}
+                        currentPage={currentPage}
+                        onNumberedLinkClick={paginate}
+                        prevButtonClick={onPrevButtonClick}
+                        nextButtonClick={onNextButtonClick}
+                      /> }
+
                   </div>
                 </div>
               </div>

@@ -9,6 +9,11 @@ function App(): JSX.Element {
     <BrowserRouter>
       <Routes>
         <Route
+          path={AppRoute.Main}
+          element={<CatalogScreen/>}
+        >
+        </Route>
+        <Route
           path={AppRoute.Catalog}
           element={<CatalogScreen/>}
         >
