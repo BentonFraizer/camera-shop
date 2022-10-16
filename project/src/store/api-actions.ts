@@ -37,7 +37,20 @@ export const fetchCameraAction = createAsyncThunk<Camera, number, {
   },
 );
 
-//Запрос промопредложения
+// Запрос похожих камер
+export const fetchSimilarCamerasAction = createAsyncThunk<Camera[], number, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchSimilarFilms',
+  async (id: number, {extra: api}) => {
+    const {data} = await api.get<Camera[]>(`${APIRoute.Camera}${id}/similar`);
+    return data;
+  },
+);
+
+// Запрос промопредложения
 export const fetchPromoCameraAction = createAsyncThunk<PromoCamera, undefined, {
   dispatch: AppDispatch;
   state: State;

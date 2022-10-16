@@ -5,14 +5,15 @@ import { RATING_NUMBERS } from '../../consts';
 
 type ProductCardProps = {
   cameraData: Camera;
-  onClick:(id:number) => void;
+  onClick?:(id:number) => void;
+  isActive?: boolean;
 }
 
 function ProductCard(props: ProductCardProps):JSX.Element {
   const { id, name, rating, price, category, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = props.cameraData;
 
   return (
-    <div className="product-card">
+    <div className={props.isActive ? 'product-card is-active' : 'product-card'}>
       <div className="product-card__img">
         <picture>
           <source type="image/webp" srcSet={`../${previewImgWebp}, ../${previewImgWebp2x} 2x`}/>
@@ -39,7 +40,7 @@ function ProductCard(props: ProductCardProps):JSX.Element {
         <button
           className="btn btn--purple product-card__btn"
           type="button"
-          onClick={() => props.onClick(id)}
+          onClick={() => props.onClick ? props.onClick(id) : null}
         >
           Купить
         </button>
