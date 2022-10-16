@@ -5,6 +5,7 @@ export type SiteData = {
   camerasList: Camera[];
   camera: Camera | null;
   promoCamera: PromoCamera | null;
+  similarCamerasList: Camera[];
 }
 
 export type State = ReturnType<typeof store.getState>;

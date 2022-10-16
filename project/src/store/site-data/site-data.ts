@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../consts';
 import { SiteData } from '../../types/state';
-import { fetchCamerasAction, fetchCameraAction, fetchPromoCameraAction } from '../api-actions';
+import { fetchCamerasAction, fetchCameraAction, fetchSimilarCamerasAction, fetchPromoCameraAction } from '../api-actions';
 
 const initialState: SiteData = {
   camerasList: [],
   camera: null,
   promoCamera: null,
+  similarCamerasList: [],
 };
 
 export const siteData = createSlice({
@@ -27,6 +28,9 @@ export const siteData = createSlice({
       })
       .addCase(fetchPromoCameraAction.fulfilled, (state, action) => {
         state.promoCamera = action.payload;
+      })
+      .addCase(fetchSimilarCamerasAction.fulfilled, (state, action) => {
+        state.similarCamerasList = action.payload;
       });
   },
 });
