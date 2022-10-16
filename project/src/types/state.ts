@@ -3,6 +3,7 @@ import { Camera, PromoCamera } from './index';
 
 export type SiteData = {
   camerasList: Camera[];
+  camera: Camera | null;
   promoCamera: PromoCamera | null;
 }
 

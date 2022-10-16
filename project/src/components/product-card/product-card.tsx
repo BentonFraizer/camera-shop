@@ -1,6 +1,7 @@
 import { Camera } from '../../types';
 import { Link } from 'react-router-dom';
 import { separateNumbers } from '../../utils/utils';
+import { RATING_NUMBERS } from '../../consts';
 
 type ProductCardProps = {
   cameraData: Camera;
@@ -9,7 +10,6 @@ type ProductCardProps = {
 
 function ProductCard(props: ProductCardProps):JSX.Element {
   const { id, name, rating, price, category, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = props.cameraData;
-  const RATING_NUMBERS = [1,2,3,4,5];
 
   return (
     <div className="product-card">

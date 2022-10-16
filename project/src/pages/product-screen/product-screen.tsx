@@ -1,11 +1,40 @@
 import Icons from '../../components/icons/icons';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from '../../hooks';
+import { fetchCameraAction } from '../../store/api-actions';
+import { getCamera } from '../../store/site-data/selectors';
+import { RATING_NUMBERS } from '../../consts';
+import { separateNumbers } from '../../utils/utils';
+import { resetCameraData } from '../../store/site-data/site-data';
 // import ReviewModal from '../../components/product/review-modal/review-modal';
 // import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
 
 function ProductScreen(): JSX.Element {
+  const BEGIN_OF_PAGE_COORDS = 0;
+  const {id} = useParams();
+  const dispatch = useAppDispatch();
+  const camera = useAppSelector(getCamera);
+
+  useEffect(() => {
+    window.scrollTo(BEGIN_OF_PAGE_COORDS, BEGIN_OF_PAGE_COORDS);
+    dispatch(fetchCameraAction(Number(id)));
+
+    return () => {
+      dispatch(resetCameraData());
+    };
+  }, [dispatch, id]);
+
+  if (!camera) {
+    return <h1>Страница не найдена</h1>; //!Заменить на <NotFoundScreen/> когда он появится
+  }
+  // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,
+  // поскольку будет выпадать ошибка: "Type 'null' is not assignable to type 'Camera'".
+  const { name, vendorCode, type, category, description, level, rating, price, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = camera;
+
+
   return (
     <>
       <Icons/>
@@ -32,7 +61,7 @@ function ProductScreen(): JSX.Element {
                       </svg>
                     </Link>
                   </li>
-                  <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">Ретрокамера «Das Auge IV»</span>
+                  <li className="breadcrumbs__item"><span className="breadcrumbs__link breadcrumbs__link--active">{category} {name}</span>
                   </li>
                 </ul>
               </div>
@@ -42,32 +71,24 @@ function ProductScreen(): JSX.Element {
                 <div className="container">
                   <div className="product__img">
                     <picture>
-                      <source type="image/webp" srcSet="img/content/img1.webp, img/content/img1@2x.webp 2x"/>
-                      <img src="img/content/img1.jpg" srcSet="img/content/img1@2x.jpg 2x" width="560" height="480" alt="Ретрокамера Das Auge IV"/>
+                      <source type="image/webp" srcSet={`../${previewImgWebp}, ../${previewImgWebp2x} 2x`}/>
+                      <img src={`../${previewImg}`} srcSet={`../${previewImg2x} 2x`} width="560" height="480" alt="Ретрокамера Das Auge IV"/>
                     </picture>
                   </div>
                   <div className="product__content">
-                    <h1 className="title title--h3">Ретрокамера «Das Auge IV»</h1>
+                    <h1 className="title title--h3">{category} {name}</h1>
                     <div className="rate product__rate">
-                      <svg width="17" height="16" aria-hidden="true">
-                        <use xlinkHref="#icon-full-star"></use>
-                      </svg>
-                      <svg width="17" height="16" aria-hidden="true">
-                        <use xlinkHref="#icon-full-star"></use>
-                      </svg>
-                      <svg width="17" height="16" aria-hidden="true">
-                        <use xlinkHref="#icon-full-star"></use>
-                      </svg>
-                      <svg width="17" height="16" aria-hidden="true">
-                        <use xlinkHref="#icon-full-star"></use>
-                      </svg>
-                      <svg width="17" height="16" aria-hidden="true">
-                        <use xlinkHref="#icon-star"></use>
-                      </svg>
-                      <p className="visually-hidden">Рейтинг: 4</p>
-                      <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>12</p>
+                      {
+                        RATING_NUMBERS.map((ratingNumber) => (
+                          <svg width="17" height="16" aria-hidden="true" key={ratingNumber}>
+                            <use xlinkHref={rating >= ratingNumber ? '#icon-full-star' : '#icon-star'}></use>
+                          </svg>
+                        ))
+                      }
+                      <p className="visually-hidden">Рейтинг: {rating}</p>
+                      <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{reviewCount}</p>
                     </div>
-                    <p className="product__price"><span className="visually-hidden">Цена:</span>73 450 ₽</p>
+                    <p className="product__price"><span className="visually-hidden">Цена:</span>{separateNumbers(price)} ₽</p>
                     <button className="btn btn--purple" type="button">
                       <svg width="24" height="16" aria-hidden="true">
                         <use xlinkHref="#icon-add-basket"></use>
@@ -82,23 +103,22 @@ function ProductScreen(): JSX.Element {
                         <div className="tabs__element">
                           <ul className="product__tabs-list">
                             <li className="item-list"><span className="item-list__title">Артикул:</span>
-                              <p className="item-list__text"> DA4IU67AD5</p>
+                              <p className="item-list__text">{vendorCode}</p>
                             </li>
                             <li className="item-list"><span className="item-list__title">Категория:</span>
-                              <p className="item-list__text">Видеокамера</p>
+                              <p className="item-list__text">{category}</p>
                             </li>
                             <li className="item-list"><span className="item-list__title">Тип камеры:</span>
-                              <p className="item-list__text">Коллекционная</p>
+                              <p className="item-list__text">{type}</p>
                             </li>
                             <li className="item-list"><span className="item-list__title">Уровень:</span>
-                              <p className="item-list__text">Любительский</p>
+                              <p className="item-list__text">{level}</p>
                             </li>
                           </ul>
                         </div>
                         <div className="tabs__element is-active">
                           <div className="product__tabs-text">
-                            <p>Немецкий концерн BRW разработал видеокамеру Das Auge IV в&nbsp;начале 80-х годов, однако она до&nbsp;сих пор пользуется популярностью среди коллекционеров и&nbsp;яростных почитателей старинной техники.</p>
-                            <p>Вы&nbsp;тоже можете прикоснуться к&nbsp;волшебству аналоговой съёмки, заказав этот чудо-аппарат. Кто знает, может с&nbsp;Das Auge IV&nbsp;начнётся ваш путь к&nbsp;наградам всех престижных кинофестивалей.</p>
+                            {description}
                           </div>
                         </div>
                       </div>

@@ -24,6 +24,19 @@ export const fetchCamerasAction = createAsyncThunk<Camera[], undefined, {
   },
 );
 
+// Зарос одной камеры
+export const fetchCameraAction = createAsyncThunk<Camera, number, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchCamera',
+  async (id: number, {extra: api}) => {
+    const {data} = await api.get<Camera>(`${APIRoute.Camera}${id}`);
+    return data;
+  },
+);
+
 //Запрос промопредложения
 export const fetchPromoCameraAction = createAsyncThunk<PromoCamera, undefined, {
   dispatch: AppDispatch;

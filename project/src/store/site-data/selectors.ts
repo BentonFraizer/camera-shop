@@ -3,6 +3,7 @@ import { State } from '../../types/state';
 import { Camera, PromoCamera } from '../../types';
 
 export const getCameras = (state: State):Camera[] => state[NameSpace.Data].camerasList;
+export const getCamera = (state: State):Camera | null => state[NameSpace.Data].camera;
 export const getPromoCamera = (state: State):PromoCamera | null => state[NameSpace.Data].promoCamera;
 // export const getFilm = (state: State) => state[NameSpace.Data].film;
 // export const getSimilarFilmsList = (state: State) => state[NameSpace.Data].similarFilmsList;
