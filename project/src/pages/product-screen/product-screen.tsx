@@ -1,7 +1,7 @@
 import Icons from '../../components/icons/icons';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { fetchCameraAction, fetchSimilarCamerasAction } from '../../store/api-actions';
@@ -21,6 +21,27 @@ function ProductScreen(): JSX.Element {
   const similarCamerasList = useAppSelector(getSimilarCamerasList);
   const [showSlider, setShowSlider] = useState(true);
   const EMPTY_LIST_LENGTH = 0;
+  const [isSpecsLinkActive, setIsSpecsLinkActive] = useState(true);
+  const [isDescriptionLinkActive, setIsDescriptionLinkActive] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get('tab') === null) {
+      setSearchParams({tab: 'specifications'});
+      setIsSpecsLinkActive(true);
+      setIsDescriptionLinkActive(false);
+    }
+    if (searchParams.get('tab') === 'specifications') {
+      setIsSpecsLinkActive(true);
+      setIsDescriptionLinkActive(false);
+    }
+    if (searchParams.get('tab') === 'description') {
+      setIsSpecsLinkActive(false);
+      setIsDescriptionLinkActive(true);
+    }
+
+  },[searchParams, setSearchParams]);
+
 
   useEffect(() => {
     window.scrollTo(BEGIN_OF_PAGE_COORDS, BEGIN_OF_PAGE_COORDS);
@@ -46,6 +67,16 @@ function ProductScreen(): JSX.Element {
   // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,
   // поскольку будет выпадать ошибка: "Type 'null' is not assignable to type 'Camera'".
   const { name, vendorCode, type, category, description, level, rating, price, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = camera;
+
+  const specificationsLinkClickHandler = (evt:React.MouseEvent) => {
+    setIsSpecsLinkActive(true);
+    setIsDescriptionLinkActive(false);
+  };
+
+  const descriptionLinkClickHandler = (evt:React.MouseEvent) => {
+    setIsSpecsLinkActive(false);
+    setIsDescriptionLinkActive(true);
+  };
 
   return (
     <>
@@ -108,11 +139,21 @@ function ProductScreen(): JSX.Element {
                     </button>
                     <div className="tabs product__tabs">
                       <div className="tabs__controls product__tabs-controls">
-                        <button className="tabs__control" type="button">Характеристики</button>
-                        <button className="tabs__control is-active" type="button">Описание</button>
+                        <Link
+                          className={isSpecsLinkActive ? 'tabs__control is-active' : 'tabs__control'}
+                          to={'?tab=specifications'}
+                          onClick={(evt) => specificationsLinkClickHandler(evt)}
+                        >Характеристики
+                        </Link>
+                        <Link
+                          className={isDescriptionLinkActive ? 'tabs__control is-active' : 'tabs__control'}
+                          to={'?tab=description'}
+                          onClick={(evt) => descriptionLinkClickHandler(evt)}
+                        >Описание
+                        </Link>
                       </div>
                       <div className="tabs__content">
-                        <div className="tabs__element">
+                        <div className={isSpecsLinkActive ? 'tabs__element is-active' : 'tabs__element'}>
                           <ul className="product__tabs-list">
                             <li className="item-list"><span className="item-list__title">Артикул:</span>
                               <p className="item-list__text">{vendorCode}</p>
@@ -128,7 +169,7 @@ function ProductScreen(): JSX.Element {
                             </li>
                           </ul>
                         </div>
-                        <div className="tabs__element is-active">
+                        <div className={isDescriptionLinkActive ? 'tabs__element is-active' : 'tabs__element'}>
                           <div className="product__tabs-text">
                             {description}
                           </div>
