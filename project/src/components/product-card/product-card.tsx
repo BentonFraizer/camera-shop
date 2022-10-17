@@ -44,7 +44,7 @@ function ProductCard(props: ProductCardProps):JSX.Element {
         >
           Купить
         </button>
-        <Link className="btn btn--transparent" to={`/product/${id}`}>Подробнее
+        <Link className="btn btn--transparent" to={`/product/${id}?tab=specifications`}>Подробнее
         </Link>
       </div>
     </div>
