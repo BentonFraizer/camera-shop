@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '../types/state';
-import { Camera, PromoCamera } from '../types';
+import { Camera, PromoCamera, Review } from '../types';
 // import { redirectToRoute } from './action';
 import { APIRoute } from '../consts';
 
@@ -11,7 +11,7 @@ export const fetchCamerasAction = createAsyncThunk<Camera[], undefined, {
   state: State;
   extra: AxiosInstance;
 }>(
-  'data/fetchFilms',
+  'data/fetchCameras',
   async (_arg, {rejectWithValue, dispatch, extra: api}) => {
     // try {
     //   const {data} = await api.get<Camera[]>(APIRoute.Cameras);
@@ -43,7 +43,7 @@ export const fetchSimilarCamerasAction = createAsyncThunk<Camera[], number, {
   state: State;
   extra: AxiosInstance;
 }>(
-  'data/fetchSimilarFilms',
+  'data/fetchSimilarCameras',
   async (id: number, {extra: api}) => {
     const {data} = await api.get<Camera[]>(`${APIRoute.Camera}${id}/similar`);
     return data;
@@ -59,6 +59,19 @@ export const fetchPromoCameraAction = createAsyncThunk<PromoCamera, undefined, {
   'data/fetchPromoCamera',
   async (_arg, {extra: api}) => {
     const {data} = await api.get<PromoCamera>(APIRoute.Promo);
+    return data;
+  },
+);
+
+//Запрос отзывов
+export const fetchReviewsAction = createAsyncThunk<Review[], number, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchReviews',
+  async (id: number, {extra: api}) => {
+    const {data} = await api.get<Review[]>(`${APIRoute.Camera}${id}/reviews`);
     return data;
   },
 );
