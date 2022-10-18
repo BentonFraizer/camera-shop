@@ -1,13 +1,20 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../consts';
 import { SiteData } from '../../types/state';
-import { fetchCamerasAction, fetchCameraAction, fetchSimilarCamerasAction, fetchPromoCameraAction } from '../api-actions';
+import {
+  fetchCamerasAction,
+  fetchCameraAction,
+  fetchSimilarCamerasAction,
+  fetchPromoCameraAction,
+  fetchReviewsAction
+} from '../api-actions';
 
 const initialState: SiteData = {
   camerasList: [],
   camera: null,
   promoCamera: null,
   similarCamerasList: [],
+  reviews: [],
 };
 
 export const siteData = createSlice({
@@ -31,6 +38,9 @@ export const siteData = createSlice({
       })
       .addCase(fetchSimilarCamerasAction.fulfilled, (state, action) => {
         state.similarCamerasList = action.payload;
+      })
+      .addCase(fetchReviewsAction.fulfilled, (state, action) => {
+        state.reviews = action.payload;
       });
   },
 });
