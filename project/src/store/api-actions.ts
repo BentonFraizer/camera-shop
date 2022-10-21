@@ -1,8 +1,11 @@
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '../types/state';
-import { Camera, PromoCamera, Review } from '../types';
-// import { redirectToRoute } from './action';
+import { Camera, PromoCamera, Review, ReviewData } from '../types';
+import {
+  // redirectToRoute,
+  postReview
+} from './action';
 import { APIRoute } from '../consts';
 
 // Запрос всех камер
@@ -63,7 +66,7 @@ export const fetchPromoCameraAction = createAsyncThunk<PromoCamera, undefined, {
   },
 );
 
-//Запрос отзывов
+// Запрос отзывов
 export const fetchReviewsAction = createAsyncThunk<Review[], number, {
   dispatch: AppDispatch;
   state: State;
@@ -74,4 +77,17 @@ export const fetchReviewsAction = createAsyncThunk<Review[], number, {
     const {data} = await api.get<Review[]>(`${APIRoute.Camera}${id}/reviews`);
     return data;
   },
+);
+
+// Отправка отзыва на сервер
+export const reviewPostAction = createAsyncThunk<void, ReviewData, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'site/postReview',
+  async ({cameraId, userName, advantage, disadvantage, review, rating}, {dispatch, extra: api}) => {
+    const {data} = await api.post<ReviewData>(APIRoute.Review, {cameraId, userName, advantage, disadvantage, review, rating});
+    dispatch(postReview(data));
+  }
 );

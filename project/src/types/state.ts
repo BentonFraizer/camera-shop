@@ -7,6 +7,7 @@ export type SiteData = {
   promoCamera: PromoCamera | null;
   similarCamerasList: Camera[];
   reviews: Review[];
+  isPostSentSuccessful: boolean;
 }
 
 export type State = ReturnType<typeof store.getState>;

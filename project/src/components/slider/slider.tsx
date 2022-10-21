@@ -4,9 +4,10 @@ import ProductCard from '../../components/product-card/product-card';
 
 type SliderProps = {
   similarCameras: Camera[];
+  onBuyButtonClick?: (id:number) => void;
 }
 
-function Slider({similarCameras}: SliderProps): JSX.Element {
+function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
   const [activeCards, setActiveCards] = useState([0, 1, 2]);
   const FIRST_SLIDER_ELEMENT = 0;
   const LAST_SLIDER_ELEMENT = 2;
@@ -57,6 +58,7 @@ function Slider({similarCameras}: SliderProps): JSX.Element {
                     key={camera.id}
                     cameraData={camera}
                     isActive={activeCards.includes(idx)}
+                    onClick={onBuyButtonClick}
                   />
                 )
               )

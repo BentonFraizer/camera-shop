@@ -37,8 +37,11 @@ export const humanizeDate = (gettedDate: string): string => {
 // Данная манипуляция необходима для дальнейшей сортировки элементов массива
 export const getDateForSort = (gettedDate: string): number => {
   const GET_DATE_VALUES = [0, 10];
-  const dateWithoutTime = gettedDate.slice(GET_DATE_VALUES[0], GET_DATE_VALUES[1]);
-  const numberForSort = Number(dateWithoutTime.replaceAll('-', ''));
+  const GET_TIME_VALUES = [11, 19];
+  const dateWithoutTime = gettedDate.slice(GET_DATE_VALUES[0], GET_DATE_VALUES[1]).replaceAll('-', '');
+  const timeWithoutDate = gettedDate.slice(GET_TIME_VALUES[0], GET_TIME_VALUES[1]).replaceAll(':', '');
+
+  const numberForSort = Number(`${dateWithoutTime}${timeWithoutDate}`);
 
   return numberForSort;
 };

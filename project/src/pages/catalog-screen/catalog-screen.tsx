@@ -27,7 +27,8 @@ function CatalogScreen(): JSX.Element {
   const PRODUCTS_PER_PAGE = 9;
   const FIRST_PAGE_NUMBER = 1;
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-  const PIXELS_FROM_TOP = 348;
+  const BEGIN_OF_PAGE_COORD_X = 0;
+  const BEGIN_OF_PAGE_COORD_Y = 0;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +42,7 @@ function CatalogScreen(): JSX.Element {
     dataForAddItemModal = camerasList.find((camera) => camera.id === idForAddItemModal);
   }
 
+  // Скрытие/отображение секции "Пагинация"
   useEffect(() => {
     if (camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE) {
       setShowPagination(true);
@@ -54,10 +56,12 @@ function CatalogScreen(): JSX.Element {
     dispatch(fetchPromoCameraAction());
   }, [dispatch]);
 
+  // Поднятие страницы в начало
   useEffect(() => {
-    window.scrollTo(0, PIXELS_FROM_TOP);
+    window.scrollTo(BEGIN_OF_PAGE_COORD_X, BEGIN_OF_PAGE_COORD_Y);
   }, [currentPage]);
 
+  // Обработчик натия на кнопку "Купить" для открытия модального окна "Добавить товар в корзину"
   const onBuyButtonClick = (gettedId: number) => {
     if (gettedId !== undefined) {
       setIdForAddItemModal(gettedId);
@@ -67,6 +71,7 @@ function CatalogScreen(): JSX.Element {
     document.body.style.paddingRight = '17px';
   };
 
+  // Обработчики закрытия модальных окон по нажатию Кнопки закрытия, нажатия на overlay, нажатия на Esc
   const onCloseBtnOrOverlayClick = () => {
     setIsAddItemModalOpened(false);
     document.body.style.overflowY = '';
@@ -81,6 +86,7 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
+  // Функция для получения товаров для отрисовки в зависимости от страницы пагинации
   const getProductsToRender = (numberOfPage: number, productsList: Camera[], productsPerPage: number ): Camera[] => {
     const firstProductIndex = (numberOfPage - 1) * productsPerPage;
     const lastProductIndex = numberOfPage * productsPerPage;
