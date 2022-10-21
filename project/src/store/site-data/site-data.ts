@@ -6,7 +6,8 @@ import {
   fetchCameraAction,
   fetchSimilarCamerasAction,
   fetchPromoCameraAction,
-  fetchReviewsAction
+  fetchReviewsAction,
+  reviewPostAction
 } from '../api-actions';
 
 const initialState: SiteData = {
@@ -15,6 +16,7 @@ const initialState: SiteData = {
   promoCamera: null,
   similarCamerasList: [],
   reviews: [],
+  isPostSentSuccessful: false,
 };
 
 export const siteData = createSlice({
@@ -23,6 +25,9 @@ export const siteData = createSlice({
   reducers: {
     resetCameraData: (state) => {
       state.camera = null;
+    },
+    resetPostSentSuccessful: (state) => {
+      state.isPostSentSuccessful = false;
     }
   },
   extraReducers(builder) {
@@ -41,8 +46,11 @@ export const siteData = createSlice({
       })
       .addCase(fetchReviewsAction.fulfilled, (state, action) => {
         state.reviews = action.payload;
+      })
+      .addCase(reviewPostAction.fulfilled, (state) => {
+        state.isPostSentSuccessful = true;
       });
   },
 });
 
-export const { resetCameraData } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful } = siteData.actions;

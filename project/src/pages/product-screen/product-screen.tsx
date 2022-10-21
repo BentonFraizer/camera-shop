@@ -4,15 +4,16 @@ import Header from '../../components/header/header';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import { fetchCameraAction, fetchReviewsAction, fetchSimilarCamerasAction } from '../../store/api-actions';
-import { getCamera, getReviews, getSimilarCamerasList } from '../../store/site-data/selectors';
+import { fetchCameraAction, fetchReviewsAction, fetchSimilarCamerasAction, fetchCamerasAction } from '../../store/api-actions';
+import { getCamera, getCameras, getReviews, getSimilarCamerasList, getIsPostSendingStatus } from '../../store/site-data/selectors';
 import { RATING_NUMBERS } from '../../consts';
-import { separateNumbers } from '../../utils/utils';
-import { resetCameraData } from '../../store/site-data/site-data';
+import { separateNumbers, isEscKeyPressed } from '../../utils/utils';
+import { resetCameraData, resetPostSentSuccessful } from '../../store/site-data/site-data';
 import Slider from '../../components/slider/slider';
 import Reviews from '../../components/reviews/reviews';
-// import ReviewModal from '../../components/product/review-modal/review-modal';
-// import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
+import ReviewModal from '../../components/product/review-modal/review-modal';
+import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
+import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
 
 function ProductScreen(): JSX.Element {
   const BEGIN_OF_PAGE_COORDS = 0;
@@ -27,7 +28,16 @@ function ProductScreen(): JSX.Element {
   const [searchParams, setSearchParams] = useSearchParams();
   const reviews = useAppSelector(getReviews);
   const [showReviews, setShowReviews] = useState(false);
+  const [isSendReviewModalOpened, setIsSendReviewModalOpened] = useState(false);
+  const [isReviewSuccessModalOpened, setIsReviewSuccessModalOpened] = useState(false);
+  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
+  const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
+  const NON_EXISTENT_ID = 0;
+  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
+  let dataForAddItemModal;
+  const camerasList = useAppSelector(getCameras);
 
+  // Обработка параметров поиска адресной строки для корретной работы Табов "Характеристики" и "Описание"
   useEffect(() => {
     if (searchParams.get('tab') === null) {
       setSearchParams({tab: 'specifications'});
@@ -45,18 +55,19 @@ function ProductScreen(): JSX.Element {
 
   },[searchParams, setSearchParams]);
 
-
   useEffect(() => {
     window.scrollTo(BEGIN_OF_PAGE_COORDS, BEGIN_OF_PAGE_COORDS);
     dispatch(fetchCameraAction(Number(id)));
     dispatch(fetchSimilarCamerasAction(Number(id)));
     dispatch(fetchReviewsAction(Number(id)));
+    dispatch(fetchCamerasAction());
 
     return () => {
       dispatch(resetCameraData());
     };
   }, [dispatch, id]);
 
+  // Скрытие/отображение секции "Похожие товары"
   useEffect(() => {
     if (similarCamerasList.length === EMPTY_LIST_LENGTH) {
       setShowSlider(false);
@@ -65,6 +76,7 @@ function ProductScreen(): JSX.Element {
     }
   }, [similarCamerasList]);
 
+  // Скрытие/отображение секции "Отзывы"
   useEffect(() => {
     if (reviews.length === EMPTY_LIST_LENGTH) {
       setShowReviews(false);
@@ -73,13 +85,30 @@ function ProductScreen(): JSX.Element {
     }
   }, [reviews]);
 
+  // Действия, которые выполнятся сразу после отправки формы "Оставить отзыв". Т.е. после нажатия кнопки "Отправить отзыв"
+  useEffect(() => {
+    if (isSendReviewModalOpened && isPostSentSuccessfully) {
+      setIsSendReviewModalOpened(false);
+      dispatch(resetPostSentSuccessful());
+      dispatch(fetchReviewsAction(Number(id)));
+      setIsReviewSuccessModalOpened(true);
+    }
+  }, [isSendReviewModalOpened, isPostSentSuccessfully, dispatch, id]);
+
   if (!camera) {
     return <h1>Страница не найдена</h1>; //!Заменить на <NotFoundScreen/> когда он появится
   }
+
+  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
+  if (idForAddItemModal !== NON_EXISTENT_ID) {
+    dataForAddItemModal = camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal);
+  }
+
   // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,
   // поскольку будет выпадать ошибка: "Type 'null' is not assignable to type 'Camera'".
   const { name, vendorCode, type, category, description, level, rating, price, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = camera;
 
+  // Обработчики клика по Табам "Характеристики" и "Описание"
   const specificationsLinkClickHandler = () => {
     setIsSpecsLinkActive(true);
     setIsDescriptionLinkActive(false);
@@ -90,11 +119,56 @@ function ProductScreen(): JSX.Element {
     setIsDescriptionLinkActive(true);
   };
 
+  // Обработчик нажатия на кнопку "Наверх". Плавное поднятие на верх страницы
   const upButtonClickHandler = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
     });
+  };
+
+  // Обработчик натия на кнопку "Оставить свой отзыв" для открытия модального окна "Оставить отзыв"
+  const onSendReviewButonClick = () => {
+    setIsSendReviewModalOpened(true);
+    document.body.style.overflowY = 'hidden';
+    document.body.style.paddingRight = '17px';
+  };
+
+  // Обработчик натия на кнопку "Купить" на элементе слайдера для открытия модального окна "Добавить товар в корзину"
+  const onBuyButtonClick = (gettedId: number) => {
+    if (gettedId !== undefined) {
+      setIdForAddItemModal(gettedId);
+    }
+    setIsAddItemModalOpened(true);
+    document.body.style.overflowY = 'hidden';
+    document.body.style.paddingRight = '17px';
+  };
+
+  // Обработчики закрытия модальных окон по нажатию Кнопки закрытия, нажатия на overlay, нажатия на Esc
+  const onCloseBtnOrOverlayClick = () => {
+    setIsSendReviewModalOpened(false);
+    setIsReviewSuccessModalOpened(false);
+    setIsAddItemModalOpened(false);
+    document.body.style.overflowY = '';
+    document.body.style.paddingRight = '0';
+  };
+
+  const escKeyDownCloseModalHandler = (evt: React.KeyboardEvent<Element>) => {
+    if (isSendReviewModalOpened && isEscKeyPressed(evt)) {
+      setIsSendReviewModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
+    if (isReviewSuccessModalOpened && isEscKeyPressed(evt)) {
+      setIsReviewSuccessModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
+    if (isAddItemModalOpened && isEscKeyPressed(evt)) {
+      setIsAddItemModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
   };
 
   return (
@@ -104,8 +178,8 @@ function ProductScreen(): JSX.Element {
 
         <Header/>
 
-        <main>
-          <div className="page-content">
+        <main onKeyDown={escKeyDownCloseModalHandler} >
+          <div className="page-content" >
             <div className="breadcrumbs">
               <div className="container">
                 <ul className="breadcrumbs__list">
@@ -201,12 +275,16 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showSlider && <Slider similarCameras={similarCamerasList}/>}
+              { showSlider &&
+                <Slider
+                  similarCameras={similarCamerasList}
+                  onBuyButtonClick={onBuyButtonClick}
+                />}
 
             </div>
             <div className="page-content__section">
 
-              { showReviews && <Reviews reviews={reviews}/>}
+              { showReviews && <Reviews reviews={reviews} openModal={onSendReviewButonClick}/>}
 
             </div>
           </div>
@@ -215,8 +293,25 @@ function ProductScreen(): JSX.Element {
               <use xlinkHref="#icon-arrow2"></use>
             </svg>
           </button>
-          {/* <ReviewModal/> */}
-          {/* <ReviewSuccessModal/> */}
+
+          { isSendReviewModalOpened &&
+            <ReviewModal
+              closeModal={onCloseBtnOrOverlayClick}
+              cameraId={id}
+              isReviewModalOpened={isSendReviewModalOpened}
+            /> }
+          { isReviewSuccessModalOpened &&
+            <ReviewSuccessModal
+              closeModal={onCloseBtnOrOverlayClick}
+              isReviewSuccessModalOpened={isReviewSuccessModalOpened}
+            /> }
+          { isAddItemModalOpened &&
+            <AddItemModal
+              dataForAddItemModal={dataForAddItemModal}
+              onCloseClick={onCloseBtnOrOverlayClick}
+              isModalOpened={isAddItemModalOpened}
+            /> }
+
         </main>
 
         <Footer/>

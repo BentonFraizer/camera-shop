@@ -11,8 +11,6 @@ type AddItemModalProps = {
 function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddItemModalProps): JSX.Element | null {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const addInBasketButtonRef = useRef<HTMLButtonElement | null>(null);
-  const modalWindowRef = useRef<HTMLDivElement>(null);
-
 
   useEffect(() => {
     if (isModalOpened === true) {
@@ -43,13 +41,11 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
     }
   };
 
-
-  if(dataForAddItemModal === undefined) {
+  if (dataForAddItemModal === undefined) {
     return null;
   }
 
   const { name, vendorCode, price, type, category, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = dataForAddItemModal;
-
 
   return (
     <div className="modal is-active">
@@ -62,10 +58,7 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
           }}
         >
         </div>
-        <div
-          className="modal__content"
-          ref={modalWindowRef}
-        >
+        <div className="modal__content">
           <p className="title title--h4">Добавить товар в корзину</p>
           <div className="basket-item basket-item--short">
             <div className="basket-item__img">
