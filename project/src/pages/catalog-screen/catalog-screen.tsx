@@ -12,7 +12,6 @@ import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal
 import { isEscKeyPressed } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
-// import AddItemSuccessModal from '../../components/catalog/add-item-success-modal/add-item-success-modal';
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -32,6 +31,11 @@ function CatalogScreen(): JSX.Element {
   const navigate = useNavigate();
 
   useEffect(() => {
+    window.onload = () => {
+      navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+      setCurrentPage(FIRST_PAGE_NUMBER);
+    };
+
     if (window.location.pathname === '/') {
       navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
       setCurrentPage(FIRST_PAGE_NUMBER);
@@ -275,8 +279,6 @@ function CatalogScreen(): JSX.Element {
               isModalOpened={isAddItemModalOpened}
             />
           }
-          {/* {isBookingModalOpened && <AddItemModal onCloseClick={onCloseBtnClick}/>} */}
-          {/* <AddItemSuccessModal/> */}
         </main>
 
         <Footer/>

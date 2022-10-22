@@ -2,11 +2,8 @@ import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '../types/state';
 import { Camera, PromoCamera, Review, ReviewData } from '../types';
-import {
-  // redirectToRoute,
-  postReview
-} from './action';
-import { APIRoute } from '../consts';
+import { redirectToRoute, postReview } from './action';
+import { APIRoute, AppRoute } from '../consts';
 
 // Запрос всех камер
 export const fetchCamerasAction = createAsyncThunk<Camera[], undefined, {
@@ -16,14 +13,12 @@ export const fetchCamerasAction = createAsyncThunk<Camera[], undefined, {
 }>(
   'data/fetchCameras',
   async (_arg, {rejectWithValue, dispatch, extra: api}) => {
-    // try {
-    //   const {data} = await api.get<Camera[]>(APIRoute.Cameras);
-    //   return data;
-    // } catch (error) {
-    //   return rejectWithValue(dispatch(redirectToRoute(AppRoute.Offline)));
-    // }
-    const {data} = await api.get<Camera[]>(APIRoute.Cameras);
-    return data;
+    try {
+      const {data} = await api.get<Camera[]>(APIRoute.Cameras);
+      return data;
+    } catch (error) {
+      return rejectWithValue(dispatch(redirectToRoute(AppRoute.Offline)));
+    }
   },
 );
 

@@ -1,0 +1,41 @@
+main {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-width: 370px;
+}
+
+.page-message {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border: #7575e2 5px solid;
+  background-color: #f4f4fc;
+  border-radius: 10px;
+  padding: 25px 50px;
+}
+
+.page-message__title {
+  font-size: 55px;
+}
+
+.page-message__text {
+  font-size: 30px;
+  margin-bottom: 25px;
+}
+
+.page-message__link {
+  font-size: 18px;
+  line-height: 20px;
+  color: #7575e2;
+  -webkit-transition: all .3s ease;
+  -o-transition: all .3s ease;
+  transition: all .3s ease;
+  margin-bottom: 25px;
+}
+
+.page-message__link:hover {
+  text-decoration: underline;
+}
+
