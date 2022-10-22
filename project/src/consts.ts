@@ -3,6 +3,7 @@ export enum AppRoute {
   Catalog = '/catalog/page_:pageNumber',
   Product = '/product/:id',
   Basket = '/basket',
+  Offline = '/offline',
 }
 
 export enum NameSpace {

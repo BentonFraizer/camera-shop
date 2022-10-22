@@ -21,7 +21,7 @@ function Banner(props: BannerProps):JSX.Element {
         <span className="banner__message">Новинка!</span>
         <span className="title title--h1">{name}</span>
         <span className="banner__text">Профессиональная камера от&nbsp;известного производителя</span>
-        <Link className="btn" to={`/product/${id}`}>Подробнее</Link>
+        <Link className="btn" to={`/product/${id}?tab=specifications`}>Подробнее</Link>
       </p>
     </div>
   );

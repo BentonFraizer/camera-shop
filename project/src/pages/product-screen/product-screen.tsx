@@ -14,6 +14,7 @@ import Reviews from '../../components/reviews/reviews';
 import ReviewModal from '../../components/product/review-modal/review-modal';
 import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
 import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
+import NotFoundScreen from '../not-found-screen/not-found-screen';
 
 function ProductScreen(): JSX.Element {
   const BEGIN_OF_PAGE_COORDS = 0;
@@ -96,7 +97,7 @@ function ProductScreen(): JSX.Element {
   }, [isSendReviewModalOpened, isPostSentSuccessfully, dispatch, id]);
 
   if (!camera) {
-    return <h1>Страница не найдена</h1>; //!Заменить на <NotFoundScreen/> когда он появится
+    return <NotFoundScreen/>;
   }
 
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
