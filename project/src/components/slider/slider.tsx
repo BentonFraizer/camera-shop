@@ -70,6 +70,7 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
             aria-label="Предыдущий слайд"
             onClick={() => handlePrevBtnClick()}
             disabled={isPrevButtonDisabled}
+            data-testid="slider-controls--prev"
           >
             <svg width="7" height="12" aria-hidden='true'>
               <use xlinkHref="#icon-arrow"></use>
@@ -81,6 +82,7 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
             aria-label="Следующий слайд"
             onClick={() => handleNextBtnClick()}
             disabled={isNextButtonDisabled}
+            data-testid="slider-controls--next"
           >
             <svg width="7" height="12" aria-hidden='true'>
               <use xlinkHref="#icon-arrow"></use>

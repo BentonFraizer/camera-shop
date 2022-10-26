@@ -59,7 +59,12 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
                 className="pagination__item"
                 onClick={() => onNumberedLinkClick(pageNumber)}
               >
-                <Link className={pageNumber === currentPage ? 'pagination__link pagination__link--active' : 'pagination__link'} to={`/catalog/page_${pageNumber}`}>{pageNumber}</Link>
+                <Link
+                  className={pageNumber === currentPage ? 'pagination__link pagination__link--active' : 'pagination__link'}
+                  to={`/catalog/page_${pageNumber}`}
+                  data-testid={pageNumber}
+                >{pageNumber}
+                </Link>
               </li>
             ))
         }

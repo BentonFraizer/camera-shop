@@ -145,7 +145,10 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
                   </div>
                   <p className="rate__message">Нужно оценить товар</p>
                 </fieldset>
-                <div className={isNameIsInvalid ? 'custom-input form-review__item is-invalid' : 'custom-input form-review__item'}>
+                <div
+                  className={isNameIsInvalid ? 'custom-input form-review__item is-invalid' : 'custom-input form-review__item'}
+                  data-testid="div-user-name"
+                >
                   <label>
                     <span className="custom-input__label">Ваше имя
                       <svg width="9" height="9" aria-hidden="true">
@@ -157,11 +160,15 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
                       name="user-name"
                       placeholder="Введите ваше имя"
                       ref={nameRef}
+                      data-testid="input-user-name"
                     />
                   </label>
                   <p className="custom-input__error">Нужно указать имя</p>
                 </div>
-                <div className={isAdvantagesIsInvalid ? 'custom-input form-review__item is-invalid' : 'custom-input form-review__item'}>
+                <div
+                  className={isAdvantagesIsInvalid ? 'custom-input form-review__item is-invalid' : 'custom-input form-review__item'}
+                  data-testid="div-user-plus"
+                >
                   <label>
                     <span className="custom-input__label">Достоинства
                       <svg width="9" height="9" aria-hidden="true">

@@ -96,6 +96,7 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
+            data-testid="close-btn"
             onClick={(evt) => {
               evt.preventDefault();
               onCloseClick();
