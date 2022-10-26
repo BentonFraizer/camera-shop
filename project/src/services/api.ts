@@ -1,9 +1,6 @@
 import
 axios,
-{ AxiosInstance,
-  // AxiosResponse,
-  // AxiosError
-} from 'axios';
+{ AxiosInstance } from 'axios';
 
 const BACKEND_URL = 'https://camera-shop.accelerator.pages.academy';
 const REQUEST_TIMEOUT = 5000;

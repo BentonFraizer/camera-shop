@@ -8,7 +8,10 @@ type ProductsListProps = {
 
 function ProductsList(props: ProductsListProps): JSX.Element {
   return (
-    <div className="cards catalog__cards">
+    <div
+      className="cards catalog__cards"
+      data-testid="products-list"
+    >
       {
         props.productsList.map((product) =>
           (

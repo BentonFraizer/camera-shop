@@ -243,6 +243,7 @@ function ProductScreen(): JSX.Element {
                           className={isDescriptionLinkActive ? 'tabs__control is-active' : 'tabs__control'}
                           to={'?tab=description'}
                           onClick={() => descriptionLinkClickHandler()}
+                          data-testid="link-description"
                         >Описание
                         </Link>
                       </div>

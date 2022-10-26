@@ -2,8 +2,6 @@ import Icons from '../../components/icons/icons';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import { Link } from 'react-router-dom';
-// import RemoveItemModal from '../../components/basket/remove-item-modal/remove-item-modal';
-// import PaymentSuccessModal from '../../components/basket/payment-success-modal/payment-success-modal';
 
 function BasketScreen(): JSX.Element {
   return (
@@ -39,7 +37,7 @@ function BasketScreen(): JSX.Element {
             </div>
             <section className="basket">
               <div className="container">
-                <h1 className="title title--h2">Корзина</h1>
+                <h1 className="title title--h2" data-testid="basket">Корзина</h1>
                 <ul className="basket__list">
                   <li className="basket-item">
                     <div className="basket-item__img">
@@ -146,8 +144,6 @@ function BasketScreen(): JSX.Element {
               </div>
             </section>
           </div>
-          {/* <RemoveItemModal/> */}
-          {/* <PaymentSuccessModal/> */}
         </main>
 
         <Footer/>
