@@ -13,7 +13,7 @@ import Slider from '../../components/slider/slider';
 import Reviews from '../../components/reviews/reviews';
 import ReviewModal from '../../components/product/review-modal/review-modal';
 import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
-import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 
 function ProductScreen(): JSX.Element {
@@ -110,18 +110,18 @@ function ProductScreen(): JSX.Element {
   const { name, vendorCode, type, category, description, level, rating, price, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = camera;
 
   // Обработчики клика по Табам "Характеристики" и "Описание"
-  const specificationsLinkClickHandler = () => {
+  const handleSpecificationsLinkClick = () => {
     setIsSpecsLinkActive(true);
     setIsDescriptionLinkActive(false);
   };
 
-  const descriptionLinkClickHandler = () => {
+  const handleDescriptionLinkClick = () => {
     setIsSpecsLinkActive(false);
     setIsDescriptionLinkActive(true);
   };
 
   // Обработчик нажатия на кнопку "Наверх". Плавное поднятие на верх страницы
-  const upButtonClickHandler = () => {
+  const handleUpButtonClick = () => {
     window.scrollTo({
       top: 0,
       behavior: 'smooth'
@@ -154,7 +154,7 @@ function ProductScreen(): JSX.Element {
     document.body.style.paddingRight = '0';
   };
 
-  const escKeyDownCloseModalHandler = (evt: React.KeyboardEvent<Element>) => {
+  const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (isSendReviewModalOpened && isEscKeyPressed(evt)) {
       setIsSendReviewModalOpened(false);
       document.body.style.overflowY = '';
@@ -179,7 +179,7 @@ function ProductScreen(): JSX.Element {
 
         <Header/>
 
-        <main onKeyDown={escKeyDownCloseModalHandler} >
+        <main onKeyDown={handleEscBtnKeydown} >
           <div className="page-content" >
             <div className="breadcrumbs">
               <div className="container">
@@ -236,13 +236,13 @@ function ProductScreen(): JSX.Element {
                         <Link
                           className={isSpecsLinkActive ? 'tabs__control is-active' : 'tabs__control'}
                           to={'?tab=specifications'}
-                          onClick={() => specificationsLinkClickHandler()}
+                          onClick={() => handleSpecificationsLinkClick()}
                         >Характеристики
                         </Link>
                         <Link
                           className={isDescriptionLinkActive ? 'tabs__control is-active' : 'tabs__control'}
                           to={'?tab=description'}
-                          onClick={() => descriptionLinkClickHandler()}
+                          onClick={() => handleDescriptionLinkClick()}
                           data-testid="link-description"
                         >Описание
                         </Link>
@@ -286,11 +286,11 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showReviews && <Reviews reviews={reviews} openModal={onSendReviewButonClick}/>}
+              { showReviews && <Reviews reviews={reviews} openSendReviewModal={onSendReviewButonClick}/>}
 
             </div>
           </div>
-          <button className="up-btn" onClick={() => upButtonClickHandler()}>
+          <button className="up-btn" onClick={() => handleUpButtonClick()}>
             <svg width="12" height="18" aria-hidden="true">
               <use xlinkHref="#icon-arrow2"></use>
             </svg>
@@ -298,19 +298,19 @@ function ProductScreen(): JSX.Element {
 
           { isSendReviewModalOpened &&
             <ReviewModal
-              closeModal={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               cameraId={id}
               isReviewModalOpened={isSendReviewModalOpened}
             /> }
           { isReviewSuccessModalOpened &&
             <ReviewSuccessModal
-              closeModal={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isReviewSuccessModalOpened={isReviewSuccessModalOpened}
             /> }
           { isAddItemModalOpened &&
             <AddItemModal
               dataForAddItemModal={dataForAddItemModal}
-              onCloseClick={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
             /> }
 

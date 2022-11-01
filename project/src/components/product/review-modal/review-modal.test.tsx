@@ -16,7 +16,7 @@ describe('Component: ReviewModal', () => {
       <Provider store={store}>
         <HistoryRouter history={history}>
           <ReviewModal
-            closeModal={jest.fn()}
+            onCloseBtnOrOverlayClick={jest.fn()}
             cameraId={'1'}
             isReviewModalOpened
           />
@@ -36,7 +36,7 @@ describe('Component: ReviewModal', () => {
       <Provider store={store}>
         <HistoryRouter history={history}>
           <ReviewModal
-            closeModal={jest.fn()}
+            onCloseBtnOrOverlayClick={jest.fn()}
             cameraId={'1'}
             isReviewModalOpened
           />

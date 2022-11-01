@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { getCameras, getPromoCamera } from '../../store/site-data/selectors';
 import { fetchCamerasAction, fetchPromoCameraAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
-import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import { isEscKeyPressed } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
@@ -82,7 +82,7 @@ function CatalogScreen(): JSX.Element {
     document.body.style.paddingRight = '0';
   };
 
-  const escKeyDownCloseModalHandler = (evt: React.KeyboardEvent<Element>) => {
+  const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (isAddItemModalOpened && isEscKeyPressed(evt)) {
       setIsAddItemModalOpened(false);
       document.body.style.overflowY = '';
@@ -99,7 +99,7 @@ function CatalogScreen(): JSX.Element {
   };
   const productsToRender = (getProductsToRender(currentPage, camerasList, PRODUCTS_PER_PAGE));
 
-  const paginate = (pageNumber:number) => {
+  const onPaginationLinkClick = (pageNumber:number) => {
     setCurrentPage(pageNumber);
   };
   const onPrevButtonClick = () => setCurrentPage(currentPage - 1);
@@ -112,7 +112,7 @@ function CatalogScreen(): JSX.Element {
 
         <Header/>
 
-        <main onKeyDown={escKeyDownCloseModalHandler} >
+        <main onKeyDown={handleEscBtnKeydown} >
 
           <Banner promoCamera={promoCamera}/>
 
@@ -261,9 +261,9 @@ function CatalogScreen(): JSX.Element {
                         productsList={camerasList}
                         productsPerPage={PRODUCTS_PER_PAGE}
                         currentPage={currentPage}
-                        onNumberedLinkClick={paginate}
-                        prevButtonClick={onPrevButtonClick}
-                        nextButtonClick={onNextButtonClick}
+                        onPaginationLinkClick={onPaginationLinkClick}
+                        onPrevButtonClick={onPrevButtonClick}
+                        onNextButtonClick={onNextButtonClick}
                       /> }
 
                   </div>
@@ -275,7 +275,7 @@ function CatalogScreen(): JSX.Element {
             isAddItemModalOpened &&
             <AddItemModal
               dataForAddItemModal={dataForAddItemModal}
-              onCloseClick={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
             />
           }

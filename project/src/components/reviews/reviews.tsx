@@ -5,10 +5,10 @@ import { useEffect, useState } from 'react';
 
 type ReviewsProps = {
   reviews: Review[];
-  openModal: () => void;
+  openSendReviewModal: () => void;
 }
 
-function Reviews({reviews, openModal}: ReviewsProps):JSX.Element {
+function Reviews({reviews, openSendReviewModal}: ReviewsProps):JSX.Element {
   const reviewsForSort = [...reviews];
   const reviewsAfterSort = reviewsForSort.sort((a, b) => getDateForSort(a.createAt) > getDateForSort(b.createAt) ? -1 : 1);
   const REVIEWS_COUNT_PER_STEP = 3;
@@ -47,7 +47,7 @@ function Reviews({reviews, openModal}: ReviewsProps):JSX.Element {
           <button
             className="btn"
             type="button"
-            onClick={ () => openModal() }
+            onClick={ () => openSendReviewModal() }
           >Оставить свой отзыв
           </button>
         </div>

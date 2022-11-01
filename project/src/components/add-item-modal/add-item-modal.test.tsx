@@ -1,8 +1,8 @@
 import {render, screen} from '@testing-library/react';
 import {createMemoryHistory} from 'history';
-import HistoryRouter from '../../../components/history-router/history-router';
+import HistoryRouter from '../../components/history-router/history-router';
 import AddItemModal from './add-item-modal';
-import { cameraData } from '../../../mockForTests';
+import { cameraData } from '../../mockForTests';
 import userEvent from '@testing-library/user-event';
 
 const history = createMemoryHistory();
@@ -14,7 +14,7 @@ describe('Component: AddItemModal', () => {
       <HistoryRouter history={history}>
         <AddItemModal
           dataForAddItemModal={cameraData}
-          onCloseClick={jest.fn()}
+          onCloseBtnOrOverlayClick={jest.fn()}
           isModalOpened
         />
       </HistoryRouter>,
@@ -30,7 +30,7 @@ describe('Component: AddItemModal', () => {
       <HistoryRouter history={history}>
         <AddItemModal
           dataForAddItemModal={cameraData}
-          onCloseClick={closeButtonClickHandle}
+          onCloseBtnOrOverlayClick={closeButtonClickHandle}
           isModalOpened
         />
       </HistoryRouter>,

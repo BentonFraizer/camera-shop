@@ -6,12 +6,12 @@ type PaginationProps = {
   productsList: Camera[];
   productsPerPage: number;
   currentPage: number;
-  onNumberedLinkClick:(pageNumber:number) => void;
-  prevButtonClick: ()=> void;
-  nextButtonClick: ()=> void;
+  onPaginationLinkClick:(pageNumber:number) => void;
+  onPrevButtonClick: ()=> void;
+  onNextButtonClick: ()=> void;
 }
 
-function Pagination({ productsList, productsPerPage, currentPage, onNumberedLinkClick, prevButtonClick, nextButtonClick }: PaginationProps):JSX.Element {
+function Pagination({ productsList, productsPerPage, currentPage, onPaginationLinkClick, onPrevButtonClick, onNextButtonClick }: PaginationProps):JSX.Element {
   const numberOfPages: number[] = useMemo(() =>
   {
     const result: number[] = [];
@@ -47,7 +47,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
           isPrevButtonVisible &&
           <li
             className="pagination__item"
-            onClick={() => prevButtonClick()}
+            onClick={() => onPrevButtonClick()}
           ><Link className="pagination__link pagination__link--text" to={`/catalog/page_${currentPage - 1}`}>Назад</Link>
           </li>
         }
@@ -57,7 +57,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
             (
               <li key={pageNumber}
                 className="pagination__item"
-                onClick={() => onNumberedLinkClick(pageNumber)}
+                onClick={() => onPaginationLinkClick(pageNumber)}
               >
                 <Link
                   className={pageNumber === currentPage ? 'pagination__link pagination__link--active' : 'pagination__link'}
@@ -73,7 +73,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
           isNextButtonVisible &&
         <li
           className="pagination__item"
-          onClick={() => nextButtonClick()}
+          onClick={() => onNextButtonClick()}
         ><Link className="pagination__link pagination__link--text" to={`/catalog/page_${currentPage + 1}`}>Далее</Link>
         </li>
         }

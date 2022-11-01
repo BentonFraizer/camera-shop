@@ -1,14 +1,14 @@
-import { Camera } from '../../../types';
-import { separateNumbers } from '../../../utils/utils';
+import { Camera } from '../../types';
+import { separateNumbers } from '../../utils/utils';
 import { useRef, useEffect } from 'react';
 
 type AddItemModalProps = {
   dataForAddItemModal?: Camera;
-  onCloseClick: () => void;
+  onCloseBtnOrOverlayClick: () => void;
   isModalOpened: boolean;
 }
 
-function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddItemModalProps): JSX.Element | null {
+function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpened}: AddItemModalProps): JSX.Element | null {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const addInBasketButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -19,7 +19,7 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
   }, [isModalOpened]);
 
   //решение взято и модифициронвано с ресурса: https://hidde.blog/using-javascript-to-trap-focus-in-an-element/
-  const tabBtnKeydownHandler = (evt:React.KeyboardEvent<Element>) => {
+  const handleTabBtnKeydown = (evt:React.KeyboardEvent<Element>) => {
     if (evt.key !== 'Tab'){
       return;
     }
@@ -54,7 +54,7 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
           className="modal__overlay"
           onClick={(evt) => {
             evt.preventDefault();
-            onCloseClick();
+            onCloseBtnOrOverlayClick();
           }}
         >
         </div>
@@ -83,7 +83,7 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
               className="btn btn--purple modal__btn modal__btn--fit-width"
               type="button"
               ref={addInBasketButtonRef}
-              onKeyDown={tabBtnKeydownHandler}
+              onKeyDown={handleTabBtnKeydown}
             >
               <svg width="24" height="16" aria-hidden="true">
                 <use xlinkHref="#icon-add-basket"></use>
@@ -92,14 +92,14 @@ function AddItemModal({dataForAddItemModal, onCloseClick, isModalOpened}: AddIte
           </div>
           <button
             ref={closeButtonRef}
-            onKeyDown={tabBtnKeydownHandler}
+            onKeyDown={handleTabBtnKeydown}
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
             data-testid="close-btn"
             onClick={(evt) => {
               evt.preventDefault();
-              onCloseClick();
+              onCloseBtnOrOverlayClick();
             }}
           >
             <svg width="10" height="10" aria-hidden="true">

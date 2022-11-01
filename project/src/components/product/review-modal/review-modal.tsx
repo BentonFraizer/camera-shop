@@ -5,12 +5,12 @@ import { reviewPostAction } from '../../../store/api-actions';
 import { getIsPostSendingStatus } from '../../../store/site-data/selectors';
 
 type ReviewModalProps = {
-  closeModal: () => void;
+  onCloseBtnOrOverlayClick: () => void;
   cameraId: string | undefined;
   isReviewModalOpened: boolean;
 };
 
-function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalProps):JSX.Element {
+function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: ReviewModalProps):JSX.Element {
   const [ratingValue, setRatingValue] = useState<number | null>(null);
   const nameRef = useRef<HTMLInputElement | null>(null);
   const advantagesRef = useRef<HTMLInputElement | null>(null);
@@ -28,11 +28,11 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const sentReviewButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const onSubmit = (reviewData: ReviewData) => {
+  const postDataOnSubmit = (reviewData: ReviewData) => {
     dispatch(reviewPostAction(reviewData));
   };
 
-  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
     ratingValue === null ? setIsRatingIsInvalid(true) : setIsRatingIsInvalid(false);
     (nameRef.current?.value === null || nameRef.current?.value === '') ? setIsNameIsInvalid(true) : setIsNameIsInvalid(false);
@@ -42,7 +42,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
 
     if (nameRef.current?.value !== '' && advantagesRef.current?.value !== '' && disadvantagesRef.current?.value !== '' && reviewRef.current?.value !== '' && ratingValue !== null) {
       setIsSubmitButtonDisabled(true);
-      onSubmit({
+      postDataOnSubmit({
         cameraId: Number(cameraId),
         userName: nameRef.current?.value,
         advantage: advantagesRef.current?.value,
@@ -68,7 +68,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
     }
   }, [isReviewModalOpened]);
 
-  const shiftTabKeydownHandler = (evt:React.KeyboardEvent<Element>) => {
+  const handleShiftTabBtnsKeydown = (evt:React.KeyboardEvent<Element>) => {
     if (evt.key !== 'Tab' && evt.key !== 'Shift') {
       return;
     }
@@ -85,7 +85,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
     }
   };
 
-  const tabBtnKeydownHandler = (evt:React.KeyboardEvent<Element>) => {
+  const handleTabBtnKeydown = (evt:React.KeyboardEvent<Element>) => {
     if (evt.key !== 'Tab') {
       return;
     }
@@ -109,7 +109,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={ () => closeModal() }
+          onClick={ () => onCloseBtnOrOverlayClick() }
         >
         </div>
         <div className="modal__content">
@@ -117,7 +117,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
           <div className="form-review">
             <form
               method="post"
-              onSubmit={handleSubmit}
+              onSubmit={handleFormSubmit}
             >
               <div className="form-review__rate">
                 <fieldset className={isRatingIsInvalid ? 'rate form-review__item is-invalid' : 'rate form-review__item'}>
@@ -136,7 +136,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
                       <label className="rate__label" htmlFor="star-3" title="Нормально"></label>
                       <input className="visually-hidden" id="star-2" name="rate" type="radio" value="2" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} />
                       <label className="rate__label" htmlFor="star-2" title="Плохо"></label>
-                      <input className="visually-hidden" id="star-1" name="rate" type="radio" value="1" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} ref={firstStartRef} onKeyDown={shiftTabKeydownHandler}/>
+                      <input className="visually-hidden" id="star-1" name="rate" type="radio" value="1" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} ref={firstStartRef} onKeyDown={handleShiftTabBtnsKeydown}/>
                       <label className="rate__label" htmlFor="star-1" title="Ужасно"></label>
                     </div>
                     <div className="rate__progress">
@@ -231,9 +231,9 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={() => closeModal()}
+            onClick={() => onCloseBtnOrOverlayClick()}
             ref={closeButtonRef}
-            onKeyDown={tabBtnKeydownHandler}
+            onKeyDown={handleTabBtnKeydown}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>

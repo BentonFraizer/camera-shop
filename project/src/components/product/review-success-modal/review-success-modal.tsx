@@ -1,11 +1,11 @@
 import { useRef, useEffect } from 'react';
 
 type ReviewSuccessModalProps = {
-  closeModal: () => void;
+  onCloseBtnOrOverlayClick: () => void;
   isReviewSuccessModalOpened: boolean;
 }
 
-function ReviewSuccessModal({closeModal, isReviewSuccessModalOpened}: ReviewSuccessModalProps): JSX.Element {
+function ReviewSuccessModal({onCloseBtnOrOverlayClick, isReviewSuccessModalOpened}: ReviewSuccessModalProps): JSX.Element {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const backToShoppingButton = useRef<HTMLButtonElement | null>(null);
 
@@ -16,7 +16,7 @@ function ReviewSuccessModal({closeModal, isReviewSuccessModalOpened}: ReviewSucc
   }, [isReviewSuccessModalOpened]);
 
   //решение взято с ресурса: https://hidde.blog/using-javascript-to-trap-focus-in-an-element/ и модифициронвано
-  const tabBtnKeydownHandler = (evt: React.KeyboardEvent<Element>) => {
+  const handleTabBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (evt.key !== 'Tab') {
       return;
     }
@@ -41,7 +41,7 @@ function ReviewSuccessModal({closeModal, isReviewSuccessModalOpened}: ReviewSucc
   return (
     <div className="modal is-active modal--narrow">
       <div className="modal__wrapper" >
-        <div className="modal__overlay" onClick={() => closeModal()} ></div>
+        <div className="modal__overlay" onClick={() => onCloseBtnOrOverlayClick()} ></div>
         <div className="modal__content">
           <p className="title title--h4">Спасибо за отзыв</p>
           <svg className="modal__icon" width="80" height="78" aria-hidden="true">
@@ -52,8 +52,8 @@ function ReviewSuccessModal({closeModal, isReviewSuccessModalOpened}: ReviewSucc
               className="btn btn--purple modal__btn modal__btn--fit-width"
               type="button"
               ref={backToShoppingButton}
-              onKeyDown={tabBtnKeydownHandler}
-              onClick={() => closeModal()}
+              onKeyDown={handleTabBtnKeydown}
+              onClick={() => onCloseBtnOrOverlayClick()}
             >Вернуться к покупкам
             </button>
           </div>
@@ -61,9 +61,9 @@ function ReviewSuccessModal({closeModal, isReviewSuccessModalOpened}: ReviewSucc
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={() => closeModal()}
+            onClick={() => onCloseBtnOrOverlayClick()}
             ref={closeButtonRef}
-            onKeyDown={tabBtnKeydownHandler}
+            onKeyDown={handleTabBtnKeydown}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>

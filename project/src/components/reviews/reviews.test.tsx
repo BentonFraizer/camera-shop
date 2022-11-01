@@ -13,7 +13,7 @@ describe('Component: Reviews', () => {
       <HistoryRouter history={history}>
         <Reviews
           reviews={reviewsList}
-          openModal={jest.fn()}
+          openSendReviewModal={jest.fn()}
         />
       </HistoryRouter>
     );
@@ -28,7 +28,7 @@ describe('Component: Reviews', () => {
       <HistoryRouter history={history}>
         <Reviews
           reviews={reviewsList}
-          openModal={jest.fn()}
+          openSendReviewModal={jest.fn()}
         />
       </HistoryRouter>
     );
@@ -44,7 +44,7 @@ describe('Component: Reviews', () => {
       <HistoryRouter history={history}>
         <Reviews
           reviews={reviewsList}
-          openModal={sendReviewButtonClick}
+          openSendReviewModal={sendReviewButtonClick}
         />
       </HistoryRouter>
     );

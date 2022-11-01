@@ -16,7 +16,7 @@ describe('Component: ReviewSuccessModal', ()=> {
       <Provider store={store}>
         <HistoryRouter history={history}>
           <ReviewSuccessModal
-            closeModal={jest.fn()}
+            onCloseBtnOrOverlayClick={jest.fn()}
             isReviewSuccessModalOpened
           />
         </HistoryRouter>
@@ -33,7 +33,7 @@ describe('Component: ReviewSuccessModal', ()=> {
       <Provider store={store}>
         <HistoryRouter history={history}>
           <ReviewSuccessModal
-            closeModal={backToShoppingButtonClickHandle}
+            onCloseBtnOrOverlayClick={backToShoppingButtonClickHandle}
             isReviewSuccessModalOpened
           />
         </HistoryRouter>

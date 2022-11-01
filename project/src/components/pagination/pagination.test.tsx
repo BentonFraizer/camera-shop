@@ -17,9 +17,9 @@ describe('Component: Pagination', () => {
           productsList={camerasList}
           productsPerPage={9}
           currentPage={1}
-          onNumberedLinkClick={jest.fn}
-          prevButtonClick={jest.fn}
-          nextButtonClick={jest.fn}
+          onPaginationLinkClick={jest.fn}
+          onPrevButtonClick={jest.fn}
+          onNextButtonClick={jest.fn}
         />
       </HistoryRouter>
     );
@@ -42,9 +42,9 @@ describe('Component: Pagination', () => {
                 productsList={camerasList}
                 productsPerPage={9}
                 currentPage={1}
-                onNumberedLinkClick={jest.fn}
-                prevButtonClick={jest.fn}
-                nextButtonClick={jest.fn}
+                onPaginationLinkClick={jest.fn}
+                onPrevButtonClick={jest.fn}
+                onNextButtonClick={jest.fn}
               />
             }
           />
@@ -69,9 +69,9 @@ describe('Component: Pagination', () => {
           productsList={camerasList}
           productsPerPage={9}
           currentPage={1}
-          onNumberedLinkClick={jest.fn}
-          prevButtonClick={jest.fn}
-          nextButtonClick={nextButtonClickHandler}
+          onPaginationLinkClick={jest.fn}
+          onPrevButtonClick={jest.fn}
+          onNextButtonClick={nextButtonClickHandler}
         />
       </HistoryRouter>
     );
