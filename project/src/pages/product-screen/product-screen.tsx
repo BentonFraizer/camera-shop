@@ -14,7 +14,7 @@ import Reviews from '../../components/reviews/reviews';
 import ReviewModal from '../../components/product/review-modal/review-modal';
 import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
-import NotFoundScreen from '../not-found-screen/not-found-screen';
+import LoadingScreen from '../loading-screen/loading-screen';
 
 const TAB_SEARCH_PARAM = 'Tab';
 const EMPTY_LIST_LENGTH = 0;
@@ -87,7 +87,7 @@ function ProductScreen(): JSX.Element {
   }, [isSendReviewModalOpened, isPostSentSuccessfully, dispatch, id]);
 
   if (!camera) {
-    return <NotFoundScreen/>;
+    return <LoadingScreen/>;
   }
 
   // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,

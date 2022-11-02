@@ -17,6 +17,7 @@ const initialState: SiteData = {
   similarCamerasList: [],
   reviews: [],
   isPostSentSuccessful: false,
+  isDataLoaded: true,
 };
 
 export const siteData = createSlice({
@@ -32,8 +33,12 @@ export const siteData = createSlice({
   },
   extraReducers(builder) {
     builder
+      .addCase(fetchCamerasAction.pending, (state) => {
+        state.isDataLoaded = true;
+      })
       .addCase(fetchCamerasAction.fulfilled, (state, action) => {
         state.camerasList = action.payload;
+        state.isDataLoaded = false;
       })
       .addCase(fetchCameraAction.fulfilled, (state, action) => {
         state.camera = action.payload;
