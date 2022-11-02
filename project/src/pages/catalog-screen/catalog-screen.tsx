@@ -14,20 +14,22 @@ import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
+const EMPTY_ARRAY_LENGTH = 0;
+const PRODUCTS_PER_PAGE = 9;
+const FIRST_PAGE_NUMBER = 1;
+const NON_EXISTENT_ID = 0;
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const camerasList = useAppSelector(getCameras);
   const promoCamera = useAppSelector(getPromoCamera);
-  const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
-  const NON_EXISTENT_ID = 0;
-  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
-  let dataForAddItemModal;
-  const EMPTY_ARRAY_LENGTH = 0;
-  const PRODUCTS_PER_PAGE = 9;
-  const FIRST_PAGE_NUMBER = 1;
-  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
   const navigate = useNavigate();
+  const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
+  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
+  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
+  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
+  const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
+  const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
 
   useEffect(() => {
     window.onload = () => {
@@ -40,10 +42,6 @@ function CatalogScreen(): JSX.Element {
       setCurrentPage(FIRST_PAGE_NUMBER);
     }
   }, [navigate]);
-
-  if (idForAddItemModal !== NON_EXISTENT_ID) {
-    dataForAddItemModal = camerasList.find((camera) => camera.id === idForAddItemModal);
-  }
 
   // Скрытие/отображение секции "Пагинация"
   const isPaginationVisible = camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE;

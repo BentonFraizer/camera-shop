@@ -25,18 +25,20 @@ function ProductScreen(): JSX.Element {
   const {id} = useParams();
   const dispatch = useAppDispatch();
   const camera = useAppSelector(getCamera);
+  const reviews = useAppSelector(getReviews);
+  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const similarCamerasList = useAppSelector(getSimilarCamerasList);
+  const camerasList = useAppSelector(getCameras);
   const [isSpecsLinkActive, setIsSpecsLinkActive] = useState(true);
   const [isDescriptionLinkActive, setIsDescriptionLinkActive] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const reviews = useAppSelector(getReviews);
   const [isSendReviewModalOpened, setIsSendReviewModalOpened] = useState(false);
   const [isReviewSuccessModalOpened, setIsReviewSuccessModalOpened] = useState(false);
-  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
-  let dataForAddItemModal;
-  const camerasList = useAppSelector(getCameras);
+  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
+  const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
+  const dataForAddItemModal = isIdExists ? camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal) : undefined;
 
   // Обработка параметров поиска адресной строки для корретной работы Табов "Характеристики" и "Описание"
   useEffect(() => {
@@ -86,11 +88,6 @@ function ProductScreen(): JSX.Element {
 
   if (!camera) {
     return <NotFoundScreen/>;
-  }
-
-  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
-  if (idForAddItemModal !== NON_EXISTENT_ID) {
-    dataForAddItemModal = camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal);
   }
 
   // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,
