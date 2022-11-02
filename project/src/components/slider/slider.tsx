@@ -1,6 +1,9 @@
 import { Camera } from '../../types';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import ProductCard from '../../components/product-card/product-card';
+import { SliderElement } from '../../consts';
+
+const ELEMENTS_WHEN_NEED_BUTTONS = 3;
 
 type SliderProps = {
   similarCameras: Camera[];
@@ -9,11 +12,6 @@ type SliderProps = {
 
 function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
   const [activeCards, setActiveCards] = useState([0, 1, 2]);
-  const FIRST_SLIDER_ELEMENT = 0;
-  const LAST_SLIDER_ELEMENT = 2;
-  const ELEMENTS_WHEN_NEED_BUTTONS = 4;
-  const [isPrevButtonDisabled, setisPrevButtonDisabled] = useState(true);
-  const [isNextButtonDisabled, setisNextButtonDisabled] = useState(false);
 
   const handleNextBtnClick = () => {
     const result = activeCards.map((item) => item + 1);
@@ -25,24 +23,9 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
     setActiveCards(result);
   };
 
-  useEffect(() => {
-    if (similarCameras.length < ELEMENTS_WHEN_NEED_BUTTONS) {
-      setisPrevButtonDisabled(true);
-      setisNextButtonDisabled(true);
-    }
-
-    if (activeCards[FIRST_SLIDER_ELEMENT] === 0) {
-      setisPrevButtonDisabled(true);
-    } else {
-      setisPrevButtonDisabled(false);
-    }
-
-    if (activeCards[LAST_SLIDER_ELEMENT] === similarCameras.length - 1) {
-      setisNextButtonDisabled(true);
-    } else {
-      setisNextButtonDisabled(false);
-    }
-  }, [activeCards, similarCameras]);
+  const isButtonVisible = similarCameras.length > ELEMENTS_WHEN_NEED_BUTTONS;
+  const isPrevButtonDisabled = activeCards[SliderElement.First] === 0;
+  const isNextButtonDisabled = activeCards[SliderElement.Last] === similarCameras.length - 1;
 
   return (
     <section className="product-similar">
@@ -64,6 +47,7 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
               )
             }
           </div>
+          { isButtonVisible &&
           <button
             className="slider-controls slider-controls--prev"
             type="button"
@@ -75,7 +59,8 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
             <svg width="7" height="12" aria-hidden='true'>
               <use xlinkHref="#icon-arrow"></use>
             </svg>
-          </button>
+          </button>}
+          { isButtonVisible &&
           <button
             className="slider-controls slider-controls--next"
             type="button"
@@ -87,7 +72,7 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
             <svg width="7" height="12" aria-hidden='true'>
               <use xlinkHref="#icon-arrow"></use>
             </svg>
-          </button>
+          </button>}
         </div>
       </div>
     </section>

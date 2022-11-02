@@ -1,5 +1,5 @@
 import { Camera } from '../../types';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 type PaginationProps = {
@@ -21,24 +21,8 @@ function Pagination({ productsList, productsPerPage, currentPage, onPaginationLi
     return result;
   }, [productsList.length, productsPerPage]);
 
-  const [isPrevButtonVisible, setIsPrevButtonVisible] = useState(false);
-  const [isNextButtonVisible, setIsNextButtonVisible] = useState(true);
-
-  useEffect (() => {
-    if (currentPage !== numberOfPages[0]) {
-      setIsPrevButtonVisible(true);
-    } else {
-      setIsPrevButtonVisible(false);
-    }
-  }, [currentPage, numberOfPages]);
-
-  useEffect (() => {
-    if (currentPage !== numberOfPages[numberOfPages.length - 1]) {
-      setIsNextButtonVisible(true);
-    } else {
-      setIsNextButtonVisible(false);
-    }
-  }, [currentPage, numberOfPages]);
+  const isPrevButtonVisible = currentPage !== numberOfPages[0];
+  const isNextButtonVisible = currentPage !== numberOfPages[numberOfPages.length - 1];
 
   return (
     <div className="pagination">

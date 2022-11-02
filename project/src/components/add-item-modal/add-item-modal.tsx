@@ -1,6 +1,7 @@
 import { Camera } from '../../types';
 import { separateNumbers } from '../../utils/utils';
 import { useRef, useEffect } from 'react';
+import { isTabKeyPressed } from '../../utils/utils';
 
 type AddItemModalProps = {
   dataForAddItemModal?: Camera;
@@ -20,23 +21,19 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
 
   //решение взято и модифициронвано с ресурса: https://hidde.blog/using-javascript-to-trap-focus-in-an-element/
   const handleTabBtnKeydown = (evt:React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab'){
-      return;
-    }
+    const isCloseBtnActiveElement = document.activeElement === closeButtonRef.current;
+    const isAddInBasketBtnActiveElement = document.activeElement === addInBasketButtonRef.current;
+    const isBtnElementsNotEmpty = closeButtonRef.current !== null && addInBasketButtonRef.current !== null;
 
-    if (isModalOpened === true) {
-      if (evt.key === 'Tab') {
-        if (closeButtonRef.current !== null && addInBasketButtonRef.current !== null) {
-          if (document.activeElement === closeButtonRef.current) {
-            addInBasketButtonRef.current.focus();
-            evt.preventDefault();
-          } else {
-            if (document.activeElement === addInBasketButtonRef.current) {
-              closeButtonRef.current.focus();
-              evt.preventDefault();
-            }
-          }
-        }
+    if (isModalOpened === true && isTabKeyPressed(evt) && isBtnElementsNotEmpty) {
+      if (isCloseBtnActiveElement) {
+        addInBasketButtonRef.current?.focus();
+        evt.preventDefault();
+      }
+
+      if (isAddInBasketBtnActiveElement) {
+        closeButtonRef.current?.focus();
+        evt.preventDefault();
       }
     }
   };

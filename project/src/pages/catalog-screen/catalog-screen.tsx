@@ -13,6 +13,8 @@ import { isEscKeyPressed } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 
+const BEGIN_OF_PAGE_COORDINATE = 0;
+
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const camerasList = useAppSelector(getCameras);
@@ -21,13 +23,10 @@ function CatalogScreen(): JSX.Element {
   const NON_EXISTENT_ID = 0;
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   let dataForAddItemModal;
-  const [showPagination, setShowPagination] = useState(false);
   const EMPTY_ARRAY_LENGTH = 0;
   const PRODUCTS_PER_PAGE = 9;
   const FIRST_PAGE_NUMBER = 1;
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-  const BEGIN_OF_PAGE_COORD_X = 0;
-  const BEGIN_OF_PAGE_COORD_Y = 0;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -47,13 +46,7 @@ function CatalogScreen(): JSX.Element {
   }
 
   // Скрытие/отображение секции "Пагинация"
-  useEffect(() => {
-    if (camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE) {
-      setShowPagination(true);
-    } else {
-      setShowPagination(false);
-    }
-  }, [camerasList]);
+  const isPaginationVisible = camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE;
 
   useEffect(() => {
     dispatch(fetchCamerasAction());
@@ -62,7 +55,10 @@ function CatalogScreen(): JSX.Element {
 
   // Поднятие страницы в начало
   useEffect(() => {
-    window.scrollTo(BEGIN_OF_PAGE_COORD_X, BEGIN_OF_PAGE_COORD_Y);
+    window.scrollTo({
+      top: BEGIN_OF_PAGE_COORDINATE,
+      behavior: 'smooth'
+    });
   }, [currentPage]);
 
   // Обработчик натия на кнопку "Купить" для открытия модального окна "Добавить товар в корзину"
@@ -256,7 +252,7 @@ function CatalogScreen(): JSX.Element {
                       onClick={onBuyButtonClick}
                     />
 
-                    { showPagination &&
+                    { isPaginationVisible &&
                       <Pagination
                         productsList={camerasList}
                         productsPerPage={PRODUCTS_PER_PAGE}

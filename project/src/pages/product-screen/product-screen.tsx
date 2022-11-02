@@ -16,40 +16,40 @@ import ReviewSuccessModal from '../../components/product/review-success-modal/re
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import NotFoundScreen from '../not-found-screen/not-found-screen';
 
+const TAB_SEARCH_PARAM = 'Tab';
+const EMPTY_LIST_LENGTH = 0;
+const NON_EXISTENT_ID = 0;
+const BEGIN_OF_PAGE_COORDINATE = 0;
+
 function ProductScreen(): JSX.Element {
-  const BEGIN_OF_PAGE_COORDS = 0;
   const {id} = useParams();
   const dispatch = useAppDispatch();
   const camera = useAppSelector(getCamera);
   const similarCamerasList = useAppSelector(getSimilarCamerasList);
-  const [showSlider, setShowSlider] = useState(true);
-  const EMPTY_LIST_LENGTH = 0;
   const [isSpecsLinkActive, setIsSpecsLinkActive] = useState(true);
   const [isDescriptionLinkActive, setIsDescriptionLinkActive] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const reviews = useAppSelector(getReviews);
-  const [showReviews, setShowReviews] = useState(false);
   const [isSendReviewModalOpened, setIsSendReviewModalOpened] = useState(false);
   const [isReviewSuccessModalOpened, setIsReviewSuccessModalOpened] = useState(false);
   const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
-  const NON_EXISTENT_ID = 0;
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   let dataForAddItemModal;
   const camerasList = useAppSelector(getCameras);
 
   // Обработка параметров поиска адресной строки для корретной работы Табов "Характеристики" и "Описание"
   useEffect(() => {
-    if (searchParams.get('tab') === null) {
+    if (searchParams.get(TAB_SEARCH_PARAM) === null) {
       setSearchParams({tab: 'specifications'});
       setIsSpecsLinkActive(true);
       setIsDescriptionLinkActive(false);
     }
-    if (searchParams.get('tab') === 'specifications') {
+    if (searchParams.get(TAB_SEARCH_PARAM) === 'specifications') {
       setIsSpecsLinkActive(true);
       setIsDescriptionLinkActive(false);
     }
-    if (searchParams.get('tab') === 'description') {
+    if (searchParams.get(TAB_SEARCH_PARAM) === 'description') {
       setIsSpecsLinkActive(false);
       setIsDescriptionLinkActive(true);
     }
@@ -57,7 +57,7 @@ function ProductScreen(): JSX.Element {
   },[searchParams, setSearchParams]);
 
   useEffect(() => {
-    window.scrollTo(BEGIN_OF_PAGE_COORDS, BEGIN_OF_PAGE_COORDS);
+    window.scrollTo({top: BEGIN_OF_PAGE_COORDINATE});
     dispatch(fetchCameraAction(Number(id)));
     dispatch(fetchSimilarCamerasAction(Number(id)));
     dispatch(fetchReviewsAction(Number(id)));
@@ -69,22 +69,10 @@ function ProductScreen(): JSX.Element {
   }, [dispatch, id]);
 
   // Скрытие/отображение секции "Похожие товары"
-  useEffect(() => {
-    if (similarCamerasList.length === EMPTY_LIST_LENGTH) {
-      setShowSlider(false);
-    } else {
-      setShowSlider(true);
-    }
-  }, [similarCamerasList]);
+  const isSliderSectionVisible = !(similarCamerasList.length === EMPTY_LIST_LENGTH);
 
   // Скрытие/отображение секции "Отзывы"
-  useEffect(() => {
-    if (reviews.length === EMPTY_LIST_LENGTH) {
-      setShowReviews(false);
-    } else {
-      setShowReviews(true);
-    }
-  }, [reviews]);
+  const isReviewsSectionVisible = !(reviews.length === EMPTY_LIST_LENGTH);
 
   // Действия, которые выполнятся сразу после отправки формы "Оставить отзыв". Т.е. после нажатия кнопки "Отправить отзыв"
   useEffect(() => {
@@ -123,12 +111,12 @@ function ProductScreen(): JSX.Element {
   // Обработчик нажатия на кнопку "Наверх". Плавное поднятие на верх страницы
   const handleUpButtonClick = () => {
     window.scrollTo({
-      top: 0,
+      top: BEGIN_OF_PAGE_COORDINATE,
       behavior: 'smooth'
     });
   };
 
-  // Обработчик натия на кнопку "Оставить свой отзыв" для открытия модального окна "Оставить отзыв"
+  // Обработчик нажатия на кнопку "Оставить свой отзыв" для открытия модального окна "Оставить отзыв"
   const onSendReviewButonClick = () => {
     setIsSendReviewModalOpened(true);
     document.body.style.overflowY = 'hidden';
@@ -277,7 +265,7 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showSlider &&
+              { isSliderSectionVisible &&
                 <Slider
                   similarCameras={similarCamerasList}
                   onBuyButtonClick={onBuyButtonClick}
@@ -286,7 +274,7 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showReviews && <Reviews reviews={reviews} openSendReviewModal={onSendReviewButonClick}/>}
+              { isReviewsSectionVisible && <Reviews reviews={reviews} openSendReviewModal={onSendReviewButonClick}/>}
 
             </div>
           </div>

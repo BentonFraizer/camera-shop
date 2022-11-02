@@ -3,6 +3,9 @@ import { ReviewData } from '../../../types';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { reviewPostAction } from '../../../store/api-actions';
 import { getIsPostSendingStatus } from '../../../store/site-data/selectors';
+import { isTabKeyPressed } from '../../../utils/utils';
+
+const TAB_EVENT_CODE = 'Tab';
 
 type ReviewModalProps = {
   onCloseBtnOrOverlayClick: () => void;
@@ -11,19 +14,19 @@ type ReviewModalProps = {
 };
 
 function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: ReviewModalProps):JSX.Element {
+  const dispatch = useAppDispatch();
+  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const advantagesRef = useRef<HTMLInputElement | null>(null);
-  const disadvantagesRef = useRef<HTMLInputElement | null>(null);
-  const reviewRef = useRef<HTMLTextAreaElement | null>(null);
   const [isRatingIsInvalid, setIsRatingIsInvalid] = useState(false);
   const [isNameIsInvalid, setIsNameIsInvalid] = useState(false);
   const [isAdvantagesIsInvalid, setIsAdvantagesIsInvalid] = useState(false);
   const [isDisadvantagesIsInvalid, setIsDisadvantagesIsInvalid] = useState(false);
   const [isReviewIsInvalid, setIsReviewIsInvalid] = useState(false);
-  const dispatch = useAppDispatch();
-  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(false);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const advantagesRef = useRef<HTMLInputElement | null>(null);
+  const disadvantagesRef = useRef<HTMLInputElement | null>(null);
+  const reviewRef = useRef<HTMLTextAreaElement | null>(null);
   const firstStartRef = useRef<HTMLInputElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const sentReviewButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -34,13 +37,14 @@ function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: 
 
   const handleFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    ratingValue === null ? setIsRatingIsInvalid(true) : setIsRatingIsInvalid(false);
-    (nameRef.current?.value === null || nameRef.current?.value === '') ? setIsNameIsInvalid(true) : setIsNameIsInvalid(false);
-    (advantagesRef.current?.value === null || advantagesRef.current?.value === '') ? setIsAdvantagesIsInvalid(true) : setIsAdvantagesIsInvalid(false);
-    (disadvantagesRef.current?.value === null || disadvantagesRef.current?.value === '') ? setIsDisadvantagesIsInvalid(true) : setIsDisadvantagesIsInvalid(false);
-    (reviewRef.current?.value === null || reviewRef.current?.value === '') ? setIsReviewIsInvalid(true) : setIsReviewIsInvalid(false);
+    setIsRatingIsInvalid(ratingValue === null);
+    setIsNameIsInvalid(nameRef.current?.value === null || nameRef.current?.value === '');
+    setIsAdvantagesIsInvalid(advantagesRef.current?.value === null || advantagesRef.current?.value === '');
+    setIsDisadvantagesIsInvalid(disadvantagesRef.current?.value === null || disadvantagesRef.current?.value === '');
+    setIsReviewIsInvalid(reviewRef.current?.value === null || reviewRef.current?.value === '');
+    const isAllInputsNotEmpty = nameRef.current?.value !== '' && advantagesRef.current?.value !== '' && disadvantagesRef.current?.value !== '' && reviewRef.current?.value !== '' && ratingValue !== null;
 
-    if (nameRef.current?.value !== '' && advantagesRef.current?.value !== '' && disadvantagesRef.current?.value !== '' && reviewRef.current?.value !== '' && ratingValue !== null) {
+    if (isAllInputsNotEmpty) {
       setIsSubmitButtonDisabled(true);
       postDataOnSubmit({
         cameraId: Number(cameraId),
@@ -50,10 +54,10 @@ function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: 
         review: reviewRef.current?.value,
         rating: ratingValue,
       });
-    } else {
-      evt.preventDefault();
-      return null;
     }
+
+    evt.preventDefault();
+    return null;
   };
 
   useEffect(() => {
@@ -69,38 +73,23 @@ function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: 
   }, [isReviewModalOpened]);
 
   const handleShiftTabBtnsKeydown = (evt:React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab' && evt.key !== 'Shift') {
-      return;
-    }
+    const isShiftTabBtnsPressed = (isTabKeyPressed(evt) || evt.code === TAB_EVENT_CODE) && evt.shiftKey;
+    const isFirstStarInputActiveElement = document.activeElement === firstStartRef.current;
 
-    if (isReviewModalOpened === true) {
-      if (evt.key === 'Tab' || evt.code === 'Tab') {
-        if (evt.shiftKey) {
-          if (document.activeElement === firstStartRef.current) {
-            closeButtonRef.current?.focus();
-            evt.preventDefault();
-          }
-        }
-      }
+    if (isReviewModalOpened === true && isShiftTabBtnsPressed && isFirstStarInputActiveElement) {
+      closeButtonRef.current?.focus();
+      evt.preventDefault();
     }
   };
 
   const handleTabBtnKeydown = (evt:React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab') {
-      return;
-    }
+    const isFocusableElementsNotEmpty = closeButtonRef.current !== null && firstStartRef.current !== null;
+    const isOnlyTabKeyPressed = isTabKeyPressed(evt) && !evt.shiftKey;
+    const isCloseBtnActiveElement = document.activeElement === closeButtonRef.current;
 
-    if (isReviewModalOpened === true) {
-      if (evt.key === 'Tab') {
-        if (!evt.shiftKey) {
-          if (closeButtonRef.current !== null && firstStartRef.current !== null) {
-            if (document.activeElement === closeButtonRef.current) {
-              firstStartRef.current.focus();
-              evt.preventDefault();
-            }
-          }
-        }
-      }
+    if (isReviewModalOpened === true && isOnlyTabKeyPressed && isFocusableElementsNotEmpty && isCloseBtnActiveElement) {
+      firstStartRef.current?.focus();
+      evt.preventDefault();
     }
   };
 

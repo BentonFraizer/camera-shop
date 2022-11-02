@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { isTabKeyPressed } from '../../../utils/utils';
 
 type ReviewSuccessModalProps = {
   onCloseBtnOrOverlayClick: () => void;
@@ -17,23 +18,19 @@ function ReviewSuccessModal({onCloseBtnOrOverlayClick, isReviewSuccessModalOpene
 
   //решение взято с ресурса: https://hidde.blog/using-javascript-to-trap-focus-in-an-element/ и модифициронвано
   const handleTabBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab') {
-      return;
-    }
+    const isFocusableElementsNotEmpty = closeButtonRef.current !== null && backToShoppingButton.current !== null;
+    const isCloseBtnActiveElement = document.activeElement === closeButtonRef.current;
+    const isBackToShoppingBtnActiveElement = document.activeElement === backToShoppingButton.current;
 
-    if (isReviewSuccessModalOpened === true) {
-      if (evt.key === 'Tab') {
-        if (closeButtonRef.current !== null && backToShoppingButton.current !== null) {
-          if (document.activeElement === closeButtonRef.current) {
-            backToShoppingButton.current.focus();
-            evt.preventDefault();
-          } else {
-            if (document.activeElement === backToShoppingButton.current) {
-              closeButtonRef.current.focus();
-              evt.preventDefault();
-            }
-          }
-        }
+    if (isReviewSuccessModalOpened === true && isTabKeyPressed(evt) && isFocusableElementsNotEmpty) {
+      if (isCloseBtnActiveElement) {
+        backToShoppingButton.current?.focus();
+        evt.preventDefault();
+      }
+
+      if (isBackToShoppingBtnActiveElement) {
+        closeButtonRef.current?.focus();
+        evt.preventDefault();
       }
     }
   };
