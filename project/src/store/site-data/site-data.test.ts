@@ -17,6 +17,7 @@ describe('Reduser: siteData', () => {
     similarCamerasList: [],
     reviews: [],
     isPostSentSuccessful: false,
+    isDataLoaded: true,
   };
 
   beforeEach(() => {
@@ -27,6 +28,7 @@ describe('Reduser: siteData', () => {
       similarCamerasList: [],
       reviews: [],
       isPostSentSuccessful: false,
+      isDataLoaded: true,
     };
   });
 
@@ -37,7 +39,7 @@ describe('Reduser: siteData', () => {
 
   it('should update camerasList by load camerasList', () => {
     expect(siteData.reducer(state, {type: fetchCamerasAction.fulfilled.type, payload: camerasList}))
-      .toEqual({...state, camerasList: camerasList });
+      .toEqual({...state, camerasList: camerasList, isDataLoaded: false });
   });
 
   it('should update camera by load cameraData', () => {
@@ -73,6 +75,7 @@ describe('Reduser: siteData', () => {
       similarCamerasList: [],
       reviews: [],
       isPostSentSuccessful: false,
+      isDataLoaded: true,
     };
 
     expect(siteData.reducer(previousState, resetCameraData())).toEqual(state);
@@ -86,6 +89,7 @@ describe('Reduser: siteData', () => {
       similarCamerasList: [],
       reviews: [],
       isPostSentSuccessful: true,
+      isDataLoaded: true,
     };
 
     expect(siteData.reducer(previousState, resetPostSentSuccessful())).toEqual(state);

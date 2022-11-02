@@ -1,0 +1,39 @@
+.text {
+  color: #7575e2;
+  font-size: 40px;
+  display: flex;
+  justify-content: center;
+  align-items:center;
+  min-height: 100vh;
+  font-family: monospace;
+}
+
+.loader {
+  position: absolute;
+  top: calc(50% - -39px);
+  left: calc(50% - 29px);
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: block;
+  margin:15px auto;
+  background: #FFF;
+  box-shadow: -24px 0 #FFF, 24px 0 #FFF;
+  box-sizing: border-box;
+  animation: shadowPulse 1.5s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: #FFF;
+    box-shadow: -24px 0 #7575e2, 24px 0 #FFF;
+  }
+  66% {
+    background: #7575e2;
+    box-shadow: -24px 0 #FFF, 24px 0 #FFF;
+  }
+  100% {
+    background: #FFF;
+    box-shadow: -24px 0 #FFF, 24px 0 #7575e2;
+  }
+}

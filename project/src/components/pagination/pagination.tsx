@@ -1,17 +1,17 @@
 import { Camera } from '../../types';
-import { useState, useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 
 type PaginationProps = {
   productsList: Camera[];
   productsPerPage: number;
   currentPage: number;
-  onNumberedLinkClick:(pageNumber:number) => void;
-  prevButtonClick: ()=> void;
-  nextButtonClick: ()=> void;
+  onPaginationLinkClick:(pageNumber:number) => void;
+  onPrevButtonClick: ()=> void;
+  onNextButtonClick: ()=> void;
 }
 
-function Pagination({ productsList, productsPerPage, currentPage, onNumberedLinkClick, prevButtonClick, nextButtonClick }: PaginationProps):JSX.Element {
+function Pagination({ productsList, productsPerPage, currentPage, onPaginationLinkClick, onPrevButtonClick, onNextButtonClick }: PaginationProps):JSX.Element {
   const numberOfPages: number[] = useMemo(() =>
   {
     const result: number[] = [];
@@ -21,24 +21,8 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
     return result;
   }, [productsList.length, productsPerPage]);
 
-  const [isPrevButtonVisible, setIsPrevButtonVisible] = useState(false);
-  const [isNextButtonVisible, setIsNextButtonVisible] = useState(true);
-
-  useEffect (() => {
-    if (currentPage !== numberOfPages[0]) {
-      setIsPrevButtonVisible(true);
-    } else {
-      setIsPrevButtonVisible(false);
-    }
-  }, [currentPage, numberOfPages]);
-
-  useEffect (() => {
-    if (currentPage !== numberOfPages[numberOfPages.length - 1]) {
-      setIsNextButtonVisible(true);
-    } else {
-      setIsNextButtonVisible(false);
-    }
-  }, [currentPage, numberOfPages]);
+  const isPrevButtonVisible = currentPage !== numberOfPages[0];
+  const isNextButtonVisible = currentPage !== numberOfPages[numberOfPages.length - 1];
 
   return (
     <div className="pagination">
@@ -47,7 +31,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
           isPrevButtonVisible &&
           <li
             className="pagination__item"
-            onClick={() => prevButtonClick()}
+            onClick={() => onPrevButtonClick()}
           ><Link className="pagination__link pagination__link--text" to={`/catalog/page_${currentPage - 1}`}>Назад</Link>
           </li>
         }
@@ -57,7 +41,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
             (
               <li key={pageNumber}
                 className="pagination__item"
-                onClick={() => onNumberedLinkClick(pageNumber)}
+                onClick={() => onPaginationLinkClick(pageNumber)}
               >
                 <Link
                   className={pageNumber === currentPage ? 'pagination__link pagination__link--active' : 'pagination__link'}
@@ -73,7 +57,7 @@ function Pagination({ productsList, productsPerPage, currentPage, onNumberedLink
           isNextButtonVisible &&
         <li
           className="pagination__item"
-          onClick={() => nextButtonClick()}
+          onClick={() => onNextButtonClick()}
         ><Link className="pagination__link pagination__link--text" to={`/catalog/page_${currentPage + 1}`}>Далее</Link>
         </li>
         }

@@ -3059,6 +3059,10 @@ button,
   margin-bottom: 0;
 }
 
+.product-similar .container {
+  padding: 0px;
+}
+
 .product-similar {
   color: #333333;
 }

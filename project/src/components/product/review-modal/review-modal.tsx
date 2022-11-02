@@ -3,46 +3,50 @@ import { ReviewData } from '../../../types';
 import { useAppDispatch, useAppSelector } from '../../../hooks';
 import { reviewPostAction } from '../../../store/api-actions';
 import { getIsPostSendingStatus } from '../../../store/site-data/selectors';
+import { isTabKeyPressed } from '../../../utils/utils';
+
+const TAB_EVENT_CODE = 'Tab';
 
 type ReviewModalProps = {
-  closeModal: () => void;
+  onCloseBtnOrOverlayClick: () => void;
   cameraId: string | undefined;
   isReviewModalOpened: boolean;
 };
 
-function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalProps):JSX.Element {
+function ReviewModal({onCloseBtnOrOverlayClick, cameraId, isReviewModalOpened}: ReviewModalProps):JSX.Element {
+  const dispatch = useAppDispatch();
+  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [ratingValue, setRatingValue] = useState<number | null>(null);
-  const nameRef = useRef<HTMLInputElement | null>(null);
-  const advantagesRef = useRef<HTMLInputElement | null>(null);
-  const disadvantagesRef = useRef<HTMLInputElement | null>(null);
-  const reviewRef = useRef<HTMLTextAreaElement | null>(null);
   const [isRatingIsInvalid, setIsRatingIsInvalid] = useState(false);
   const [isNameIsInvalid, setIsNameIsInvalid] = useState(false);
   const [isAdvantagesIsInvalid, setIsAdvantagesIsInvalid] = useState(false);
   const [isDisadvantagesIsInvalid, setIsDisadvantagesIsInvalid] = useState(false);
   const [isReviewIsInvalid, setIsReviewIsInvalid] = useState(false);
-  const dispatch = useAppDispatch();
-  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [isSubmitButtonDisabled, setIsSubmitButtonDisabled] = useState(false);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const advantagesRef = useRef<HTMLInputElement | null>(null);
+  const disadvantagesRef = useRef<HTMLInputElement | null>(null);
+  const reviewRef = useRef<HTMLTextAreaElement | null>(null);
   const firstStartRef = useRef<HTMLInputElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const sentReviewButtonRef = useRef<HTMLButtonElement | null>(null);
 
-  const onSubmit = (reviewData: ReviewData) => {
+  const postDataOnSubmit = (reviewData: ReviewData) => {
     dispatch(reviewPostAction(reviewData));
   };
 
-  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+  const handleFormSubmit = (evt: FormEvent<HTMLFormElement>) => {
     evt.preventDefault();
-    ratingValue === null ? setIsRatingIsInvalid(true) : setIsRatingIsInvalid(false);
-    (nameRef.current?.value === null || nameRef.current?.value === '') ? setIsNameIsInvalid(true) : setIsNameIsInvalid(false);
-    (advantagesRef.current?.value === null || advantagesRef.current?.value === '') ? setIsAdvantagesIsInvalid(true) : setIsAdvantagesIsInvalid(false);
-    (disadvantagesRef.current?.value === null || disadvantagesRef.current?.value === '') ? setIsDisadvantagesIsInvalid(true) : setIsDisadvantagesIsInvalid(false);
-    (reviewRef.current?.value === null || reviewRef.current?.value === '') ? setIsReviewIsInvalid(true) : setIsReviewIsInvalid(false);
+    setIsRatingIsInvalid(ratingValue === null);
+    setIsNameIsInvalid(nameRef.current?.value === null || nameRef.current?.value === '');
+    setIsAdvantagesIsInvalid(advantagesRef.current?.value === null || advantagesRef.current?.value === '');
+    setIsDisadvantagesIsInvalid(disadvantagesRef.current?.value === null || disadvantagesRef.current?.value === '');
+    setIsReviewIsInvalid(reviewRef.current?.value === null || reviewRef.current?.value === '');
+    const isAllInputsNotEmpty = nameRef.current?.value !== '' && advantagesRef.current?.value !== '' && disadvantagesRef.current?.value !== '' && reviewRef.current?.value !== '' && ratingValue !== null;
 
-    if (nameRef.current?.value !== '' && advantagesRef.current?.value !== '' && disadvantagesRef.current?.value !== '' && reviewRef.current?.value !== '' && ratingValue !== null) {
+    if (isAllInputsNotEmpty) {
       setIsSubmitButtonDisabled(true);
-      onSubmit({
+      postDataOnSubmit({
         cameraId: Number(cameraId),
         userName: nameRef.current?.value,
         advantage: advantagesRef.current?.value,
@@ -50,10 +54,10 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
         review: reviewRef.current?.value,
         rating: ratingValue,
       });
-    } else {
-      evt.preventDefault();
-      return null;
     }
+
+    evt.preventDefault();
+    return null;
   };
 
   useEffect(() => {
@@ -68,39 +72,24 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
     }
   }, [isReviewModalOpened]);
 
-  const shiftTabKeydownHandler = (evt:React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab' && evt.key !== 'Shift') {
-      return;
-    }
+  const handleShiftTabBtnsKeydown = (evt:React.KeyboardEvent<Element>) => {
+    const isShiftTabBtnsPressed = (isTabKeyPressed(evt) || evt.code === TAB_EVENT_CODE) && evt.shiftKey;
+    const isFirstStarInputActiveElement = document.activeElement === firstStartRef.current;
 
-    if (isReviewModalOpened === true) {
-      if (evt.key === 'Tab' || evt.code === 'Tab') {
-        if (evt.shiftKey) {
-          if (document.activeElement === firstStartRef.current) {
-            closeButtonRef.current?.focus();
-            evt.preventDefault();
-          }
-        }
-      }
+    if (isReviewModalOpened === true && isShiftTabBtnsPressed && isFirstStarInputActiveElement) {
+      closeButtonRef.current?.focus();
+      evt.preventDefault();
     }
   };
 
-  const tabBtnKeydownHandler = (evt:React.KeyboardEvent<Element>) => {
-    if (evt.key !== 'Tab') {
-      return;
-    }
+  const handleTabBtnKeydown = (evt:React.KeyboardEvent<Element>) => {
+    const isFocusableElementsNotEmpty = closeButtonRef.current !== null && firstStartRef.current !== null;
+    const isOnlyTabKeyPressed = isTabKeyPressed(evt) && !evt.shiftKey;
+    const isCloseBtnActiveElement = document.activeElement === closeButtonRef.current;
 
-    if (isReviewModalOpened === true) {
-      if (evt.key === 'Tab') {
-        if (!evt.shiftKey) {
-          if (closeButtonRef.current !== null && firstStartRef.current !== null) {
-            if (document.activeElement === closeButtonRef.current) {
-              firstStartRef.current.focus();
-              evt.preventDefault();
-            }
-          }
-        }
-      }
+    if (isReviewModalOpened === true && isOnlyTabKeyPressed && isFocusableElementsNotEmpty && isCloseBtnActiveElement) {
+      firstStartRef.current?.focus();
+      evt.preventDefault();
     }
   };
 
@@ -109,7 +98,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={ () => closeModal() }
+          onClick={ () => onCloseBtnOrOverlayClick() }
         >
         </div>
         <div className="modal__content">
@@ -117,7 +106,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
           <div className="form-review">
             <form
               method="post"
-              onSubmit={handleSubmit}
+              onSubmit={handleFormSubmit}
             >
               <div className="form-review__rate">
                 <fieldset className={isRatingIsInvalid ? 'rate form-review__item is-invalid' : 'rate form-review__item'}>
@@ -136,7 +125,7 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
                       <label className="rate__label" htmlFor="star-3" title="Нормально"></label>
                       <input className="visually-hidden" id="star-2" name="rate" type="radio" value="2" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} />
                       <label className="rate__label" htmlFor="star-2" title="Плохо"></label>
-                      <input className="visually-hidden" id="star-1" name="rate" type="radio" value="1" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} ref={firstStartRef} onKeyDown={shiftTabKeydownHandler}/>
+                      <input className="visually-hidden" id="star-1" name="rate" type="radio" value="1" onClick={(evt) => setRatingValue(Number((evt.target as HTMLInputElement).value))} ref={firstStartRef} onKeyDown={handleShiftTabBtnsKeydown}/>
                       <label className="rate__label" htmlFor="star-1" title="Ужасно"></label>
                     </div>
                     <div className="rate__progress">
@@ -231,9 +220,9 @@ function ReviewModal({closeModal, cameraId, isReviewModalOpened}: ReviewModalPro
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={() => closeModal()}
+            onClick={() => onCloseBtnOrOverlayClick()}
             ref={closeButtonRef}
-            onKeyDown={tabBtnKeydownHandler}
+            onKeyDown={handleTabBtnKeydown}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>

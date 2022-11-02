@@ -3,27 +3,24 @@ import { RATING_NUMBERS } from '../../consts';
 import { convertDateForDateTimeAttr, humanizeDate, getDateForSort } from '../../utils/utils';
 import { useEffect, useState } from 'react';
 
+const REVIEWS_COUNT_PER_STEP = 3;
+
 type ReviewsProps = {
   reviews: Review[];
-  openModal: () => void;
+  openSendReviewModal: () => void;
 }
 
-function Reviews({reviews, openModal}: ReviewsProps):JSX.Element {
-  const reviewsForSort = [...reviews];
-  const reviewsAfterSort = reviewsForSort.sort((a, b) => getDateForSort(a.createAt) > getDateForSort(b.createAt) ? -1 : 1);
-  const REVIEWS_COUNT_PER_STEP = 3;
-  const reviewsCount = reviewsAfterSort.length;
+function Reviews({reviews, openSendReviewModal}: ReviewsProps):JSX.Element {
   const [renderedReviewsCount, setRenderedReviewsCount] = useState(REVIEWS_COUNT_PER_STEP);
   const [isShowMoreButtonVisible, setIsShowMoreButtonVisible] = useState(true);
+  const reviewsForSort = [...reviews];
+  const reviewsAfterSort = reviewsForSort.sort((a, b) => getDateForSort(a.createAt) > getDateForSort(b.createAt) ? -1 : 1);
+  const reviewsCount = reviewsAfterSort.length;
   let renderedReviews = reviewsAfterSort.slice(0, Math.min(reviewsCount, renderedReviewsCount));
 
   // Отображение/скрытие кнопки "Показать больше отзывов"
   useEffect(() => {
-    if (renderedReviews.length >= REVIEWS_COUNT_PER_STEP && renderedReviews.length < reviewsCount) {
-      setIsShowMoreButtonVisible(true);
-    } else {
-      setIsShowMoreButtonVisible(false);
-    }
+    setIsShowMoreButtonVisible(renderedReviews.length >= REVIEWS_COUNT_PER_STEP && renderedReviews.length < reviewsCount);
   }, [renderedReviews, reviewsCount]);
 
   // Обработчик нажатия на кнопку "Показать больше отзывов"
@@ -47,7 +44,7 @@ function Reviews({reviews, openModal}: ReviewsProps):JSX.Element {
           <button
             className="btn"
             type="button"
-            onClick={ () => openModal() }
+            onClick={ () => openSendReviewModal() }
           >Оставить свой отзыв
           </button>
         </div>

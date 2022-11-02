@@ -34,9 +34,12 @@ describe('Async actions', () => {
 
     await store.dispatch(fetchCamerasAction());
 
-    const actions = store.getActions();
+    const actions = store.getActions().map(({type}:Action<string>) => type);
 
-    expect(actions[1].type).toEqual(fetchCamerasAction.fulfilled.type);
+    expect(actions).toEqual([
+      fetchCamerasAction.pending.type,
+      fetchCamerasAction.fulfilled.type
+    ]);
   });
 
   it('should dispatch fetchCameraAction when GET /cameras/:id', async () => {

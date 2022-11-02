@@ -13,7 +13,7 @@ const mockStore = configureMockStore();
 const history = createMemoryHistory();
 const store = mockStore({});
 
-describe('Component: ReviewSuccessModal', ()=> {
+describe('Component: ProductCard', ()=> {
   it('should render correctly', () => {
     render(
       <Provider store={store}>

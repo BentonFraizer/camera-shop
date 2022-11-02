@@ -12,6 +12,9 @@ export const separateNumbers = (priceToCheck: number): string => {
 //Функция определения нажатия клавиши Escape
 export const isEscKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Escape' || evt.key === 'Esc';
 
+//Функция определения нажатия клавиши Tab
+export const isTabKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Tab';
+
 // Функция для получения даты для аттрибута dateTime
 export const convertDateForDateTimeAttr = (incorrectDate: string):string => {
   const CUT_FROM_VALUE = 0;

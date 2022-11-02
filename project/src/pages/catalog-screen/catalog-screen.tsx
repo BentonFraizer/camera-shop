@@ -8,27 +8,28 @@ import React, { useEffect, useState } from 'react';
 import { getCameras, getPromoCamera } from '../../store/site-data/selectors';
 import { fetchCamerasAction, fetchPromoCameraAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
-import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import { isEscKeyPressed } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
+
+const BEGIN_OF_PAGE_COORDINATE = 0;
+const EMPTY_ARRAY_LENGTH = 0;
+const PRODUCTS_PER_PAGE = 9;
+const FIRST_PAGE_NUMBER = 1;
+const NON_EXISTENT_ID = 0;
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const camerasList = useAppSelector(getCameras);
   const promoCamera = useAppSelector(getPromoCamera);
-  const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
-  const NON_EXISTENT_ID = 0;
-  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
-  let dataForAddItemModal;
-  const [showPagination, setShowPagination] = useState(false);
-  const EMPTY_ARRAY_LENGTH = 0;
-  const PRODUCTS_PER_PAGE = 9;
-  const FIRST_PAGE_NUMBER = 1;
-  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-  const BEGIN_OF_PAGE_COORD_X = 0;
-  const BEGIN_OF_PAGE_COORD_Y = 0;
   const navigate = useNavigate();
+  const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
+  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
+  const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
+  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
+  const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
+  const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
 
   useEffect(() => {
     window.onload = () => {
@@ -42,18 +43,8 @@ function CatalogScreen(): JSX.Element {
     }
   }, [navigate]);
 
-  if (idForAddItemModal !== NON_EXISTENT_ID) {
-    dataForAddItemModal = camerasList.find((camera) => camera.id === idForAddItemModal);
-  }
-
   // Скрытие/отображение секции "Пагинация"
-  useEffect(() => {
-    if (camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE) {
-      setShowPagination(true);
-    } else {
-      setShowPagination(false);
-    }
-  }, [camerasList]);
+  const isPaginationVisible = camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE;
 
   useEffect(() => {
     dispatch(fetchCamerasAction());
@@ -62,7 +53,10 @@ function CatalogScreen(): JSX.Element {
 
   // Поднятие страницы в начало
   useEffect(() => {
-    window.scrollTo(BEGIN_OF_PAGE_COORD_X, BEGIN_OF_PAGE_COORD_Y);
+    window.scrollTo({
+      top: BEGIN_OF_PAGE_COORDINATE,
+      behavior: 'smooth'
+    });
   }, [currentPage]);
 
   // Обработчик натия на кнопку "Купить" для открытия модального окна "Добавить товар в корзину"
@@ -82,7 +76,7 @@ function CatalogScreen(): JSX.Element {
     document.body.style.paddingRight = '0';
   };
 
-  const escKeyDownCloseModalHandler = (evt: React.KeyboardEvent<Element>) => {
+  const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (isAddItemModalOpened && isEscKeyPressed(evt)) {
       setIsAddItemModalOpened(false);
       document.body.style.overflowY = '';
@@ -99,7 +93,7 @@ function CatalogScreen(): JSX.Element {
   };
   const productsToRender = (getProductsToRender(currentPage, camerasList, PRODUCTS_PER_PAGE));
 
-  const paginate = (pageNumber:number) => {
+  const onPaginationLinkClick = (pageNumber:number) => {
     setCurrentPage(pageNumber);
   };
   const onPrevButtonClick = () => setCurrentPage(currentPage - 1);
@@ -112,7 +106,7 @@ function CatalogScreen(): JSX.Element {
 
         <Header/>
 
-        <main onKeyDown={escKeyDownCloseModalHandler} >
+        <main onKeyDown={handleEscBtnKeydown} >
 
           <Banner promoCamera={promoCamera}/>
 
@@ -256,14 +250,14 @@ function CatalogScreen(): JSX.Element {
                       onClick={onBuyButtonClick}
                     />
 
-                    { showPagination &&
+                    { isPaginationVisible &&
                       <Pagination
                         productsList={camerasList}
                         productsPerPage={PRODUCTS_PER_PAGE}
                         currentPage={currentPage}
-                        onNumberedLinkClick={paginate}
-                        prevButtonClick={onPrevButtonClick}
-                        nextButtonClick={onNextButtonClick}
+                        onPaginationLinkClick={onPaginationLinkClick}
+                        onPrevButtonClick={onPrevButtonClick}
+                        onNextButtonClick={onNextButtonClick}
                       /> }
 
                   </div>
@@ -275,7 +269,7 @@ function CatalogScreen(): JSX.Element {
             isAddItemModalOpened &&
             <AddItemModal
               dataForAddItemModal={dataForAddItemModal}
-              onCloseClick={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
             />
           }

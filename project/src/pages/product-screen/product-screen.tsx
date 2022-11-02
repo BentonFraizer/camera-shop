@@ -13,43 +13,45 @@ import Slider from '../../components/slider/slider';
 import Reviews from '../../components/reviews/reviews';
 import ReviewModal from '../../components/product/review-modal/review-modal';
 import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
-import AddItemModal from '../../components/catalog/add-item-modal/add-item-modal';
-import NotFoundScreen from '../not-found-screen/not-found-screen';
+import AddItemModal from '../../components/add-item-modal/add-item-modal';
+import LoadingScreen from '../loading-screen/loading-screen';
+
+const TAB_SEARCH_PARAM = 'Tab';
+const EMPTY_LIST_LENGTH = 0;
+const NON_EXISTENT_ID = 0;
+const BEGIN_OF_PAGE_COORDINATE = 0;
 
 function ProductScreen(): JSX.Element {
-  const BEGIN_OF_PAGE_COORDS = 0;
   const {id} = useParams();
   const dispatch = useAppDispatch();
   const camera = useAppSelector(getCamera);
+  const reviews = useAppSelector(getReviews);
+  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const similarCamerasList = useAppSelector(getSimilarCamerasList);
-  const [showSlider, setShowSlider] = useState(true);
-  const EMPTY_LIST_LENGTH = 0;
+  const camerasList = useAppSelector(getCameras);
   const [isSpecsLinkActive, setIsSpecsLinkActive] = useState(true);
   const [isDescriptionLinkActive, setIsDescriptionLinkActive] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const reviews = useAppSelector(getReviews);
-  const [showReviews, setShowReviews] = useState(false);
   const [isSendReviewModalOpened, setIsSendReviewModalOpened] = useState(false);
   const [isReviewSuccessModalOpened, setIsReviewSuccessModalOpened] = useState(false);
-  const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
-  const NON_EXISTENT_ID = 0;
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
-  let dataForAddItemModal;
-  const camerasList = useAppSelector(getCameras);
+  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
+  const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
+  const dataForAddItemModal = isIdExists ? camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal) : undefined;
 
   // Обработка параметров поиска адресной строки для корретной работы Табов "Характеристики" и "Описание"
   useEffect(() => {
-    if (searchParams.get('tab') === null) {
+    if (searchParams.get(TAB_SEARCH_PARAM) === null) {
       setSearchParams({tab: 'specifications'});
       setIsSpecsLinkActive(true);
       setIsDescriptionLinkActive(false);
     }
-    if (searchParams.get('tab') === 'specifications') {
+    if (searchParams.get(TAB_SEARCH_PARAM) === 'specifications') {
       setIsSpecsLinkActive(true);
       setIsDescriptionLinkActive(false);
     }
-    if (searchParams.get('tab') === 'description') {
+    if (searchParams.get(TAB_SEARCH_PARAM) === 'description') {
       setIsSpecsLinkActive(false);
       setIsDescriptionLinkActive(true);
     }
@@ -57,7 +59,7 @@ function ProductScreen(): JSX.Element {
   },[searchParams, setSearchParams]);
 
   useEffect(() => {
-    window.scrollTo(BEGIN_OF_PAGE_COORDS, BEGIN_OF_PAGE_COORDS);
+    window.scrollTo({top: BEGIN_OF_PAGE_COORDINATE});
     dispatch(fetchCameraAction(Number(id)));
     dispatch(fetchSimilarCamerasAction(Number(id)));
     dispatch(fetchReviewsAction(Number(id)));
@@ -69,22 +71,10 @@ function ProductScreen(): JSX.Element {
   }, [dispatch, id]);
 
   // Скрытие/отображение секции "Похожие товары"
-  useEffect(() => {
-    if (similarCamerasList.length === EMPTY_LIST_LENGTH) {
-      setShowSlider(false);
-    } else {
-      setShowSlider(true);
-    }
-  }, [similarCamerasList]);
+  const isSliderSectionVisible = !(similarCamerasList.length === EMPTY_LIST_LENGTH);
 
   // Скрытие/отображение секции "Отзывы"
-  useEffect(() => {
-    if (reviews.length === EMPTY_LIST_LENGTH) {
-      setShowReviews(false);
-    } else {
-      setShowReviews(true);
-    }
-  }, [reviews]);
+  const isReviewsSectionVisible = !(reviews.length === EMPTY_LIST_LENGTH);
 
   // Действия, которые выполнятся сразу после отправки формы "Оставить отзыв". Т.е. после нажатия кнопки "Отправить отзыв"
   useEffect(() => {
@@ -97,12 +87,7 @@ function ProductScreen(): JSX.Element {
   }, [isSendReviewModalOpened, isPostSentSuccessfully, dispatch, id]);
 
   if (!camera) {
-    return <NotFoundScreen/>;
-  }
-
-  // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
-  if (idForAddItemModal !== NON_EXISTENT_ID) {
-    dataForAddItemModal = camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal);
+    return <LoadingScreen/>;
   }
 
   // Нет возможности реализовать деструктуризацию переменной "camera" раньше проверки переменной на null,
@@ -110,25 +95,25 @@ function ProductScreen(): JSX.Element {
   const { name, vendorCode, type, category, description, level, rating, price, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = camera;
 
   // Обработчики клика по Табам "Характеристики" и "Описание"
-  const specificationsLinkClickHandler = () => {
+  const handleSpecificationsLinkClick = () => {
     setIsSpecsLinkActive(true);
     setIsDescriptionLinkActive(false);
   };
 
-  const descriptionLinkClickHandler = () => {
+  const handleDescriptionLinkClick = () => {
     setIsSpecsLinkActive(false);
     setIsDescriptionLinkActive(true);
   };
 
   // Обработчик нажатия на кнопку "Наверх". Плавное поднятие на верх страницы
-  const upButtonClickHandler = () => {
+  const handleUpButtonClick = () => {
     window.scrollTo({
-      top: 0,
+      top: BEGIN_OF_PAGE_COORDINATE,
       behavior: 'smooth'
     });
   };
 
-  // Обработчик натия на кнопку "Оставить свой отзыв" для открытия модального окна "Оставить отзыв"
+  // Обработчик нажатия на кнопку "Оставить свой отзыв" для открытия модального окна "Оставить отзыв"
   const onSendReviewButonClick = () => {
     setIsSendReviewModalOpened(true);
     document.body.style.overflowY = 'hidden';
@@ -154,7 +139,7 @@ function ProductScreen(): JSX.Element {
     document.body.style.paddingRight = '0';
   };
 
-  const escKeyDownCloseModalHandler = (evt: React.KeyboardEvent<Element>) => {
+  const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (isSendReviewModalOpened && isEscKeyPressed(evt)) {
       setIsSendReviewModalOpened(false);
       document.body.style.overflowY = '';
@@ -179,7 +164,7 @@ function ProductScreen(): JSX.Element {
 
         <Header/>
 
-        <main onKeyDown={escKeyDownCloseModalHandler} >
+        <main onKeyDown={handleEscBtnKeydown} >
           <div className="page-content" >
             <div className="breadcrumbs">
               <div className="container">
@@ -236,13 +221,13 @@ function ProductScreen(): JSX.Element {
                         <Link
                           className={isSpecsLinkActive ? 'tabs__control is-active' : 'tabs__control'}
                           to={'?tab=specifications'}
-                          onClick={() => specificationsLinkClickHandler()}
+                          onClick={() => handleSpecificationsLinkClick()}
                         >Характеристики
                         </Link>
                         <Link
                           className={isDescriptionLinkActive ? 'tabs__control is-active' : 'tabs__control'}
                           to={'?tab=description'}
-                          onClick={() => descriptionLinkClickHandler()}
+                          onClick={() => handleDescriptionLinkClick()}
                           data-testid="link-description"
                         >Описание
                         </Link>
@@ -277,7 +262,7 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showSlider &&
+              { isSliderSectionVisible &&
                 <Slider
                   similarCameras={similarCamerasList}
                   onBuyButtonClick={onBuyButtonClick}
@@ -286,11 +271,11 @@ function ProductScreen(): JSX.Element {
             </div>
             <div className="page-content__section">
 
-              { showReviews && <Reviews reviews={reviews} openModal={onSendReviewButonClick}/>}
+              { isReviewsSectionVisible && <Reviews reviews={reviews} openSendReviewModal={onSendReviewButonClick}/>}
 
             </div>
           </div>
-          <button className="up-btn" onClick={() => upButtonClickHandler()}>
+          <button className="up-btn" onClick={() => handleUpButtonClick()}>
             <svg width="12" height="18" aria-hidden="true">
               <use xlinkHref="#icon-arrow2"></use>
             </svg>
@@ -298,19 +283,19 @@ function ProductScreen(): JSX.Element {
 
           { isSendReviewModalOpened &&
             <ReviewModal
-              closeModal={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               cameraId={id}
               isReviewModalOpened={isSendReviewModalOpened}
             /> }
           { isReviewSuccessModalOpened &&
             <ReviewSuccessModal
-              closeModal={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isReviewSuccessModalOpened={isReviewSuccessModalOpened}
             /> }
           { isAddItemModalOpened &&
             <AddItemModal
               dataForAddItemModal={dataForAddItemModal}
-              onCloseClick={onCloseBtnOrOverlayClick}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
             /> }
 
