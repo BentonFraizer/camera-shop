@@ -16,7 +16,7 @@ import ReviewSuccessModal from '../../components/product/review-success-modal/re
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import LoadingScreen from '../loading-screen/loading-screen';
 
-const TAB_SEARCH_PARAM = 'Tab';
+const TAB_SEARCH_PARAM = 'tab';
 const EMPTY_LIST_LENGTH = 0;
 const NON_EXISTENT_ID = 0;
 const BEGIN_OF_PAGE_COORDINATE = 0;
