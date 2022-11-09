@@ -7,7 +7,8 @@ import {
   fetchSimilarCamerasAction,
   fetchPromoCameraAction,
   fetchReviewsAction,
-  reviewPostAction
+  reviewPostAction,
+  fetchSortedCamerasAction
 } from '../api-actions';
 
 const initialState: SiteData = {
@@ -18,6 +19,7 @@ const initialState: SiteData = {
   reviews: [],
   isPostSentSuccessful: false,
   isDataLoaded: true,
+  sortedCamerasList: [],
 };
 
 export const siteData = createSlice({
@@ -54,6 +56,13 @@ export const siteData = createSlice({
       })
       .addCase(reviewPostAction.fulfilled, (state) => {
         state.isPostSentSuccessful = true;
+      })
+      .addCase(fetchSortedCamerasAction.pending, (state, action) => {
+        state.isDataLoaded = true;
+      })
+      .addCase(fetchSortedCamerasAction.fulfilled, (state, action) => {
+        state.sortedCamerasList = action.payload;
+        state.isDataLoaded = false;
       });
   },
 });

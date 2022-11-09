@@ -2,34 +2,82 @@ import Icons from '../../components/icons/icons';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import Banner from '../../components/banner/banner';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import React, { useEffect, useState } from 'react';
-import { getCameras, getPromoCamera } from '../../store/site-data/selectors';
-import { fetchCamerasAction, fetchPromoCameraAction } from '../../store/api-actions';
+import React, { useEffect, useState, useRef } from 'react';
+import { getIsDataLoadedStatus, getPromoCamera, getSortedCameras } from '../../store/site-data/selectors';
+import { fetchPromoCameraAction, fetchSortedCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
-import { isEscKeyPressed } from '../../utils/utils';
+import { isEscKeyPressed, makeURL } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
+import Loader from '../../components/loader/loader';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
 const PRODUCTS_PER_PAGE = 9;
 const FIRST_PAGE_NUMBER = 1;
 const NON_EXISTENT_ID = 0;
+const SORTING_PARAMS_AMOUNT = 2;
+
+type StartParams = {
+  [k: string]: string;
+};
+
+const START_PARAMS: StartParams = {
+  _sort: 'price',
+  _order: 'asc',
+};
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
-  const camerasList = useAppSelector(getCameras);
   const promoCamera = useAppSelector(getPromoCamera);
   const navigate = useNavigate();
+  const camerasList = useAppSelector(getSortedCameras);
+  const isDataLoading = useAppSelector(getIsDataLoadedStatus);
+  const [params, setParams] = useState(START_PARAMS);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
+  const [isSortByPrice, setSortByPrice] = useState(true);
+  const [isSortedUp, setIsSortedUp] = useState(true);
+  const [searchParams, setSearchParams] = useSearchParams(makeURL(params));
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+  const sortPriceRef = useRef<HTMLInputElement | null>(null);
+  const sortPopularRef = useRef<HTMLInputElement | null>(null);
+  const sortUpRef = useRef<HTMLInputElement | null>(null);
+  const sortDownRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if ([...searchParams].length > SORTING_PARAMS_AMOUNT) {
+      setParams(Object.fromEntries([...searchParams]));
+    }
+    // Условия на случай если в адресную строку вручную внесены параметры поиска отличные от START_PARAMS
+    if ([...searchParams].length === SORTING_PARAMS_AMOUNT) {
+      if (searchParams.toString().indexOf('price') > 0 && searchParams.toString().indexOf('desc') > 0) {
+        setParams({_sort:'price', _order:'desc'});
+        setIsSortedUp(false);
+      }
+
+      if (searchParams.toString().indexOf('rating') > 0 && searchParams.toString().indexOf('asc') > 0) {
+        setParams({_sort:'rating', _order:'asc'});
+        setSortByPrice(false);
+      }
+
+      if (searchParams.toString().indexOf('rating') > 0 && searchParams.toString().indexOf('desc') > 0) {
+        setParams({_sort:'rating', _order:'desc'});
+        setSortByPrice(false);
+        setIsSortedUp(false);
+      }
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    setSearchParams(makeURL(params));
+  }, [params, setSearchParams]);
 
   useEffect(() => {
     window.onload = () => {
@@ -47,7 +95,10 @@ function CatalogScreen(): JSX.Element {
   const isPaginationVisible = camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE;
 
   useEffect(() => {
-    dispatch(fetchCamerasAction());
+    dispatch(fetchSortedCamerasAction(makeURL(params)));
+  }, [dispatch, params]);
+
+  useEffect(() => {
     dispatch(fetchPromoCameraAction());
   }, [dispatch]);
 
@@ -98,6 +149,35 @@ function CatalogScreen(): JSX.Element {
   };
   const onPrevButtonClick = () => setCurrentPage(currentPage - 1);
   const onNextButtonClick = () => setCurrentPage(currentPage + 1);
+
+  // Обработка нажатий элементов сортировки
+  const handleSortPriceBtnClick = () => {
+    if (sortPriceRef.current?.checked) {
+      setParams({...params, _sort: 'price'});
+      setSortByPrice(true);
+    }
+  };
+
+  const handleSortPopularBtnClick = () => {
+    if (sortPopularRef.current?.checked) {
+      setParams({...params, _sort: 'rating'});
+      setSortByPrice(false);
+    }
+  };
+
+  const handleSortUpBtnClick = () => {
+    if (sortUpRef.current?.checked) {
+      setParams({...params, _order: 'asc'});
+      setIsSortedUp(true);
+    }
+  };
+
+  const handleSortDownBtnClick = () => {
+    if (sortDownRef.current?.checked) {
+      setParams({...params, _order: 'desc'});
+      setIsSortedUp(false);
+    }
+  };
 
   return (
     <>
@@ -215,17 +295,39 @@ function CatalogScreen(): JSX.Element {
                           <p className="title title--h5">Сортировать:</p>
                           <div className="catalog-sort__type">
                             <div className="catalog-sort__btn-text">
-                              <input type="radio" id="sortPrice" name="sort" defaultChecked/>
+                              <input
+                                type="radio"
+                                id="sortPrice"
+                                name="sort"
+                                ref={sortPriceRef}
+                                onChange={handleSortPriceBtnClick}
+                                checked={isSortByPrice}
+                              />
                               <label htmlFor="sortPrice">по цене</label>
                             </div>
                             <div className="catalog-sort__btn-text">
-                              <input type="radio" id="sortPopular" name="sort"/>
+                              <input
+                                type="radio"
+                                id="sortPopular"
+                                name="sort"
+                                ref={sortPopularRef}
+                                onChange={handleSortPopularBtnClick}
+                                checked={!isSortByPrice}
+                              />
                               <label htmlFor="sortPopular">по популярности</label>
                             </div>
                           </div>
                           <div className="catalog-sort__order">
                             <div className="catalog-sort__btn catalog-sort__btn--up">
-                              <input type="radio" id="up" name="sort-icon" defaultChecked aria-label="По возрастанию"/>
+                              <input
+                                type="radio"
+                                id="up"
+                                name="sort-icon"
+                                aria-label="По возрастанию"
+                                ref={sortUpRef}
+                                onChange={handleSortUpBtnClick}
+                                checked={isSortedUp}
+                              />
                               <label htmlFor="up">
                                 <svg width="16" height="14" aria-hidden="true">
                                   <use xlinkHref="#icon-sort"></use>
@@ -233,7 +335,15 @@ function CatalogScreen(): JSX.Element {
                               </label>
                             </div>
                             <div className="catalog-sort__btn catalog-sort__btn--down">
-                              <input type="radio" id="down" name="sort-icon" aria-label="По убыванию"/>
+                              <input
+                                type="radio"
+                                id="down"
+                                name="sort-icon"
+                                aria-label="По убыванию"
+                                ref={sortDownRef}
+                                onChange={handleSortDownBtnClick}
+                                checked={!isSortedUp}
+                              />
                               <label htmlFor="down">
                                 <svg width="16" height="14" aria-hidden="true">
                                   <use xlinkHref="#icon-sort"></use>
@@ -245,12 +355,14 @@ function CatalogScreen(): JSX.Element {
                       </form>
                     </div>
 
-                    <ProductsList
-                      productsList={productsToRender}
-                      onClick={onBuyButtonClick}
-                    />
+                    { isDataLoading && <Loader/> }
+                    { !isDataLoading &&
+                      <ProductsList
+                        productsList={productsToRender}
+                        onClick={onBuyButtonClick}
+                      /> }
 
-                    { isPaginationVisible &&
+                    { (isPaginationVisible && !isDataLoading) &&
                       <Pagination
                         productsList={camerasList}
                         productsPerPage={PRODUCTS_PER_PAGE}

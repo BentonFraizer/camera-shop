@@ -1,0 +1,44 @@
+.loader-container {
+  display: flex;
+  min-width: 875px;
+  align-items: center;
+  justify-content: center;
+  min-height: 595px;
+}
+
+.loader-text {
+  color: #7575e2;
+  font-size: 40px;
+  display: inline-flex;
+  font-family: monospace;
+  position: relative;
+  text-align: center;
+  top: 1rem;
+}
+
+.loader-dots {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: inline-flex;
+  margin: 8px 30px;
+  background: #FFF;
+  box-shadow: -24px 0 #FFF, 24px 0 #FFF;
+  box-sizing: border-box;
+  animation: shadowPulse 1.5s linear infinite;
+}
+
+@keyframes shadowPulse {
+  33% {
+    background: #FFF;
+    box-shadow: -24px 0 #7575e2, 24px 0 #FFF;
+  }
+  66% {
+    background: #7575e2;
+    box-shadow: -24px 0 #FFF, 24px 0 #FFF;
+  }
+  100% {
+    background: #FFF;
+    box-shadow: -24px 0 #FFF, 24px 0 #7575e2;
+  }
+}
