@@ -7,7 +7,7 @@ import { fetchCamerasAction,
   fetchSimilarCamerasAction,
   reviewPostAction,
 } from '../api-actions';
-import { resetCameraData, resetPostSentSuccessful } from '../site-data/site-data';
+import { resetCameraData, resetPostSentSuccessful } from './site-data';
 
 describe('Reduser: siteData', () => {
   let state = {
@@ -95,3 +95,5 @@ describe('Reduser: siteData', () => {
     expect(siteData.reducer(previousState, resetPostSentSuccessful())).toEqual(state);
   });
 });
+
+

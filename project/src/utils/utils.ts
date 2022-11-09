@@ -48,3 +48,11 @@ export const getDateForSort = (gettedDate: string): number => {
 
   return numberForSort;
 };
+
+// Функция для преобразования объекта настроек для searchParams в строку для запроса к серверу
+// Пример
+export const makeURL = (parameters: object) => {
+  const preliminaryString = JSON.stringify(parameters);
+  const result = preliminaryString.replace(/[{}]/g, '').replace(',', '&').replaceAll(':', '=').replaceAll('"', '');
+  return result;
+};
