@@ -53,6 +53,6 @@ export const getDateForSort = (gettedDate: string): number => {
 // Пример
 export const makeURL = (parameters: object) => {
   const preliminaryString = JSON.stringify(parameters);
-  const result = preliminaryString.replace(/[{}]/g, '').replace(',', '&').replaceAll(':', '=').replaceAll('"', '');
+  const result = preliminaryString.replace(/[{}]/g, '').replaceAll(',', '&').replaceAll(':', '=').replaceAll('"', '');
   return result;
 };

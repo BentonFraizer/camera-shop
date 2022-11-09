@@ -19,7 +19,13 @@ const EMPTY_ARRAY_LENGTH = 0;
 const PRODUCTS_PER_PAGE = 9;
 const FIRST_PAGE_NUMBER = 1;
 const NON_EXISTENT_ID = 0;
-const START_PARAMS = {
+const SORTING_PARAMS_AMOUNT = 2;
+
+type StartParams = {
+  [k: string]: string;
+};
+
+const START_PARAMS: StartParams = {
   _sort: 'price',
   _order: 'asc',
 };
@@ -44,6 +50,30 @@ function CatalogScreen(): JSX.Element {
   const sortPopularRef = useRef<HTMLInputElement | null>(null);
   const sortUpRef = useRef<HTMLInputElement | null>(null);
   const sortDownRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    if ([...searchParams].length > SORTING_PARAMS_AMOUNT) {
+      setParams(Object.fromEntries([...searchParams]));
+    }
+    // Условия на случай если в адресную строку вручную внесены параметры поиска отличные от START_PARAMS
+    if ([...searchParams].length === SORTING_PARAMS_AMOUNT) {
+      if (searchParams.toString().indexOf('price') > 0 && searchParams.toString().indexOf('desc') > 0) {
+        setParams({_sort:'price', _order:'desc'});
+        setIsSortedUp(false);
+      }
+
+      if (searchParams.toString().indexOf('rating') > 0 && searchParams.toString().indexOf('asc') > 0) {
+        setParams({_sort:'rating', _order:'asc'});
+        setSortByPrice(false);
+      }
+
+      if (searchParams.toString().indexOf('rating') > 0 && searchParams.toString().indexOf('desc') > 0) {
+        setParams({_sort:'rating', _order:'desc'});
+        setSortByPrice(false);
+        setIsSortedUp(false);
+      }
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
