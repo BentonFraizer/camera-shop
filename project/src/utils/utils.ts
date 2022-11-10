@@ -1,3 +1,5 @@
+import { Camera } from '../types';
+
 export const separateNumbers = (priceToCheck: number): string => {
   const MIN_VALUE_TO_SEPARATE_ZEROS = 1000;
   if (priceToCheck < MIN_VALUE_TO_SEPARATE_ZEROS) {
@@ -50,9 +52,40 @@ export const getDateForSort = (gettedDate: string): number => {
 };
 
 // Функция для преобразования объекта настроек для searchParams в строку для запроса к серверу
-// Пример
 export const makeURL = (parameters: object) => {
   const preliminaryString = JSON.stringify(parameters);
   const result = preliminaryString.replace(/[{}]/g, '').replaceAll(',', '&').replaceAll(':', '=').replaceAll('"', '');
   return result;
+};
+
+export const getMinPrice = (products: Camera[]): string | undefined => {
+  if (products.length !== 0) {
+    const camerasForSort = [...products];
+    const sortedCameras = camerasForSort.sort((item1, item2) => {
+      if (item1.price > item2.price) {
+        return 1;
+      }
+      if (item1.price < item2.price) {
+        return -1;
+      }
+      return 0;
+    });
+    return String(sortedCameras[0].price);
+  }
+};
+
+export const getMaxPrice = (products: Camera[]): string | undefined => {
+  if (products.length !== 0) {
+    const camerasForSort = [...products];
+    const sortedCameras = camerasForSort.sort((item1, item2) => {
+      if (item1.price > item2.price) {
+        return -1;
+      }
+      if (item1.price < item2.price) {
+        return 1;
+      }
+      return 0;
+    });
+    return String(sortedCameras[0].price);
+  }
 };

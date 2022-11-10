@@ -13,6 +13,7 @@ import { isEscKeyPressed, makeURL } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
+import { getMinPrice, getMaxPrice } from '../../utils/utils';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
@@ -20,6 +21,10 @@ const PRODUCTS_PER_PAGE = 9;
 const FIRST_PAGE_NUMBER = 1;
 const NON_EXISTENT_ID = 0;
 const SORTING_PARAMS_AMOUNT = 2;
+enum PriceLength {
+  Min = 0,
+  Max = 7,
+}
 
 type StartParams = {
   [k: string]: string;
@@ -42,14 +47,19 @@ function CatalogScreen(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
   const [isSortByPrice, setSortByPrice] = useState(true);
   const [isSortedUp, setIsSortedUp] = useState(true);
-  const [searchParams, setSearchParams] = useSearchParams(makeURL(params));
+  const [priceFromFieldValue, setPriceFromFieldValue] = useState<string>('');
+  const [priceToFieldValue, setPriceToFieldValue] = useState<string>('');
+  const [searchParams, setSearchParams] = useSearchParams(params);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+
   const sortPriceRef = useRef<HTMLInputElement | null>(null);
   const sortPopularRef = useRef<HTMLInputElement | null>(null);
   const sortUpRef = useRef<HTMLInputElement | null>(null);
   const sortDownRef = useRef<HTMLInputElement | null>(null);
+  const priceFromRef = useRef<HTMLInputElement | null>(null);
+  const priceToRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if ([...searchParams].length > SORTING_PARAMS_AMOUNT) {
@@ -179,6 +189,21 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
+  // Обработка взаимодействия с элементами формы фильтрации
+  const handlePriceFromFieldChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    evt.preventDefault();
+    const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
+
+    setPriceFromFieldValue(currentValue);
+  };
+
+  const handlePriceToFieldChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    evt.preventDefault();
+    const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
+
+    setPriceToFieldValue(currentValue);
+  };
+
   return (
     <>
       <Icons/>
@@ -219,12 +244,26 @@ function CatalogScreen(): JSX.Element {
                           <div className="catalog-filter__price-range">
                             <div className="custom-input">
                               <label>
-                                <input type="number" name="price" placeholder="от"/>
+                                <input
+                                  type="text"
+                                  name="price"
+                                  placeholder={getMinPrice(camerasList) || 'от'}
+                                  onChange={handlePriceFromFieldChange}
+                                  ref={priceFromRef}
+                                  value={priceFromFieldValue}
+                                />
                               </label>
                             </div>
                             <div className="custom-input">
                               <label>
-                                <input type="number" name="priceUp" placeholder="до"/>
+                                <input
+                                  type="text"
+                                  name="priceUp"
+                                  placeholder={getMaxPrice(camerasList) || 'до'}
+                                  onChange={handlePriceToFieldChange}
+                                  ref={priceToRef}
+                                  value={priceToFieldValue}
+                                />
                               </label>
                             </div>
                           </div>
@@ -233,7 +272,7 @@ function CatalogScreen(): JSX.Element {
                           <legend className="title title--h5">Категория</legend>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="photocamera" defaultChecked/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
+                              <input type="checkbox" name="photocamera" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
                             </label>
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
@@ -246,12 +285,12 @@ function CatalogScreen(): JSX.Element {
                           <legend className="title title--h5">Тип камеры</legend>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="digital" defaultChecked/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
+                              <input type="checkbox" name="digital" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
                             </label>
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="film" disabled/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
+                              <input type="checkbox" name="film"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
                             </label>
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
@@ -261,7 +300,7 @@ function CatalogScreen(): JSX.Element {
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="collection" defaultChecked disabled/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
+                              <input type="checkbox" name="collection"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
                             </label>
                           </div>
                         </fieldset>
@@ -269,7 +308,7 @@ function CatalogScreen(): JSX.Element {
                           <legend className="title title--h5">Уровень</legend>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="zero" defaultChecked/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
+                              <input type="checkbox" name="zero" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
                             </label>
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
