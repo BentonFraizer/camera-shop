@@ -13,7 +13,8 @@ import { isEscKeyPressed, makeURL } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
-import { getMinPrice, getMaxPrice } from '../../utils/utils';
+import { getMinPrice, getMaxPrice, getClosestMinPriceValue, getClosestMaxPriceValue } from '../../utils/utils';
+import EmptyQuery from '../../components/empty-query/empty-query';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
@@ -47,8 +48,8 @@ function CatalogScreen(): JSX.Element {
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
   const [isSortByPrice, setSortByPrice] = useState(true);
   const [isSortedUp, setIsSortedUp] = useState(true);
-  const [priceFromFieldValue, setPriceFromFieldValue] = useState<string>('');
-  const [priceToFieldValue, setPriceToFieldValue] = useState<string>('');
+  const [priceFromInputValue, setPriceFromInputValue] = useState<string | undefined>('');
+  const [priceToInputValue, setPriceToInputValue] = useState<string | undefined>('');
   const [searchParams, setSearchParams] = useSearchParams(params);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
@@ -190,18 +191,82 @@ function CatalogScreen(): JSX.Element {
   };
 
   // Обработка взаимодействия с элементами формы фильтрации
-  const handlePriceFromFieldChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceFromInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     evt.preventDefault();
     const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
 
-    setPriceFromFieldValue(currentValue);
+    setPriceFromInputValue(currentValue);
   };
 
-  const handlePriceToFieldChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePriceToInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     evt.preventDefault();
     const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
 
-    setPriceToFieldValue(currentValue);
+    setPriceToInputValue(currentValue);
+  };
+
+  const handlePriceFromInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+    const isPriceFromValueEmpty = (priceFromRef.current as HTMLInputElement).value === '';
+    const isPriceToValueEmpty = (priceToRef.current as HTMLInputElement).value === '';
+    if (!isPriceFromValueEmpty) {
+      if (Number(evt.target.value) < (Number(getMinPrice(camerasList)) || '0') || isPriceFromValueEmpty) {
+        setPriceFromInputValue(getMinPrice(camerasList));
+      }
+
+      if (Number(evt.target.value) > (Number(getMinPrice(camerasList)) || '0') && evt.target.value < (Number(getMaxPrice(camerasList)) || '0')) {
+        const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(priceFromInputValue));
+        setPriceFromInputValue(closestMinPriceValue);
+      }
+
+      if (!isPriceToValueEmpty && Number(priceToInputValue) < Number(evt.target.value)) {
+        setPriceToInputValue(evt.target.value);
+      }
+
+      if (priceFromInputValue !== undefined){
+        setParams({...params, 'price_gte': priceFromInputValue});
+      }
+    }
+  };
+
+  const handlePriceToInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
+    const isPriceFromValueEmpty = priceFromRef.current?.value === '';
+    const isPriceToValueEmpty = priceToRef.current?.value === '';
+    const isFieldsStatesNotUndefined = priceToInputValue !== undefined && priceFromInputValue !== undefined;
+    if (!isPriceToValueEmpty) {
+      if ((Number(evt.target.value) > (Number(getMaxPrice(camerasList)) || '0'))) {
+        setPriceToInputValue(getMaxPrice(camerasList));
+      }
+
+      if (Number(priceToInputValue) < Number(priceFromInputValue)) {
+        setPriceToInputValue(priceFromInputValue);
+      }
+
+      if (!isPriceFromValueEmpty && isFieldsStatesNotUndefined && Number(priceToInputValue) > Number(priceFromInputValue)) {
+        setPriceToInputValue(priceToInputValue);
+      }
+
+      if (Number(evt.target.value) > (Number(getMinPrice(camerasList)) || '0') && Number(evt.target.value) < (Number(getMaxPrice(camerasList)) || '0')) {
+        const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(priceToInputValue));
+        setPriceToInputValue(closestMaxPriceValue);
+        if (priceToInputValue !== undefined) {
+          setParams({...params, 'price_lte': priceToInputValue});
+        }
+      }
+
+      if (Number(priceToInputValue) > Number(getMaxPrice(camerasList))) {
+        setPriceToInputValue(getMaxPrice(camerasList));
+      }
+
+      if (priceToInputValue !== undefined) {
+        setParams({...params, 'price_lte': priceToInputValue});
+      }
+    }
+  };
+
+  const handleResetBtnClick = () => {
+    setPriceFromInputValue('');
+    setPriceToInputValue('');
+    setParams(START_PARAMS);
   };
 
   return (
@@ -248,9 +313,10 @@ function CatalogScreen(): JSX.Element {
                                   type="text"
                                   name="price"
                                   placeholder={getMinPrice(camerasList) || 'от'}
-                                  onChange={handlePriceFromFieldChange}
+                                  onChange={handlePriceFromInputChange}
                                   ref={priceFromRef}
-                                  value={priceFromFieldValue}
+                                  value={priceFromInputValue}
+                                  onBlur={handlePriceFromInputBlur}
                                 />
                               </label>
                             </div>
@@ -260,9 +326,10 @@ function CatalogScreen(): JSX.Element {
                                   type="text"
                                   name="priceUp"
                                   placeholder={getMaxPrice(camerasList) || 'до'}
-                                  onChange={handlePriceToFieldChange}
+                                  onChange={handlePriceToInputChange}
                                   ref={priceToRef}
-                                  value={priceToFieldValue}
+                                  value={priceToInputValue}
+                                  onBlur={handlePriceToInputBlur}
                                 />
                               </label>
                             </div>
@@ -322,7 +389,11 @@ function CatalogScreen(): JSX.Element {
                             </label>
                           </div>
                         </fieldset>
-                        <button className="btn catalog-filter__reset-btn" type="reset">Сбросить фильтры
+                        <button
+                          className="btn catalog-filter__reset-btn"
+                          type="reset"
+                          onClick={handleResetBtnClick}
+                        >Сбросить фильтры
                         </button>
                       </form>
                     </div>
@@ -395,6 +466,8 @@ function CatalogScreen(): JSX.Element {
                     </div>
 
                     { isDataLoading && <Loader/> }
+                    { !isDataLoading && camerasList.length === EMPTY_ARRAY_LENGTH &&
+                      <EmptyQuery/> }
                     { !isDataLoading &&
                       <ProductsList
                         productsList={productsToRender}

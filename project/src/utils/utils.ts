@@ -58,34 +58,75 @@ export const makeURL = (parameters: object) => {
   return result;
 };
 
+const sortUp = (dataForSort: Camera[]): Camera[] => {
+  const copiedDataForSort = [...dataForSort];
+  const sortedData = copiedDataForSort.sort((item1, item2) => {
+    if (item1.price > item2.price) {
+      return 1;
+    }
+    if (item1.price < item2.price) {
+      return -1;
+    }
+    return 0;
+  });
+  return sortedData;
+};
+
+const sortDown = (dataForSort: Camera[]): Camera[] => {
+  const copiedDataForSort = [...dataForSort];
+  const sortedData = copiedDataForSort.sort((item1, item2) => {
+    if (item1.price > item2.price) {
+      return -1;
+    }
+    if (item1.price < item2.price) {
+      return 1;
+    }
+    return 0;
+  });
+  return sortedData;
+};
+
 export const getMinPrice = (products: Camera[]): string | undefined => {
   if (products.length !== 0) {
-    const camerasForSort = [...products];
-    const sortedCameras = camerasForSort.sort((item1, item2) => {
-      if (item1.price > item2.price) {
-        return 1;
-      }
-      if (item1.price < item2.price) {
-        return -1;
-      }
-      return 0;
-    });
-    return String(sortedCameras[0].price);
+    const sortedProducts = sortUp(products);
+    return String(sortedProducts[0].price);
   }
 };
 
 export const getMaxPrice = (products: Camera[]): string | undefined => {
   if (products.length !== 0) {
-    const camerasForSort = [...products];
-    const sortedCameras = camerasForSort.sort((item1, item2) => {
-      if (item1.price > item2.price) {
-        return -1;
-      }
-      if (item1.price < item2.price) {
-        return 1;
-      }
-      return 0;
-    });
-    return String(sortedCameras[0].price);
+    const sortedProducts = sortDown(products);
+    return String(sortedProducts[0].price);
+  }
+};
+
+
+export const getClosestMinPriceValue = (products: Camera[], gettedInputValue: number): string | undefined => {
+  const sortedProducts = sortDown(products);
+
+  let resultValue;
+  sortedProducts.forEach((item) => {
+    if (item.price >= gettedInputValue) {
+      resultValue = item.price;
+    }
+  });
+
+  if (resultValue !== undefined) {
+    return String(resultValue);
+  }
+};
+
+export const getClosestMaxPriceValue = (products: Camera[], gettedInputValue: number): string | undefined => {
+  const sortedProducts = sortUp(products);
+
+  let resultValue;
+  sortedProducts.forEach((item) => {
+    if (item.price <= gettedInputValue) {
+      resultValue = item.price;
+    }
+  });
+
+  if (resultValue !== undefined) {
+    return resultValue;
   }
 };

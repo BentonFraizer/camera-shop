@@ -1,0 +1,17 @@
+.info-container {
+  display: flex;
+  min-width: 875px;
+  align-items: center;
+  justify-content: center;
+  min-height: 595px;
+}
+
+.info-text {
+  color: #7575e2;
+  font-size: 30px;
+  display: inline-flex;
+  font-family: monospace;
+  position: relative;
+  text-align: center;
+  top: 1rem;
+}
