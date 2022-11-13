@@ -22,18 +22,20 @@ const PRODUCTS_PER_PAGE = 9;
 const FIRST_PAGE_NUMBER = 1;
 const NON_EXISTENT_ID = 0;
 const SORTING_PARAMS_AMOUNT = 2;
+const LENGTH_OF_CATEGORY_WORDS = 11;
 enum PriceLength {
   Min = 0,
   Max = 7,
 }
 
 type StartParams = {
-  [k: string]: string;
+  [k: string]: string | string[];
 };
 
 const START_PARAMS: StartParams = {
   _sort: 'price',
   _order: 'asc',
+  category: [],
 };
 
 function CatalogScreen(): JSX.Element {
@@ -50,7 +52,7 @@ function CatalogScreen(): JSX.Element {
   const [isSortedUp, setIsSortedUp] = useState(true);
   const [priceFromInputValue, setPriceFromInputValue] = useState<string | undefined>('');
   const [priceToInputValue, setPriceToInputValue] = useState<string | undefined>('');
-  const [searchParams, setSearchParams] = useSearchParams(params);
+  const [searchParams, setSearchParams] = useSearchParams(makeURL(params));
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
@@ -61,6 +63,10 @@ function CatalogScreen(): JSX.Element {
   const sortDownRef = useRef<HTMLInputElement | null>(null);
   const priceFromRef = useRef<HTMLInputElement | null>(null);
   const priceToRef = useRef<HTMLInputElement | null>(null);
+  const photocameraRef = useRef<HTMLInputElement | null>(null);
+  const videocameraRef = useRef<HTMLInputElement | null>(null);
+  // console.log(photocameraRef);
+
 
   useEffect(() => {
     if ([...searchParams].length > SORTING_PARAMS_AMOUNT) {
@@ -269,6 +275,77 @@ function CatalogScreen(): JSX.Element {
     setParams(START_PARAMS);
   };
 
+  // Обработчик нажатия на любой из чекбоксов в форме фильтрации (обработчик onChange висел на элементе <form>)
+  // const handleCheckboxesClick = (evt: React.FormEvent<HTMLFormElement>) => {
+  //   const name = (evt.target as HTMLInputElement).name;
+  //   const isChecked = ((evt.target as HTMLInputElement).checked);
+
+  //   if (name === 'photocamera' && isChecked && !videocameraRef.current?.checked) {
+  //     console.log('1');
+  //     params.category = ['Фотоаппарат'];
+  //     setParams({...params});
+  //   }
+  //   if (name === 'photocamera' && !isChecked && params.category.length === LENGTH_OF_CATEGORY_WORDS) {
+  //     delete params.category;
+  //     setParams({...params});
+  //   }
+
+  //   // if (name === 'videocamera' && isChecked && !photocameraRef.current?.checked) {
+  //   //   console.log('2');
+  //   //   params.category = ['Видеокамера'];
+  //   //   setParams({...params});
+  //   // }
+  //   // if (name === 'videocamera' && !isChecked && params.category.length === LENGTH_OF_CATEGORY_WORDS) {
+  //   //   delete params.category;
+  //   //   setParams({...params});
+  //   // }
+
+  //   if (name === 'photocamera' && videocameraRef.current?.checked) {
+  //     console.log('3');
+  //     params.category = ['Видеокамера', 'Фотоаппарат'];
+  //     setParams({...params});
+  //     console.log(params);
+  //   }
+
+  //   setCurrentPage(FIRST_PAGE_NUMBER);
+  // };
+  // console.log('+', params);
+  // console.log('++', makeURL(params));
+  // console.log('+++', searchParams.toString());
+
+  //!----------------------Проблемная часть------------------------------
+
+  const handlePhotocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const name = (evt.target as HTMLInputElement).name;
+    const isChecked = ((evt.target as HTMLInputElement).checked);
+    if (name === 'photocamera' && isChecked && !videocameraRef.current?.checked) {
+      params.category = ['Фотоаппарат'];
+      setParams({...params});
+    }
+    if (name === 'photocamera' && !isChecked && params.category.length === LENGTH_OF_CATEGORY_WORDS) {
+      params.category = [];
+      setParams({...params});
+    }
+
+    if (videocameraRef.current?.checked) {
+      params.category = ['Видеокамера', 'Фотоаппарат'];
+      setParams({...params});
+    }
+  };
+
+  const handleVideocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const name = (evt.target as HTMLInputElement).name;
+    const isChecked = ((evt.target as HTMLInputElement).checked);
+    if (name === 'videocamera' && isChecked && !photocameraRef.current?.checked) {
+      params.category = ['Видеокамера'];
+      setParams({...params});
+    }
+    if (name === 'videocamera' && !isChecked && params.category.length === LENGTH_OF_CATEGORY_WORDS) {
+      params.category = [];
+      setParams({...params});
+    }
+  };
+
   return (
     <>
       <Icons/>
@@ -339,12 +416,22 @@ function CatalogScreen(): JSX.Element {
                           <legend className="title title--h5">Категория</legend>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="photocamera" /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
+                              <input
+                                type="checkbox"
+                                name="photocamera"
+                                onChange={handlePhotocameraCheckboxClick}
+                                ref={photocameraRef}
+                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
                             </label>
                           </div>
                           <div className="custom-checkbox catalog-filter__item">
                             <label>
-                              <input type="checkbox" name="videocamera"/><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
+                              <input
+                                type="checkbox"
+                                name="videocamera"
+                                onChange={handleVideocameraCheckboxClick}
+                                ref={videocameraRef}
+                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
                             </label>
                           </div>
                         </fieldset>

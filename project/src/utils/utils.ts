@@ -53,9 +53,21 @@ export const getDateForSort = (gettedDate: string): number => {
 
 // Функция для преобразования объекта настроек для searchParams в строку для запроса к серверу
 export const makeURL = (parameters: object) => {
-  const preliminaryString = JSON.stringify(parameters);
-  const result = preliminaryString.replace(/[{}]/g, '').replaceAll(',', '&').replaceAll(':', '=').replaceAll('"', '');
-  return result;
+  let resultString = '';
+
+  for (const [key, value] of Object.entries(parameters)) {
+    if (typeof(value) === 'object') {
+      const values = Array.from(value as string[]);
+      for (const item of values) {
+        resultString += `&${key}=${item}`;
+      }
+    }
+
+    if (typeof(value) === 'string') {
+      resultString += `&${key}=${value}`;
+    }
+  }
+  return resultString.replace(/^&/, '');
 };
 
 const sortUp = (dataForSort: Camera[]): Camera[] => {
