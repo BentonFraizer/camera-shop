@@ -51,23 +51,21 @@ export const getDateForSort = (gettedDate: string): number => {
   return numberForSort;
 };
 
-// Функция для преобразования объекта настроек для searchParams в строку для запроса к серверу
 export const makeURL = (parameters: object) => {
-  let resultString = '';
+  const resultURL = new URL(window.location.origin);
 
   for (const [key, value] of Object.entries(parameters)) {
-    if (typeof(value) === 'object') {
-      const values = Array.from(value as string[]);
-      for (const item of values) {
-        resultString += `&${key}=${item}`;
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        resultURL.searchParams.append(key, item as string);
       }
     }
 
     if (typeof(value) === 'string') {
-      resultString += `&${key}=${value}`;
+      resultURL.searchParams.append(key, value);
     }
   }
-  return resultString.replace(/^&/, '');
+  return resultURL.searchParams.toString();
 };
 
 const sortUp = (dataForSort: Camera[]): Camera[] => {
@@ -139,6 +137,6 @@ export const getClosestMaxPriceValue = (products: Camera[], gettedInputValue: nu
   });
 
   if (resultValue !== undefined) {
-    return resultValue;
+    return String(resultValue);
   }
 };
