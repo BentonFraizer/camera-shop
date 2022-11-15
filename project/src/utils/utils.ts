@@ -17,6 +17,9 @@ export const isEscKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Escape
 //Функция определения нажатия клавиши Tab
 export const isTabKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Tab';
 
+//Функция определения нажатия клавиши Enter
+export const isEnterKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Enter';
+
 // Функция для получения даты для аттрибута dateTime
 export const convertDateForDateTimeAttr = (incorrectDate: string):string => {
   const CUT_FROM_VALUE = 0;

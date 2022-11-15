@@ -5,7 +5,7 @@ import Banner from '../../components/banner/banner';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import React, { useEffect, useState, useRef } from 'react';
-import { getIsDataLoadedStatus, getPromoCamera, getSortedCameras } from '../../store/site-data/selectors';
+import { getCameras, getIsDataLoadedStatus, getPromoCamera, getSortedCameras } from '../../store/site-data/selectors';
 import { fetchPromoCameraAction, fetchSortedCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
@@ -16,6 +16,7 @@ import Loader from '../../components/loader/loader';
 import { getMinPrice, getMaxPrice, getClosestMinPriceValue, getClosestMaxPriceValue } from '../../utils/utils';
 import EmptyQuery from '../../components/empty-query/empty-query';
 import { Filters } from '../../consts';
+import { isEnterKeyPressed } from '../../utils/utils';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
@@ -50,6 +51,7 @@ function CatalogScreen(): JSX.Element {
   const promoCamera = useAppSelector(getPromoCamera);
   const navigate = useNavigate();
   const camerasList = useAppSelector(getSortedCameras);
+  const immutableCamerasList = useAppSelector(getCameras);
   const isDataLoading = useAppSelector(getIsDataLoadedStatus);
   const [params, setParams] = useState(START_PARAMS);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
@@ -72,6 +74,7 @@ function CatalogScreen(): JSX.Element {
   const sortDownRef = useRef<HTMLInputElement | null>(null);
   const priceFromRef = useRef<HTMLInputElement | null>(null);
   const priceToRef = useRef<HTMLInputElement | null>(null);
+  const photocameraRef = useRef<HTMLInputElement | null>(null);
   const videocameraRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -149,7 +152,7 @@ function CatalogScreen(): JSX.Element {
   const onPrevButtonClick = () => setCurrentPage(currentPage - 1);
   const onNextButtonClick = () => setCurrentPage(currentPage + 1);
 
-  // Обработка нажатий элементов сортировки
+  // Обработчики нажатий на элементы сортировки
   const handleSortPriceBtnClick = () => {
     if (sortPriceRef.current?.checked) {
       setParams({...params, _sort: 'price'});
@@ -178,7 +181,7 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
-  // Обработка взаимодействия с элементами формы фильтрации
+  // Обработчики взаимодействия с элементами формы фильтрации
   const handlePriceFromInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     evt.preventDefault();
     const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
@@ -196,65 +199,111 @@ function CatalogScreen(): JSX.Element {
   const handlePriceFromInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
     const isPriceFromValueEmpty = (priceFromRef.current as HTMLInputElement).value === '';
     const isPriceToValueEmpty = (priceToRef.current as HTMLInputElement).value === '';
+    const targetValue = Number(evt.target.value);
+    const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(targetValue));
+    const closestMinPriceValueImmutable = getClosestMinPriceValue(immutableCamerasList, Number(targetValue));
+    const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
+    const minPriceInImmutableCamerasList = Number(getMinPrice(immutableCamerasList));
+    const maxPriceInImmutableCamerasList = Number(getMaxPrice(immutableCamerasList));
     if (!isPriceFromValueEmpty) {
-      if (Number(evt.target.value) < (Number(getMinPrice(camerasList)) || '0') || isPriceFromValueEmpty) {
-        setPriceFromInputValue(getMinPrice(camerasList));
+      // Если полученное значение меньше минимального значения цены из всех товаров
+      if (targetValue < Number(minPriceInImmutableCamerasList)) {
+        setPriceFromInputValue(String(minPriceInImmutableCamerasList));
+        setParams({...params, 'price_gte': String(minPriceInImmutableCamerasList)});
       }
 
-      if (Number(evt.target.value) > (Number(getMinPrice(camerasList)) || '0') && evt.target.value < (Number(getMaxPrice(camerasList)) || '0')) {
-        const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(priceFromInputValue));
+      // Если в поле "от" значение уже было записано и получено новое значение, которое меньше предыдущего
+      if (targetValue < Number(params.price_gte)) {
+        setPriceFromInputValue(closestMinPriceValueImmutable);
+        setParams({...params, 'price_gte': closestMinPriceValueImmutable});
+      }
+
+      // Если полученное значение попадает в диапазон от минимальной цены до максимальной
+      if (targetValue > Number(getMinPrice(camerasList)) && targetValue < Number(getMaxPrice(camerasList))) {
         setPriceFromInputValue(closestMinPriceValue);
+        setParams({...params, 'price_gte': closestMinPriceValue});
       }
 
-      if (!isPriceToValueEmpty && Number(priceToInputValue) < Number(evt.target.value)) {
-        setPriceToInputValue(evt.target.value);
+      // Если полученное значение больше максимальной цены из всех товаров
+      if (targetValue > maxPriceInImmutableCamerasList) {
+        setPriceFromInputValue(closestMaxPriceValueImmutable);
+        setParams({...params, 'price_gte': String(closestMaxPriceValueImmutable)});
       }
 
-      const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(priceFromInputValue));
-      setParams({...params, 'price_gte': closestMinPriceValue});
+      // Если в поле "до" значение было уже записано, а полученное в поле "от" больше него
+      if (!isPriceToValueEmpty && Number(priceToInputValue) < targetValue) {
+        setPriceFromInputValue(priceToInputValue);
+        setParams({...params, 'price_gte': priceToInputValue});
+      }
     }
   };
 
   const handlePriceToInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
     const isPriceFromValueEmpty = priceFromRef.current?.value === '';
     const isPriceToValueEmpty = priceToRef.current?.value === '';
-    const isFieldsStatesNotUndefined = priceToInputValue !== undefined && priceFromInputValue !== undefined;
+    const targetValue = Number(evt.target.value);
+    const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(targetValue));
+    const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
+    const maxPriceInCamerasList = Number(getMaxPrice(camerasList));
+    const minPriceInCamerasList = Number(getMinPrice(camerasList));
+    const maxPriceInImmutableCamerasList = Number(getMaxPrice(immutableCamerasList));
     if (!isPriceToValueEmpty) {
-      if ((Number(evt.target.value) > (Number(getMaxPrice(camerasList)) || '0'))) {
-        setPriceToInputValue(getMaxPrice(camerasList));
-      }
-
-      if (Number(priceToInputValue) < Number(priceFromInputValue)) {
+      // Если значение в поле "от" больше, чем в поле "до"
+      if (Number(priceFromInputValue) > Number(priceToInputValue)) {
         setPriceToInputValue(priceFromInputValue);
+        setParams({...params, 'price_lte': priceFromInputValue});
+      } else {
+        setParams({...params, 'price_lte': closestMaxPriceValue});
       }
 
-      if (!isPriceFromValueEmpty && isFieldsStatesNotUndefined && Number(priceToInputValue) > Number(priceFromInputValue)) {
-        setPriceToInputValue(priceToInputValue);
-      }
-
-      if (Number(evt.target.value) > (Number(getMinPrice(camerasList)) || '0') && Number(evt.target.value) < (Number(getMaxPrice(camerasList)) || '0')) {
-        const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(priceToInputValue));
+      if (Number(getMinPrice(camerasList)) < targetValue && targetValue < maxPriceInCamerasList) {
         setPriceToInputValue(closestMaxPriceValue);
-        if (priceToInputValue !== undefined) {
-          setParams({...params, 'price_lte': priceToInputValue});
-        }
+        setParams({...params, 'price_lte': closestMaxPriceValue});
       }
 
-      if (Number(priceToInputValue) > Number(getMaxPrice(camerasList))) {
-        setPriceToInputValue(getMaxPrice(camerasList));
+      // Если в поле "до" значение уже было записано и получено нововое значение, которое больше предыдущего
+      if (targetValue > Number(params.price_lte)) {
+        setPriceToInputValue(closestMaxPriceValueImmutable);
+        setParams({...params, 'price_lte': String(closestMaxPriceValueImmutable)});
       }
 
-      const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(priceToInputValue));
-      setParams({...params, 'price_lte': closestMaxPriceValue});
+      // Если поле "от" не заполнено и полученное значение меньше минимальной цены из всех товаров
+      // записывается минимальное значение цены из всех товаров
+      if (isPriceFromValueEmpty && targetValue < minPriceInCamerasList) {
+        setPriceToInputValue(String(minPriceInCamerasList));
+      }
+
+      // Если полученное значение больше максимальной цены товаров в каталоге
+      if (targetValue > Number(maxPriceInImmutableCamerasList)) {
+        setPriceToInputValue(closestMaxPriceValueImmutable);
+        setParams({...params, 'price_lte': String(closestMaxPriceValueImmutable)});
+      }
     }
   };
 
+  // Обработчики подтверждения ввода чисел посредством нажатия на клавишу "Enter"
+  const handleFromInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isEnterKeyPressed(evt)) {
+      priceToRef.current?.focus();
+    }
+  };
+
+  const handleToInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+    if (isEnterKeyPressed(evt)) {
+      photocameraRef.current?.focus();
+    }
+  };
+
+  // Обработчик нажатия на кнопку "Сбросить фильтры"
   const handleResetBtnClick = () => {
     setPriceFromInputValue('');
     setPriceToInputValue('');
     setParams(START_PARAMS);
+    setIsFilmCheckboxChecked(false);
+    setIsSnapshotCheckboxChecked(false);
   };
 
+  // Обработчики нажатий на каждый из чекбоксов фильтрации
   const handlePhotocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newCategory = [...params.category];
@@ -432,11 +481,12 @@ function CatalogScreen(): JSX.Element {
                                 <input
                                   type="text"
                                   name="price"
-                                  placeholder={getMinPrice(camerasList) || 'от'}
+                                  placeholder={getMinPrice(camerasList)}
                                   onChange={handlePriceFromInputChange}
                                   ref={priceFromRef}
                                   value={priceFromInputValue}
                                   onBlur={handlePriceFromInputBlur}
+                                  onKeyDown={handleFromInputEnterKeydown}
                                 />
                               </label>
                             </div>
@@ -445,11 +495,12 @@ function CatalogScreen(): JSX.Element {
                                 <input
                                   type="text"
                                   name="priceUp"
-                                  placeholder={getMaxPrice(camerasList) || 'до'}
+                                  placeholder={getMaxPrice(camerasList)}
                                   onChange={handlePriceToInputChange}
                                   ref={priceToRef}
                                   value={priceToInputValue}
                                   onBlur={handlePriceToInputBlur}
+                                  onKeyDown={handleToInputEnterKeydown}
                                 />
                               </label>
                             </div>
@@ -463,6 +514,7 @@ function CatalogScreen(): JSX.Element {
                                 type="checkbox"
                                 name="photocamera"
                                 onChange={handlePhotocameraCheckboxClick}
+                                ref={photocameraRef}
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
                             </label>
                           </div>
