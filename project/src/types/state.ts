@@ -9,7 +9,7 @@ export type SiteData = {
   reviews: Review[];
   isPostSentSuccessful: boolean;
   isDataLoaded: boolean;
-  sortedCamerasList: Camera[];
+  sortedAndFilteredCamerasList: Camera[];
 }
 
 export type State = ReturnType<typeof store.getState>;

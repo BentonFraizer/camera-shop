@@ -1,3 +1,5 @@
+import { Camera } from '../types';
+
 export const separateNumbers = (priceToCheck: number): string => {
   const MIN_VALUE_TO_SEPARATE_ZEROS = 1000;
   if (priceToCheck < MIN_VALUE_TO_SEPARATE_ZEROS) {
@@ -14,6 +16,9 @@ export const isEscKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Escape
 
 //Функция определения нажатия клавиши Tab
 export const isTabKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Tab';
+
+//Функция определения нажатия клавиши Enter
+export const isEnterKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Enter';
 
 // Функция для получения даты для аттрибута dateTime
 export const convertDateForDateTimeAttr = (incorrectDate: string):string => {
@@ -49,10 +54,92 @@ export const getDateForSort = (gettedDate: string): number => {
   return numberForSort;
 };
 
-// Функция для преобразования объекта настроек для searchParams в строку для запроса к серверу
-// Пример
 export const makeURL = (parameters: object) => {
-  const preliminaryString = JSON.stringify(parameters);
-  const result = preliminaryString.replace(/[{}]/g, '').replaceAll(',', '&').replaceAll(':', '=').replaceAll('"', '');
-  return result;
+  const resultURL = new URL(window.location.origin);
+
+  for (const [key, value] of Object.entries(parameters)) {
+    if (Array.isArray(value)) {
+      for (const item of value) {
+        resultURL.searchParams.append(key, item as string);
+      }
+    }
+
+    if (typeof(value) === 'string') {
+      resultURL.searchParams.append(key, value);
+    }
+  }
+  return resultURL.searchParams.toString();
+};
+
+const sortUp = (dataForSort: Camera[]): Camera[] => {
+  const copiedDataForSort = [...dataForSort];
+  const sortedData = copiedDataForSort.sort((item1, item2) => {
+    if (item1.price > item2.price) {
+      return 1;
+    }
+    if (item1.price < item2.price) {
+      return -1;
+    }
+    return 0;
+  });
+  return sortedData;
+};
+
+const sortDown = (dataForSort: Camera[]): Camera[] => {
+  const copiedDataForSort = [...dataForSort];
+  const sortedData = copiedDataForSort.sort((item1, item2) => {
+    if (item1.price > item2.price) {
+      return -1;
+    }
+    if (item1.price < item2.price) {
+      return 1;
+    }
+    return 0;
+  });
+  return sortedData;
+};
+
+export const getMinPrice = (products: Camera[]): string | undefined => {
+  if (products.length !== 0) {
+    const sortedProducts = sortUp(products);
+    return String(sortedProducts[0].price);
+  }
+};
+
+export const getMaxPrice = (products: Camera[]): string | undefined => {
+  if (products.length !== 0) {
+    const sortedProducts = sortDown(products);
+    return String(sortedProducts[0].price);
+  }
+};
+
+
+export const getClosestMinPriceValue = (products: Camera[], gettedInputValue: number): string | undefined => {
+  const sortedProducts = sortDown(products);
+
+  let resultValue;
+  sortedProducts.forEach((item) => {
+    if (item.price >= gettedInputValue) {
+      resultValue = item.price;
+    }
+  });
+
+  if (resultValue !== undefined) {
+    return String(resultValue);
+  }
+};
+
+export const getClosestMaxPriceValue = (products: Camera[], gettedInputValue: number): string | undefined => {
+  const sortedProducts = sortUp(products);
+
+  let resultValue;
+  sortedProducts.forEach((item) => {
+    if (item.price <= gettedInputValue) {
+      resultValue = item.price;
+    }
+  });
+
+  if (resultValue !== undefined) {
+    return String(resultValue);
+  }
 };

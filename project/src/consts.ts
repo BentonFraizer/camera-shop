@@ -23,3 +23,15 @@ export enum SliderElement {
   First = 0,
   Last = 2,
 }
+
+export enum Filters {
+  Photocamera = 'Фотоаппарат',
+  Videocamera = 'Видеокамера',
+  Digital = 'Цифровая',
+  Film = 'Плёночная',
+  Snapshot = 'Моментальная',
+  Collection = 'Коллекционная',
+  Zero = 'Нулевой',
+  NonProfessiobal = 'Любительский',
+  Professiobal = 'Профессиональный'
+}
