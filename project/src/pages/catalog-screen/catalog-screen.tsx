@@ -5,8 +5,8 @@ import Banner from '../../components/banner/banner';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import React, { useEffect, useState, useRef } from 'react';
-import { getCameras, getIsDataLoadedStatus, getPromoCamera, getSortedCameras } from '../../store/site-data/selectors';
-import { fetchPromoCameraAction, fetchSortedCamerasAction } from '../../store/api-actions';
+import { getCameras, getIsDataLoadedStatus, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
+import { fetchPromoCameraAction, fetchSortedAndFilteredCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import { isEscKeyPressed, makeURL } from '../../utils/utils';
@@ -50,7 +50,7 @@ function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const promoCamera = useAppSelector(getPromoCamera);
   const navigate = useNavigate();
-  const camerasList = useAppSelector(getSortedCameras);
+  const camerasList = useAppSelector(getSortedAndFilteredCameras);
   const immutableCamerasList = useAppSelector(getCameras);
   const isDataLoading = useAppSelector(getIsDataLoadedStatus);
   const [params, setParams] = useState(START_PARAMS);
@@ -97,7 +97,7 @@ function CatalogScreen(): JSX.Element {
   const isPaginationVisible = camerasList.length !== EMPTY_ARRAY_LENGTH && camerasList.length > PRODUCTS_PER_PAGE;
 
   useEffect(() => {
-    dispatch(fetchSortedCamerasAction(makeURL(params)));
+    dispatch(fetchSortedAndFilteredCamerasAction(makeURL(params)));
   }, [dispatch, params]);
 
   useEffect(() => {

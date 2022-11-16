@@ -88,12 +88,12 @@ export const reviewPostAction = createAsyncThunk<void, ReviewData, {
 );
 
 // Запрос отсортированных камер
-export const fetchSortedCamerasAction = createAsyncThunk<Camera[], string, {
+export const fetchSortedAndFilteredCamerasAction = createAsyncThunk<Camera[], string, {
   dispatch: AppDispatch;
   state: State;
   extra: AxiosInstance;
 }>(
-  'data/fetchSortedCameras',
+  'data/fetchSortedAndFilteredCameras',
   async (URL: string, {extra: api}) => {
     const {data} = await api.get<Camera[]>(`${APIRoute.Cameras}?${URL}`);
     return data;
