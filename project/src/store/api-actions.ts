@@ -87,7 +87,7 @@ export const reviewPostAction = createAsyncThunk<void, ReviewData, {
   }
 );
 
-// Запрос отсортированных камер
+// Запрос отсортированных и отфильтрованных камер
 export const fetchSortedAndFilteredCamerasAction = createAsyncThunk<Camera[], string, {
   dispatch: AppDispatch;
   state: State;
@@ -96,6 +96,19 @@ export const fetchSortedAndFilteredCamerasAction = createAsyncThunk<Camera[], st
   'data/fetchSortedAndFilteredCameras',
   async (URL: string, {extra: api}) => {
     const {data} = await api.get<Camera[]>(`${APIRoute.Cameras}?${URL}`);
+    return data;
+  },
+);
+
+// Запрос камер для формы поиска, которая располагается в компоненте header
+export const fetchSearchedCamerasAction = createAsyncThunk<Camera[], object, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'data/fetchSearchedCameras',
+  async (params: object, {extra: api}) => {
+    const {data} = await api.get<Camera[]>(APIRoute.Cameras, { params });
     return data;
   },
 );

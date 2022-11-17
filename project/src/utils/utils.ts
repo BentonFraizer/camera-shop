@@ -20,6 +20,9 @@ export const isTabKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Tab';
 //Функция определения нажатия клавиши Enter
 export const isEnterKeyPressed = (evt: React.KeyboardEvent) => evt.key === 'Enter';
 
+//Функция определения нажатия клавиши Space (пробел)
+export const isSpaceKeyPressed = (evt: React.KeyboardEvent) => evt.code === 'Space';
+
 // Функция для получения даты для аттрибута dateTime
 export const convertDateForDateTimeAttr = (incorrectDate: string):string => {
   const CUT_FROM_VALUE = 0;

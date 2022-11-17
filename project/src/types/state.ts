@@ -10,6 +10,7 @@ export type SiteData = {
   isPostSentSuccessful: boolean;
   isDataLoaded: boolean;
   sortedAndFilteredCamerasList: Camera[];
+  searchedCameras: Camera[];
 }
 
 export type State = ReturnType<typeof store.getState>;

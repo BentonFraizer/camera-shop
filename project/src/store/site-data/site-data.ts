@@ -8,7 +8,8 @@ import {
   fetchPromoCameraAction,
   fetchReviewsAction,
   reviewPostAction,
-  fetchSortedAndFilteredCamerasAction
+  fetchSortedAndFilteredCamerasAction,
+  fetchSearchedCamerasAction
 } from '../api-actions';
 
 const initialState: SiteData = {
@@ -20,6 +21,7 @@ const initialState: SiteData = {
   isPostSentSuccessful: false,
   isDataLoaded: true,
   sortedAndFilteredCamerasList: [],
+  searchedCameras: [],
 };
 
 export const siteData = createSlice({
@@ -57,12 +59,15 @@ export const siteData = createSlice({
       .addCase(reviewPostAction.fulfilled, (state) => {
         state.isPostSentSuccessful = true;
       })
-      .addCase(fetchSortedAndFilteredCamerasAction.pending, (state, action) => {
+      .addCase(fetchSortedAndFilteredCamerasAction.pending, (state) => {
         state.isDataLoaded = true;
       })
       .addCase(fetchSortedAndFilteredCamerasAction.fulfilled, (state, action) => {
         state.sortedAndFilteredCamerasList = action.payload;
         state.isDataLoaded = false;
+      })
+      .addCase(fetchSearchedCamerasAction.fulfilled, (state, action) => {
+        state.searchedCameras = action.payload;
       });
   },
 });
