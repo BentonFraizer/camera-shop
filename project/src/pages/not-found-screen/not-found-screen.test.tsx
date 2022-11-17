@@ -2,15 +2,26 @@ import { render, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import HistoryRouter from '../../components/history-router/history-router';
 import NotFoundScreen from './not-found-screen';
+import { Provider } from 'react-redux';
+import { configureMockStore } from '@jedmao/redux-mock-store';
+import thunk from 'redux-thunk';
+import { camerasList } from '../../mockForTests';
+
+const middlewares = [thunk];
+const mockStore = configureMockStore(middlewares);
+const history = createMemoryHistory();
+const store = mockStore({
+  DATA: {searchedCameras: camerasList},
+});
 
 describe('Page: NotFoundScreen', () => {
   it('should render correctly', () => {
-    const history = createMemoryHistory();
-
     render(
-      <HistoryRouter history={history}>
-        <NotFoundScreen/>
-      </HistoryRouter>
+      <Provider store={store}>
+        <HistoryRouter history={history}>
+          <NotFoundScreen/>
+        </HistoryRouter>
+      </Provider>
     );
 
     const headerElement = screen.getByText('404');

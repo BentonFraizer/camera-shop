@@ -351,7 +351,7 @@ exports[`Page: NotFoundScreen should render correctly 1`] = `
           </ul>
         </nav>
         <div
-          class="form-search"
+          class="form-search list-opened"
         >
           <form>
             <label>
@@ -368,43 +368,235 @@ exports[`Page: NotFoundScreen should render correctly 1`] = `
               <input
                 autocomplete="off"
                 class="form-search__input"
+                data-testid="search-input"
                 placeholder="Поиск по сайту"
                 type="text"
+                value=""
               />
             </label>
             <ul
               class="form-search__select-list"
             >
-              <li
-                class="form-search__select-item"
-                tabindex="0"
+              <a
+                href="/product/1?tab=specifications"
+                tabindex="-1"
               >
-                Cannonball Pro MX 8i
-              </li>
-              <li
-                class="form-search__select-item"
-                tabindex="0"
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Ретрокамера Dus Auge lV
+                </li>
+              </a>
+              <a
+                href="/product/2?tab=specifications"
+                tabindex="-1"
               >
-                Cannonball Pro MX 7i
-              </li>
-              <li
-                class="form-search__select-item"
-                tabindex="0"
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  FastShot MR-5
+                </li>
+              </a>
+              <a
+                href="/product/3?tab=specifications"
+                tabindex="-1"
               >
-                Cannonball Pro MX 6i
-              </li>
-              <li
-                class="form-search__select-item"
-                tabindex="0"
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Instaprinter P2
+                </li>
+              </a>
+              <a
+                href="/product/4?tab=specifications"
+                tabindex="-1"
               >
-                Cannonball Pro MX 5i
-              </li>
-              <li
-                class="form-search__select-item"
-                tabindex="0"
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Орлёнок
+                </li>
+              </a>
+              <a
+                href="/product/5?tab=specifications"
+                tabindex="-1"
               >
-                Cannonball Pro MX 4i
-              </li>
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Van Shot
+                </li>
+              </a>
+              <a
+                href="/product/6?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Click Sap
+                </li>
+              </a>
+              <a
+                href="/product/7?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Look 54
+                </li>
+              </a>
+              <a
+                href="/product/8?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Look SF3
+                </li>
+              </a>
+              <a
+                href="/product/9?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Van60
+                </li>
+              </a>
+              <a
+                href="/product/10?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Van Click
+                </li>
+              </a>
+              <a
+                href="/product/11?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  SP 520
+                </li>
+              </a>
+              <a
+                href="/product/12?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Look Shot
+                </li>
+              </a>
+              <a
+                href="/product/13?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Look Shot 5
+                </li>
+              </a>
+              <a
+                href="/product/14?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  See Shot
+                </li>
+              </a>
+              <a
+                href="/product/15?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  SS 54F
+                </li>
+              </a>
+              <a
+                href="/product/16?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Small Shot 4
+                </li>
+              </a>
+              <a
+                href="/product/17?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Look Identify
+                </li>
+              </a>
+              <a
+                href="/product/18?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  LI Shot 76
+                </li>
+              </a>
+              <a
+                href="/product/19?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Pro Look 4
+                </li>
+              </a>
+              <a
+                href="/product/20?tab=specifications"
+                tabindex="-1"
+              >
+                <li
+                  class="form-search__select-item"
+                  tabindex="0"
+                >
+                  Pro Look 56F
+                </li>
+              </a>
             </ul>
           </form>
           <button
@@ -698,5 +890,6 @@ exports[`Page: NotFoundScreen should render correctly 1`] = `
       </div>
     </footer>
   </div>
+  ,
 </div>
 `;

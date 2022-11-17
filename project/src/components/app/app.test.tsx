@@ -21,6 +21,9 @@ const store = mockStore({
     similarCamerasList: camerasList,
     reviews: reviewsList,
     isPostSentSuccessful: false,
+    isDataLoaded: true,
+    sortedAndFilteredCamerasList: camerasList,
+    searchedCameras: camerasList,
   },
 });
 

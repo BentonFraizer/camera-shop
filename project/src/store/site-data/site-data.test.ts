@@ -18,6 +18,8 @@ describe('Reduser: siteData', () => {
     reviews: [],
     isPostSentSuccessful: false,
     isDataLoaded: true,
+    sortedAndFilteredCamerasList: [],
+    searchedCameras: [],
   };
 
   beforeEach(() => {
@@ -29,6 +31,8 @@ describe('Reduser: siteData', () => {
       reviews: [],
       isPostSentSuccessful: false,
       isDataLoaded: true,
+      sortedAndFilteredCamerasList: [],
+      searchedCameras: [],
     };
   });
 
@@ -76,6 +80,8 @@ describe('Reduser: siteData', () => {
       reviews: [],
       isPostSentSuccessful: false,
       isDataLoaded: true,
+      sortedAndFilteredCamerasList: [],
+      searchedCameras: [],
     };
 
     expect(siteData.reducer(previousState, resetCameraData())).toEqual(state);
@@ -90,6 +96,8 @@ describe('Reduser: siteData', () => {
       reviews: [],
       isPostSentSuccessful: true,
       isDataLoaded: true,
+      sortedAndFilteredCamerasList: [],
+      searchedCameras: [],
     };
 
     expect(siteData.reducer(previousState, resetPostSentSuccessful())).toEqual(state);

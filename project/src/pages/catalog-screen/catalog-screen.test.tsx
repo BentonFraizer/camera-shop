@@ -16,6 +16,8 @@ const store = mockStore({
   DATA: {
     promoCamera: promoCameraData,
     camerasList: camerasList,
+    sortedAndFilteredCamerasList: camerasList,
+    searchedCameras: camerasList
   },
 });
 

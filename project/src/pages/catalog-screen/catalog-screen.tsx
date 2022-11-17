@@ -318,6 +318,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {category: newCategory}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleVideocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -341,6 +343,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {category: newCategory, type: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleDigitalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -354,6 +358,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {type: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleFilmCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -369,6 +375,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {type: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleSnapshotCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -384,6 +392,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {type: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleCollectionCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -397,6 +407,8 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {type: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleZeroCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -410,32 +422,38 @@ function CatalogScreen(): JSX.Element {
     }
 
     setParams(Object.assign({}, params, {level: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleNonProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.level];
     if (isChecked) {
-      newType.push(Filters.NonProfessiobal);
+      newType.push(Filters.NonProfessional);
     } else {
-      const nameIndex = params.level.findIndex((level) => level === Filters.NonProfessiobal);
+      const nameIndex = params.level.findIndex((level) => level === Filters.NonProfessional);
       newType?.splice(nameIndex, 1);
     }
 
     setParams(Object.assign({}, params, {level: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.level];
     if (isChecked) {
-      newType.push(Filters.Professiobal);
+      newType.push(Filters.Professional);
     } else {
-      const nameIndex = params.level.findIndex((level) => level === Filters.Professiobal);
+      const nameIndex = params.level.findIndex((level) => level === Filters.Professional);
       newType?.splice(nameIndex, 1);
     }
 
     setParams(Object.assign({}, params, {level: newType}));
+    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   return (

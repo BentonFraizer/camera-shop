@@ -102,6 +102,7 @@ function Header(): JSX.Element {
                 onKeyDown={handleSearchFormInputSpaceKeydown}
                 ref={searchInputRef}
                 value={searchInputValue}
+                data-testid="search-input"
               />
             </label>
             <ul className="form-search__select-list">
