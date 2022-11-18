@@ -1,11 +1,13 @@
 import { siteData } from './site-data';
-import { camerasList, cameraData, promoCameraData, reviewsList } from '../../mockForTests';
+import { camerasList, cameraData, promoCameraData, reviewsList, sortedAndFilteredCamerasList, searchedCameras } from '../../mockForTests';
 import { fetchCamerasAction,
   fetchCameraAction,
   fetchPromoCameraAction,
   fetchReviewsAction,
   fetchSimilarCamerasAction,
   reviewPostAction,
+  fetchSortedAndFilteredCamerasAction,
+  fetchSearchedCamerasAction
 } from '../api-actions';
 import { resetCameraData, resetPostSentSuccessful } from './site-data';
 
@@ -101,6 +103,16 @@ describe('Reduser: siteData', () => {
     };
 
     expect(siteData.reducer(previousState, resetPostSentSuccessful())).toEqual(state);
+  });
+
+  it('should update sortedAndFilteredCamerasList by load sortedAndFilteredCamerasList', () => {
+    expect(siteData.reducer(state, {type: fetchSortedAndFilteredCamerasAction.fulfilled.type, payload: sortedAndFilteredCamerasList}))
+      .toEqual({...state, sortedAndFilteredCamerasList: sortedAndFilteredCamerasList, isDataLoaded: false });
+  });
+
+  it('should update searchedCameras by load searchedCameras', () => {
+    expect(siteData.reducer(state, {type: fetchSearchedCamerasAction.fulfilled.type, payload: searchedCameras}))
+      .toEqual({...state, searchedCameras: searchedCameras});
   });
 });
 

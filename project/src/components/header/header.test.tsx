@@ -60,18 +60,35 @@ describe('Component: Header', () => {
     expect(screen.getByText(/This is catalog page/i)).toBeInTheDocument();
   });
 
-  // Начал писать новые тесты тут:
+  it('should found name in the cameras list when user typed \'Van Shot\' in search input', async () => {
+    render(
+      <Provider store={store}>
+        <HistoryRouter history={history}>
+          <Header />
+        </HistoryRouter>,
+      </Provider>
+    );
 
-  //   it('should show modal when user typed letters in search input', async () => {
-  //     render(
-  //       <HistoryRouter history={history}>
-  //         <Header />
-  //       </HistoryRouter>,
-  //     );
+    await userEvent.click(screen.getByTestId('search-input'));
+    await userEvent.type(screen.getByTestId('search-input'), 'Van Shot');
+    await userEvent.tab();
 
-  //     await userEvent.click(screen.getByTestId('search-input'));
-  //     await userEvent.type(screen.getByTestId('search-input'), 'Van Shot');
+    expect(screen.getByDisplayValue(/Van Shot/i)).toBeInTheDocument();
+  });
 
-  //     expect(screen.getAllByText(/Van Shot/i)).toBeInTheDocument();
-  //   });
+  it('should not found name in the cameras list when user typed \'kodak\' in search input', async () => {
+    render(
+      <Provider store={store}>
+        <HistoryRouter history={history}>
+          <Header />
+        </HistoryRouter>,
+      </Provider>
+    );
+
+    await userEvent.click(screen.getByTestId('search-input'));
+    await userEvent.type(screen.getByTestId('search-input'), 'kodak');
+    await userEvent.tab();
+
+    expect(screen.queryByText(/kodak/i)).not.toBeInTheDocument();
+  });
 });
