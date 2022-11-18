@@ -7,6 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { isEnterKeyPressed } from '../../utils/utils';
 import { useNavigate } from 'react-router-dom';
 import { isSpaceKeyPressed } from '../../utils/utils';
+import './header.css';
 
 const TABINDEX_VALUE = 0;
 const FOCUS_OFF_TABINDEX_VALUE = -1;
@@ -29,8 +30,8 @@ function Header(): JSX.Element {
   const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setIsSelectListOpened(searchedCamerasList.length !== EMPTY_ARRAY_LENGTH);
-  }, [searchedCamerasList]);
+    setIsSelectListOpened(searchedCamerasList.length !== EMPTY_ARRAY_LENGTH || (searchedCamerasList.length === EMPTY_ARRAY_LENGTH && searchInputValue !== ''));
+  }, [searchedCamerasList, searchInputValue]);
 
   useEffect(() => {
     dispatch(fetchSearchedCamerasAction(params));
@@ -51,6 +52,11 @@ function Header(): JSX.Element {
     const targetValue = evt.target.value;
     setSearchInputValue(targetValue);
     targetValue === '' ? setParams(START_PARAMS) : setParams({'name_like': targetValue});
+    // if (searchInputRef.current?.value !== '' && searchedCamerasList.length === EMPTY_ARRAY_LENGTH) {
+    //   setIsSelectListOpened(true);
+    // } else {
+    //   setIsSelectListOpened(false);
+    // }
   };
 
   // Обработчик перехода на страницу товара по нажатию клавиши "Enter".
@@ -102,6 +108,7 @@ function Header(): JSX.Element {
                 onKeyDown={handleSearchFormInputSpaceKeydown}
                 ref={searchInputRef}
                 value={searchInputValue}
+                data-testid="search-input"
               />
             </label>
             <ul className="form-search__select-list">
@@ -118,6 +125,16 @@ function Header(): JSX.Element {
                     </Link>
                   )
                 )
+              }
+
+              {
+                isSelectListOpened && searchedCamerasList.length === EMPTY_ARRAY_LENGTH &&
+                <li
+                  className="form-search__select-item form-search__select-item-warning"
+                  tabIndex={TABINDEX_VALUE}
+                  style={{cursor: 'default'}}
+                >Измените параметры поиска
+                </li>
               }
             </ul>
           </form>

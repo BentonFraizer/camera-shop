@@ -32,6 +32,6 @@ export enum Filters {
   Snapshot = 'Моментальная',
   Collection = 'Коллекционная',
   Zero = 'Нулевой',
-  NonProfessiobal = 'Любительский',
-  Professiobal = 'Профессиональный'
+  NonProfessional = 'Любительский',
+  Professional = 'Профессиональный'
 }

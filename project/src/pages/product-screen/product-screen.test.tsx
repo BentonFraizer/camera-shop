@@ -17,6 +17,7 @@ const store = mockStore({
     similarCamerasList: camerasList,
     reviews: reviewsList,
     camera: cameraData,
+    searchedCameras: camerasList,
   },
 });
 

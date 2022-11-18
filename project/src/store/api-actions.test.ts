@@ -8,11 +8,13 @@ import { fetchCamerasAction,
   fetchSimilarCamerasAction,
   fetchPromoCameraAction,
   fetchReviewsAction,
-  reviewPostAction
+  reviewPostAction,
+  fetchSortedAndFilteredCamerasAction,
+  fetchSearchedCamerasAction,
 } from './api-actions';
 import { APIRoute } from '../consts';
 import { State } from '../types/state';
-import { camerasList, cameraData, promoCameraData, reviewData } from '../mockForTests';
+import { camerasList, cameraData, promoCameraData, reviewData, sortedAndFilteredCamerasList, searchedCameras } from '../mockForTests';
 
 describe('Async actions', () => {
   const api = createAPI();
@@ -73,7 +75,7 @@ describe('Async actions', () => {
   it('should dispatch fetchPromoCameraAction when GET /promo', async () => {
     mockAPI
       .onGet('/promo')
-      .reply(201, promoCameraData);
+      .reply(200, promoCameraData);
 
     const store = mockStore();
 
@@ -98,7 +100,7 @@ describe('Async actions', () => {
     expect(actions[1].type).toEqual(fetchReviewsAction.fulfilled.type);
   });
 
-  it('should dispatch reviewPostAction when GET /reviews', async () => {
+  it('should dispatch reviewPostAction when POST /reviews', async () => {
     mockAPI
       .onPost('/reviews')
       .reply(201);
@@ -110,5 +112,36 @@ describe('Async actions', () => {
     const actions = store.getActions();
 
     expect(actions[2].type).toEqual(reviewPostAction.fulfilled.type);
+  });
+
+  it('should dispatch fetchSortedAndFilteredCamerasAction when GET "/cameras?_sort=price&_order=asc"', async () => {
+    mockAPI
+      .onGet('/cameras?_sort=price&_order=asc')
+      .reply(200, sortedAndFilteredCamerasList);
+
+    const store = mockStore();
+
+    await store.dispatch(fetchSortedAndFilteredCamerasAction('_sort=price&_order=asc'));
+
+    const actions = store.getActions().map(({type}:Action<string>) => type);
+
+    expect(actions).toEqual([
+      fetchSortedAndFilteredCamerasAction.pending.type,
+      fetchSortedAndFilteredCamerasAction.fulfilled.type
+    ]);
+  });
+
+  it('should dispatch fetchSearchedCamerasAction when GET "/cameras?name_like=Van"', async () => {
+    mockAPI
+      .onGet('/cameras?name_like=Van')
+      .reply(200, searchedCameras);
+
+    const store = mockStore();
+
+    await store.dispatch(fetchSearchedCamerasAction({'name_like': 'Van'}));
+
+    const actions = store.getActions();
+
+    expect(actions[1].type).toEqual(fetchSearchedCamerasAction.fulfilled.type);
   });
 });
