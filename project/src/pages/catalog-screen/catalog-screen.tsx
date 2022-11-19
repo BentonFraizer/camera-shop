@@ -205,13 +205,12 @@ function CatalogScreen(): JSX.Element {
     const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(targetValue));
     const closestMinPriceValueImmutable = getClosestMinPriceValue(immutableCamerasList, Number(targetValue));
     const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
-    const minPriceInImmutableCamerasList = Number(getMinPrice(immutableCamerasList));
     const maxPriceInImmutableCamerasList = Number(getMaxPrice(immutableCamerasList));
     if (!isPriceFromValueEmpty) {
       // Если полученное значение меньше минимального значения цены из всех товаров
-      if (targetValue < Number(minPriceInImmutableCamerasList)) {
-        setPriceFromInputValue(String(minPriceInImmutableCamerasList));
-        setParams({...params, 'price_gte': String(minPriceInImmutableCamerasList)});
+      if (targetValue < Number(closestMinPriceValue)) {
+        setPriceFromInputValue(String(closestMinPriceValue));
+        setParams({...params, 'price_gte': String(closestMinPriceValue)});
       }
 
       // Если в поле "от" значение уже было записано и получено новое значение, которое меньше предыдущего
@@ -255,6 +254,7 @@ function CatalogScreen(): JSX.Element {
         setPriceToInputValue(priceFromInputValue);
         setParams({...params, 'price_lte': priceFromInputValue});
       } else {
+        setPriceToInputValue(closestMaxPriceValue);
         setParams({...params, 'price_lte': closestMaxPriceValue});
       }
 
