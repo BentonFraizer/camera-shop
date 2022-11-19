@@ -19,12 +19,7 @@ export enum APIRoute {
 
 export const RATING_NUMBERS = [1,2,3,4,5];
 
-export enum SliderElement {
-  First = 0,
-  Last = 2,
-}
-
-export enum Filters {
+export enum Filter {
   Photocamera = 'Фотоаппарат',
   Videocamera = 'Видеокамера',
   Digital = 'Цифровая',

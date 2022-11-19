@@ -15,7 +15,7 @@ import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
 import { getMinPrice, getMaxPrice, getClosestMinPriceValue, getClosestMaxPriceValue } from '../../utils/utils';
 import EmptyQuery from '../../components/empty-query/empty-query';
-import { Filters } from '../../consts';
+import { Filter } from '../../consts';
 import { isEnterKeyPressed } from '../../utils/utils';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
@@ -181,7 +181,9 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
-  // Обработчики взаимодействия с элементами формы фильтрации
+  // ---Обработчики взаимодействия с элементами формы фильтрации---
+
+  // Запрет ввода нуля первым значением и любых символов кроме цифр
   const handlePriceFromInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
     evt.preventDefault();
     const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
@@ -282,13 +284,13 @@ function CatalogScreen(): JSX.Element {
   };
 
   // Обработчики подтверждения ввода чисел посредством нажатия на клавишу "Enter"
-  const handleFromInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+  const handlePriceFromInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
     if (isEnterKeyPressed(evt)) {
       priceToRef.current?.focus();
     }
   };
 
-  const handleToInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
+  const handlePriceToInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
     if (isEnterKeyPressed(evt)) {
       photocameraRef.current?.focus();
     }
@@ -310,9 +312,9 @@ function CatalogScreen(): JSX.Element {
 
     if (Array.isArray(params.category)){
       if (isChecked) {
-        newCategory?.push(Filters.Photocamera);
+        newCategory?.push(Filter.Photocamera);
       } else {
-        const nameIndex = params.category.findIndex((category) => category === Filters.Photocamera);
+        const nameIndex = params.category.findIndex((category) => category === Filter.Photocamera);
         newCategory?.splice(nameIndex, 1);
       }
     }
@@ -328,17 +330,17 @@ function CatalogScreen(): JSX.Element {
     const newType = [...params.type];
 
     if (isChecked) {
-      newCategory.push(Filters.Videocamera);
+      newCategory.push(Filter.Videocamera);
       setIsFilmCheckboxChecked(false);
       setIsSnapshotCheckboxChecked(false);
 
-      const nameFilmIndex = params.type.findIndex((type) => type === Filters.Film);
+      const nameFilmIndex = params.type.findIndex((type) => type === Filter.Film);
       newType.splice(nameFilmIndex, 1);
 
-      const nameSnapshotIndex = params.type.findIndex((type) => type === Filters.Snapshot);
+      const nameSnapshotIndex = params.type.findIndex((type) => type === Filter.Snapshot);
       newType.splice(nameSnapshotIndex, 1);
     } else {
-      const nameIndex = params.category.findIndex((category) => category === Filters.Videocamera);
+      const nameIndex = params.category.findIndex((category) => category === Filter.Videocamera);
       newCategory?.splice(nameIndex, 1);
     }
 
@@ -351,9 +353,9 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.type];
     if (isChecked) {
-      newType.push(Filters.Digital);
+      newType.push(Filter.Digital);
     } else {
-      const nameIndex = params.type.findIndex((type) => type === Filters.Digital);
+      const nameIndex = params.type.findIndex((type) => type === Filter.Digital);
       newType?.splice(nameIndex, 1);
     }
 
@@ -366,11 +368,11 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.type];
     if (isChecked) {
-      newType.push(Filters.Film);
+      newType.push(Filter.Film);
       setIsFilmCheckboxChecked(true);
     } else {
       setIsFilmCheckboxChecked(false);
-      const nameIndex = params.type.findIndex((type) => type === Filters.Film);
+      const nameIndex = params.type.findIndex((type) => type === Filter.Film);
       newType?.splice(nameIndex, 1);
     }
 
@@ -383,11 +385,11 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.type];
     if (isChecked) {
-      newType.push(Filters.Snapshot);
+      newType.push(Filter.Snapshot);
       setIsSnapshotCheckboxChecked(true);
     } else {
       setIsSnapshotCheckboxChecked(false);
-      const nameIndex = params.type.findIndex((type) => type === Filters.Snapshot);
+      const nameIndex = params.type.findIndex((type) => type === Filter.Snapshot);
       newType?.splice(nameIndex, 1);
     }
 
@@ -400,9 +402,9 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.type];
     if (isChecked) {
-      newType.push(Filters.Collection);
+      newType.push(Filter.Collection);
     } else {
-      const nameIndex = params.type.findIndex((type) => type === Filters.Collection);
+      const nameIndex = params.type.findIndex((type) => type === Filter.Collection);
       newType?.splice(nameIndex, 1);
     }
 
@@ -415,9 +417,9 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.level];
     if (isChecked) {
-      newType.push(Filters.Zero);
+      newType.push(Filter.Zero);
     } else {
-      const nameIndex = params.level.findIndex((level) => level === Filters.Zero);
+      const nameIndex = params.level.findIndex((level) => level === Filter.Zero);
       newType?.splice(nameIndex, 1);
     }
 
@@ -430,9 +432,9 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.level];
     if (isChecked) {
-      newType.push(Filters.NonProfessional);
+      newType.push(Filter.NonProfessional);
     } else {
-      const nameIndex = params.level.findIndex((level) => level === Filters.NonProfessional);
+      const nameIndex = params.level.findIndex((level) => level === Filter.NonProfessional);
       newType?.splice(nameIndex, 1);
     }
 
@@ -445,9 +447,9 @@ function CatalogScreen(): JSX.Element {
     const isChecked = ((evt.target as HTMLInputElement).checked);
     const newType = [...params.level];
     if (isChecked) {
-      newType.push(Filters.Professional);
+      newType.push(Filter.Professional);
     } else {
-      const nameIndex = params.level.findIndex((level) => level === Filters.Professional);
+      const nameIndex = params.level.findIndex((level) => level === Filter.Professional);
       newType?.splice(nameIndex, 1);
     }
 
@@ -504,7 +506,7 @@ function CatalogScreen(): JSX.Element {
                                   ref={priceFromRef}
                                   value={priceFromInputValue}
                                   onBlur={handlePriceFromInputBlur}
-                                  onKeyDown={handleFromInputEnterKeydown}
+                                  onKeyDown={handlePriceFromInputEnterKeydown}
                                   data-testid="price-from"
                                 />
                               </label>
@@ -519,7 +521,7 @@ function CatalogScreen(): JSX.Element {
                                   ref={priceToRef}
                                   value={priceToInputValue}
                                   onBlur={handlePriceToInputBlur}
-                                  onKeyDown={handleToInputEnterKeydown}
+                                  onKeyDown={handlePriceToInputEnterKeydown}
                                   data-testid="price-to"
                                 />
                               </label>

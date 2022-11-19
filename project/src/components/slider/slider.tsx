@@ -1,9 +1,12 @@
 import { Camera } from '../../types';
 import { useState } from 'react';
 import ProductCard from '../../components/product-card/product-card';
-import { SliderElement } from '../../consts';
 
 const ELEMENTS_WHEN_NEED_BUTTONS = 3;
+const enum SliderElement {
+  First = 0,
+  Last = 2,
+}
 
 type SliderProps = {
   similarCameras: Camera[];

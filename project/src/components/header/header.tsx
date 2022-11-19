@@ -3,7 +3,7 @@ import { AppRoute } from '../../consts';
 import { fetchSearchedCamerasAction } from '../../store/api-actions';
 import { getSearchedCameras } from '../../store/site-data/selectors';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isEnterKeyPressed } from '../../utils/utils';
 import { useNavigate } from 'react-router-dom';
 import { isSpaceKeyPressed } from '../../utils/utils';
@@ -27,10 +27,10 @@ function Header(): JSX.Element {
   const [params, setParams] = useState(START_PARAMS);
   const [isSelectListOpened, setIsSelectListOpened] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState<string | undefined>('');
-  const searchInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    setIsSelectListOpened(searchedCamerasList.length !== EMPTY_ARRAY_LENGTH || (searchedCamerasList.length === EMPTY_ARRAY_LENGTH && searchInputValue !== ''));
+    const isSearchedCamerasListEmpty = searchedCamerasList.length === EMPTY_ARRAY_LENGTH;
+    setIsSelectListOpened(!isSearchedCamerasListEmpty || (isSearchedCamerasListEmpty && searchInputValue !== ''));
   }, [searchedCamerasList, searchInputValue]);
 
   useEffect(() => {
@@ -39,7 +39,7 @@ function Header(): JSX.Element {
 
   // Обработчик для запрета ввода пробела при пустом поле поиска (т.е. запрет ввода пробела первым символом)
   const handleSearchFormInputSpaceKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isSpaceKeyPressed(evt) && searchInputRef.current?.value === '') {
+    if (isSpaceKeyPressed(evt) && searchInputValue === '') {
       evt.preventDefault();
     }
   };
@@ -52,16 +52,11 @@ function Header(): JSX.Element {
     const targetValue = evt.target.value;
     setSearchInputValue(targetValue);
     targetValue === '' ? setParams(START_PARAMS) : setParams({'name_like': targetValue});
-    // if (searchInputRef.current?.value !== '' && searchedCamerasList.length === EMPTY_ARRAY_LENGTH) {
-    //   setIsSelectListOpened(true);
-    // } else {
-    //   setIsSelectListOpened(false);
-    // }
   };
 
   // Обработчик перехода на страницу товара по нажатию клавиши "Enter".
   // Работает когда есть "focus()" на элементе списка
-  const handleSelectLiKeydown = (evt: React.KeyboardEvent<HTMLLIElement>, cameraID: number) => {
+  const handleSelectLiEnterKeydown = (evt: React.KeyboardEvent<HTMLLIElement>, cameraID: number) => {
     if (isEnterKeyPressed(evt)) {
       navigate(`/product/${cameraID}?tab=specifications`);
     }
@@ -106,7 +101,6 @@ function Header(): JSX.Element {
                 placeholder="Поиск по сайту"
                 onChange={handleSearchFromInputChange}
                 onKeyDown={handleSearchFormInputSpaceKeydown}
-                ref={searchInputRef}
                 value={searchInputValue}
                 data-testid="search-input"
               />
@@ -119,7 +113,7 @@ function Header(): JSX.Element {
                       <li
                         className="form-search__select-item"
                         tabIndex={TABINDEX_VALUE}
-                        onKeyDown={(evt: React.KeyboardEvent<HTMLLIElement>) => handleSelectLiKeydown(evt, camera.id)}
+                        onKeyDown={(evt: React.KeyboardEvent<HTMLLIElement>) => handleSelectLiEnterKeydown(evt, camera.id)}
                       >{camera.name}
                       </li>
                     </Link>
