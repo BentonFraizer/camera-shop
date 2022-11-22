@@ -4,7 +4,7 @@ import Footer from '../../components/footer/footer';
 import Banner from '../../components/banner/banner';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { getCameras, getIsDataLoadedStatus, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
 import { fetchPromoCameraAction, fetchSortedAndFilteredCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
@@ -67,15 +67,7 @@ function CatalogScreen(): JSX.Element {
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
-
-  const sortPriceRef = useRef<HTMLInputElement | null>(null);
-  const sortPopularRef = useRef<HTMLInputElement | null>(null);
-  const sortUpRef = useRef<HTMLInputElement | null>(null);
-  const sortDownRef = useRef<HTMLInputElement | null>(null);
-  const priceFromRef = useRef<HTMLInputElement | null>(null);
-  const priceToRef = useRef<HTMLInputElement | null>(null);
-  const photocameraRef = useRef<HTMLInputElement | null>(null);
-  const videocameraRef = useRef<HTMLInputElement | null>(null);
+  const isVideocameraChecked = params.category.includes(Filter.Videocamera);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
@@ -153,29 +145,29 @@ function CatalogScreen(): JSX.Element {
   const onNextButtonClick = () => setCurrentPage(currentPage + 1);
 
   // Обработчики нажатий на элементы сортировки
-  const handleSortPriceBtnClick = () => {
-    if (sortPriceRef.current?.checked) {
+  const handleSortPriceBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _sort: 'price'});
       setSortByPrice(true);
     }
   };
 
-  const handleSortPopularBtnClick = () => {
-    if (sortPopularRef.current?.checked) {
+  const handleSortPopularBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _sort: 'rating'});
       setSortByPrice(false);
     }
   };
 
-  const handleSortUpBtnClick = () => {
-    if (sortUpRef.current?.checked) {
+  const handleSortUpBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _order: 'asc'});
       setIsSortedUp(true);
     }
   };
 
-  const handleSortDownBtnClick = () => {
-    if (sortDownRef.current?.checked) {
+  const handleSortDownBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _order: 'desc'});
       setIsSortedUp(false);
     }
@@ -199,8 +191,8 @@ function CatalogScreen(): JSX.Element {
   };
 
   const handlePriceFromInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-    const isPriceFromValueEmpty = (priceFromRef.current as HTMLInputElement).value === '';
-    const isPriceToValueEmpty = (priceToRef.current as HTMLInputElement).value === '';
+    const isPriceFromValueEmpty = priceFromInputValue === '';
+    const isPriceToValueEmpty = priceToInputValue === '';
     const targetValue = Number(evt.target.value);
     const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(targetValue));
     const closestMinPriceValueImmutable = getClosestMinPriceValue(immutableCamerasList, Number(targetValue));
@@ -240,8 +232,8 @@ function CatalogScreen(): JSX.Element {
   };
 
   const handlePriceToInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-    const isPriceFromValueEmpty = priceFromRef.current?.value === '';
-    const isPriceToValueEmpty = priceToRef.current?.value === '';
+    const isPriceFromValueEmpty = priceFromInputValue === '';
+    const isPriceToValueEmpty = priceToInputValue === '';
     const targetValue = Number(evt.target.value);
     const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(targetValue));
     const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
@@ -286,13 +278,19 @@ function CatalogScreen(): JSX.Element {
   // Обработчики подтверждения ввода чисел посредством нажатия на клавишу "Enter"
   const handlePriceFromInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
     if (isEnterKeyPressed(evt)) {
-      priceToRef.current?.focus();
+      const priceToElement = document.querySelector('.catalog-filter__price-range input[name="priceUp"]');
+      if (priceToElement !== null){
+        (priceToElement as HTMLInputElement).focus();
+      }
     }
   };
 
   const handlePriceToInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
     if (isEnterKeyPressed(evt)) {
-      photocameraRef.current?.focus();
+      const photocameraElement = document.querySelector('.catalog-filter__item input[name="photocamera"]');
+      if (photocameraElement !== null){
+        (photocameraElement as HTMLInputElement).focus();
+      }
     }
   };
 
@@ -503,7 +501,6 @@ function CatalogScreen(): JSX.Element {
                                   name="price"
                                   placeholder={getMinPrice(camerasList)}
                                   onChange={handlePriceFromInputChange}
-                                  ref={priceFromRef}
                                   value={priceFromInputValue}
                                   onBlur={handlePriceFromInputBlur}
                                   onKeyDown={handlePriceFromInputEnterKeydown}
@@ -518,7 +515,6 @@ function CatalogScreen(): JSX.Element {
                                   name="priceUp"
                                   placeholder={getMaxPrice(camerasList)}
                                   onChange={handlePriceToInputChange}
-                                  ref={priceToRef}
                                   value={priceToInputValue}
                                   onBlur={handlePriceToInputBlur}
                                   onKeyDown={handlePriceToInputEnterKeydown}
@@ -536,7 +532,6 @@ function CatalogScreen(): JSX.Element {
                                 type="checkbox"
                                 name="photocamera"
                                 onChange={handlePhotocameraCheckboxClick}
-                                ref={photocameraRef}
                                 data-testid="photocamera-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
                             </label>
@@ -547,7 +542,6 @@ function CatalogScreen(): JSX.Element {
                                 type="checkbox"
                                 name="videocamera"
                                 onChange={handleVideocameraCheckboxClick}
-                                ref={videocameraRef}
                                 data-testid="videocamera-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
                             </label>
@@ -571,7 +565,7 @@ function CatalogScreen(): JSX.Element {
                                 type="checkbox"
                                 name="film"
                                 onChange={handleFilmCheckboxClick}
-                                disabled={videocameraRef.current?.checked}
+                                disabled={isVideocameraChecked}
                                 checked={isFilmCheckboxChecked}
                                 data-testid="film-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
@@ -583,7 +577,7 @@ function CatalogScreen(): JSX.Element {
                                 type="checkbox"
                                 name="snapshot"
                                 onChange={handleSnapshotCheckboxClick}
-                                disabled={videocameraRef.current?.checked}
+                                disabled={isVideocameraChecked}
                                 checked={isSnapshotCheckboxChecked}
                                 data-testid="snapshot-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
@@ -653,7 +647,6 @@ function CatalogScreen(): JSX.Element {
                                 type="radio"
                                 id="sortPrice"
                                 name="sort"
-                                ref={sortPriceRef}
                                 onChange={handleSortPriceBtnClick}
                                 checked={isSortByPrice}
                               />
@@ -664,7 +657,6 @@ function CatalogScreen(): JSX.Element {
                                 type="radio"
                                 id="sortPopular"
                                 name="sort"
-                                ref={sortPopularRef}
                                 onChange={handleSortPopularBtnClick}
                                 checked={!isSortByPrice}
                               />
@@ -678,7 +670,6 @@ function CatalogScreen(): JSX.Element {
                                 id="up"
                                 name="sort-icon"
                                 aria-label="По возрастанию"
-                                ref={sortUpRef}
                                 onChange={handleSortUpBtnClick}
                                 checked={isSortedUp}
                               />
@@ -694,7 +685,6 @@ function CatalogScreen(): JSX.Element {
                                 id="down"
                                 name="sort-icon"
                                 aria-label="По убыванию"
-                                ref={sortDownRef}
                                 onChange={handleSortDownBtnClick}
                                 checked={!isSortedUp}
                               />
