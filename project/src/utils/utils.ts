@@ -1,4 +1,4 @@
-import { Camera } from '../types';
+import { Camera, FiltersType, FilterTypeItem } from '../types';
 
 export const separateNumbers = (priceToCheck: number): string => {
   const MIN_VALUE_TO_SEPARATE_ZEROS = 1000;
@@ -145,4 +145,14 @@ export const getClosestMaxPriceValue = (products: Camera[], gettedInputValue: nu
   if (resultValue !== undefined) {
     return String(resultValue);
   }
+};
+
+export const getPropertiesForCurrentChecbox = (checboxName:string, checboxes: FiltersType): FilterTypeItem => {
+  let result = {name: '', option: ''};
+  for (const [key, value] of Object.entries(checboxes)) {
+    if (key.toLocaleLowerCase() === checboxName.replace('-', '')){
+      result = value;
+    }
+  }
+  return result;
 };

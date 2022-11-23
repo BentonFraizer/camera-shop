@@ -1,3 +1,5 @@
+import { FiltersType } from './types';
+
 export enum AppRoute {
   Main = '/',
   Catalog = '/catalog/page_:pageNumber',
@@ -19,14 +21,14 @@ export enum APIRoute {
 
 export const RATING_NUMBERS = [1,2,3,4,5];
 
-export enum Filter {
-  Photocamera = 'Фотоаппарат',
-  Videocamera = 'Видеокамера',
-  Digital = 'Цифровая',
-  Film = 'Плёночная',
-  Snapshot = 'Моментальная',
-  Collection = 'Коллекционная',
-  Zero = 'Нулевой',
-  NonProfessional = 'Любительский',
-  Professional = 'Профессиональный'
-}
+export const FILTERS: FiltersType = {
+  Photocamera: { name: 'Фотоаппарат', option: 'type' },
+  Videocamera: { name: 'Видеокамера', option: 'type' },
+  Digital: { name: 'Цифровая', option: 'type' },
+  Film: { name: 'Плёночная', option: 'type' },
+  Snapshot: { name: 'Моментальная', option: 'type' },
+  Collection: { name: 'Коллекционная', option: 'type' },
+  Zero: { name: 'Нулевой', option: 'level' },
+  NonProfessional: { name: 'Любительский', option: 'level' },
+  Professional: { name: 'Профессиональный', option: 'level' }
+};

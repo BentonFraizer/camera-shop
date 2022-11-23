@@ -15,8 +15,8 @@ import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
 import { getMinPrice, getMaxPrice, getClosestMinPriceValue, getClosestMaxPriceValue } from '../../utils/utils';
 import EmptyQuery from '../../components/empty-query/empty-query';
-import { Filter } from '../../consts';
-import { isEnterKeyPressed } from '../../utils/utils';
+import { FILTERS } from '../../consts';
+import { isEnterKeyPressed, getPropertiesForCurrentChecbox } from '../../utils/utils';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
@@ -63,12 +63,6 @@ function CatalogScreen(): JSX.Element {
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
-
-  const isSortByPrice = params._sort === 'price';
-  const isSortedUp = params._order === 'asc';
-  const isVideocameraChecked = params.category.includes(Filter.Videocamera);
-  const isFilmCheckboxChecked = params.type.includes(Filter.Film);
-  const isSnapshotCheckboxChecked = params.type.includes(Filter.Snapshot);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
@@ -306,9 +300,9 @@ function CatalogScreen(): JSX.Element {
 
     if (Array.isArray(params.category)){
       if (isChecked) {
-        newCategory?.push(Filter.Photocamera);
+        newCategory?.push(FILTERS.Photocamera.name);
       } else {
-        const nameIndex = params.category.findIndex((category) => category === Filter.Photocamera);
+        const nameIndex = params.category.findIndex((category) => category === FILTERS.Photocamera.name);
         newCategory?.splice(nameIndex, 1);
       }
     }
@@ -324,21 +318,21 @@ function CatalogScreen(): JSX.Element {
     const newType = [...params.type];
 
     if (isChecked) {
-      newCategory.push(Filter.Videocamera);
+      newCategory.push(FILTERS.Videocamera.name);
 
-      const nameFilmIndex = params.type.findIndex((type) => type === Filter.Film);
+      const nameFilmIndex = params.type.findIndex((type) => type === FILTERS.Film.name);
       if (nameFilmIndex !== -1) {
         newType.splice(nameFilmIndex, 1);
       }
 
-      const nameSnapshotIndex = newType.findIndex((type) => type === Filter.Snapshot);
+      const nameSnapshotIndex = newType.findIndex((type) => type === FILTERS.Snapshot.name);
       if (nameSnapshotIndex !== -1) {
         newType.splice(nameSnapshotIndex, 1);
       }
 
       setParams(Object.assign({}, params, {category: newCategory, type: newType}));
     } else {
-      const nameIndex = params.category.findIndex((category) => category === Filter.Videocamera);
+      const nameIndex = params.category.findIndex((category) => category === FILTERS.Videocamera.name);
       newCategory?.splice(nameIndex, 1);
       setParams(Object.assign({}, params, {category: newCategory}));
     }
@@ -347,111 +341,40 @@ function CatalogScreen(): JSX.Element {
     setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
-  // --------Фильтры Тип---------
-  const handleDigitalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Digital);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Digital);
-      newType?.splice(nameIndex, 1);
+  // --------Фильтры Тип и Уровень---------
+  const handleTypeorLevelCheckboxesClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const targetName = (evt.target.name).toLocaleLowerCase();
+    const currentCheckboxProperties = getPropertiesForCurrentChecbox(targetName, FILTERS);
+
+    if (currentCheckboxProperties.option === 'type') {
+      const isChecked = ((evt.target as HTMLInputElement).checked);
+      const newType = [...params.type];
+      if (isChecked) {
+        newType.push(currentCheckboxProperties.name);
+      } else {
+        const nameIndex = params.type.findIndex((type) => type === currentCheckboxProperties.name);
+        newType?.splice(nameIndex, 1);
+      }
+
+      setParams(Object.assign({}, params, {type: newType}));
+      navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+      setCurrentPage(FIRST_PAGE_NUMBER);
     }
 
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
+    if (currentCheckboxProperties.option === 'level') {
+      const isChecked = ((evt.target as HTMLInputElement).checked);
+      const newLevel = [...params.level];
+      if (isChecked) {
+        newLevel.push(currentCheckboxProperties.name);
+      } else {
+        const nameIndex = params.level.findIndex((level) => level === currentCheckboxProperties.name);
+        newLevel?.splice(nameIndex, 1);
+      }
 
-  const handleFilmCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Film);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Film);
-      newType?.splice(nameIndex, 1);
+      setParams(Object.assign({}, params, {level: newLevel}));
+      navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
+      setCurrentPage(FIRST_PAGE_NUMBER);
     }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleSnapshotCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Snapshot);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Snapshot);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleCollectionCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Collection);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Collection);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  // -------Фильтры Уровень-------
-  const handleZeroCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newLevel = [...params.level];
-    if (isChecked) {
-      newLevel.push(Filter.Zero);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.Zero);
-      newLevel?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newLevel}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleNonProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newLevel = [...params.level];
-    if (isChecked) {
-      newLevel.push(Filter.NonProfessional);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.NonProfessional);
-      newLevel?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newLevel}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newLevel = [...params.level];
-    if (isChecked) {
-      newLevel.push(Filter.Professional);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.Professional);
-      newLevel?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newLevel}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   return (
@@ -552,7 +475,8 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="digital"
-                                onChange={handleDigitalCheckboxClick}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                checked={params.type.includes(FILTERS.Digital.name)}
                                 data-testid="digital-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
                             </label>
@@ -562,9 +486,9 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="film"
-                                onChange={handleFilmCheckboxClick}
-                                disabled={isVideocameraChecked}
-                                checked={isFilmCheckboxChecked}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                disabled={params.category.includes(FILTERS.Videocamera.name)}
+                                checked={params.type.includes(FILTERS.Film.name)}
                                 data-testid="film-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
                             </label>
@@ -574,9 +498,9 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="snapshot"
-                                onChange={handleSnapshotCheckboxClick}
-                                disabled={isVideocameraChecked}
-                                checked={isSnapshotCheckboxChecked}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                disabled={params.category.includes(FILTERS.Videocamera.name)}
+                                checked={params.type.includes(FILTERS.Snapshot.name)}
                                 data-testid="snapshot-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
                             </label>
@@ -586,7 +510,8 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="collection"
-                                onChange={handleCollectionCheckboxClick}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                checked={params.type.includes(FILTERS.Collection.name)}
                                 data-testid="collection-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
                             </label>
@@ -599,7 +524,8 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="zero"
-                                onChange={handleZeroCheckboxClick}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                checked={params.level.includes(FILTERS.Zero.name)}
                                 data-testid="zero-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
                             </label>
@@ -609,7 +535,8 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="non-professional"
-                                onChange={handleNonProfessionalCheckboxClick}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                checked={params.level.includes(FILTERS.NonProfessional.name)}
                                 data-testid="non-professional-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Любительский</span>
                             </label>
@@ -619,7 +546,8 @@ function CatalogScreen(): JSX.Element {
                               <input
                                 type="checkbox"
                                 name="professional"
-                                onChange={handleProfessionalCheckboxClick}
+                                onChange={handleTypeorLevelCheckboxesClick}
+                                checked={params.level.includes(FILTERS.Professional.name)}
                                 data-testid="professional-checkbox"
                               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Профессиональный</span>
                             </label>
@@ -646,7 +574,7 @@ function CatalogScreen(): JSX.Element {
                                 id="sortPrice"
                                 name="sort"
                                 onChange={handleSortPriceBtnClick}
-                                checked={isSortByPrice}
+                                checked={params._sort === 'price'}
                               />
                               <label htmlFor="sortPrice">по цене</label>
                             </div>
@@ -656,7 +584,7 @@ function CatalogScreen(): JSX.Element {
                                 id="sortPopular"
                                 name="sort"
                                 onChange={handleSortPopularBtnClick}
-                                checked={!isSortByPrice}
+                                checked={!(params._sort === 'price')}
                               />
                               <label htmlFor="sortPopular">по популярности</label>
                             </div>
@@ -669,7 +597,7 @@ function CatalogScreen(): JSX.Element {
                                 name="sort-icon"
                                 aria-label="По возрастанию"
                                 onChange={handleSortUpBtnClick}
-                                checked={isSortedUp}
+                                checked={params._order === 'asc'}
                               />
                               <label htmlFor="up">
                                 <svg width="16" height="14" aria-hidden="true">
@@ -684,7 +612,7 @@ function CatalogScreen(): JSX.Element {
                                 name="sort-icon"
                                 aria-label="По убыванию"
                                 onChange={handleSortDownBtnClick}
-                                checked={!isSortedUp}
+                                checked={!(params._order === 'asc')}
                               />
                               <label htmlFor="down">
                                 <svg width="16" height="14" aria-hidden="true">
