@@ -288,6 +288,7 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
                 type="checkbox"
                 name="photocamera"
                 onChange={handlePhotocameraCheckboxClick}
+                checked={params.category.includes(FILTERS.Photocamera.name)}
                 data-testid="photocamera-checkbox"
               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
             </label>
@@ -298,6 +299,7 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
                 type="checkbox"
                 name="videocamera"
                 onChange={handleVideocameraCheckboxClick}
+                checked={params.category.includes(FILTERS.Videocamera.name)}
                 data-testid="videocamera-checkbox"
               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
             </label>
