@@ -1,4 +1,4 @@
-import { FiltersType } from './types';
+import { FiltersType, StartParams } from './types';
 
 export enum AppRoute {
   Main = '/',
@@ -20,6 +20,16 @@ export enum APIRoute {
 }
 
 export const RATING_NUMBERS = [1,2,3,4,5];
+
+export const FIRST_PAGE_NUMBER = 1;
+
+export const START_PARAMS: StartParams = {
+  _sort: 'price',
+  _order: 'asc',
+  category: [],
+  type: [],
+  level: [],
+};
 
 export const FILTERS: FiltersType = {
   Photocamera: { name: 'Фотоаппарат', option: 'type' },
