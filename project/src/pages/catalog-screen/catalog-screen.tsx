@@ -4,8 +4,8 @@ import Footer from '../../components/footer/footer';
 import Banner from '../../components/banner/banner';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
-import React, { useEffect, useState, useRef } from 'react';
-import { getCameras, getIsDataLoadedStatus, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
+import React, { useEffect, useState } from 'react';
+import { getIsDataLoadedStatus, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
 import { fetchPromoCameraAction, fetchSortedAndFilteredCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
@@ -13,69 +13,30 @@ import { isEscKeyPressed, makeURL } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
-import { getMinPrice, getMaxPrice, getClosestMinPriceValue, getClosestMaxPriceValue } from '../../utils/utils';
 import EmptyQuery from '../../components/empty-query/empty-query';
-import { Filter } from '../../consts';
-import { isEnterKeyPressed } from '../../utils/utils';
+import Filter from '../../components/filter/filter';
+import { START_PARAMS, FIRST_PAGE_NUMBER } from '../../consts';
 
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
 const PRODUCTS_PER_PAGE = 9;
-const FIRST_PAGE_NUMBER = 1;
 const NON_EXISTENT_ID = 0;
-enum PriceLength {
-  Min = 0,
-  Max = 7,
-}
-
-type StartParams = {
-  _sort: string;
-  _order: string;
-  category: string[];
-  type: string[];
-  level: string[];
-  price_gte?: string;
-  price_lte?: string;
-};
-
-const START_PARAMS: StartParams = {
-  _sort: 'price',
-  _order: 'asc',
-  category: [],
-  type: [],
-  level: [],
-};
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
   const promoCamera = useAppSelector(getPromoCamera);
   const navigate = useNavigate();
   const camerasList = useAppSelector(getSortedAndFilteredCameras);
-  const immutableCamerasList = useAppSelector(getCameras);
   const isDataLoading = useAppSelector(getIsDataLoadedStatus);
   const [params, setParams] = useState(START_PARAMS);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-  const [isSortByPrice, setSortByPrice] = useState(true);
-  const [isSortedUp, setIsSortedUp] = useState(true);
-  const [priceFromInputValue, setPriceFromInputValue] = useState<string | undefined>('');
-  const [priceToInputValue, setPriceToInputValue] = useState<string | undefined>('');
+
   const [, setSearchParams] = useSearchParams(params);
-  const [isFilmCheckboxChecked, setIsFilmCheckboxChecked] = useState<boolean>(false);
-  const [isSnapshotCheckboxChecked, setIsSnapshotCheckboxChecked] = useState<boolean>(false);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
-
-  const sortPriceRef = useRef<HTMLInputElement | null>(null);
-  const sortPopularRef = useRef<HTMLInputElement | null>(null);
-  const sortUpRef = useRef<HTMLInputElement | null>(null);
-  const sortDownRef = useRef<HTMLInputElement | null>(null);
-  const priceFromRef = useRef<HTMLInputElement | null>(null);
-  const priceToRef = useRef<HTMLInputElement | null>(null);
-  const photocameraRef = useRef<HTMLInputElement | null>(null);
-  const videocameraRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
@@ -153,309 +114,28 @@ function CatalogScreen(): JSX.Element {
   const onNextButtonClick = () => setCurrentPage(currentPage + 1);
 
   // Обработчики нажатий на элементы сортировки
-  const handleSortPriceBtnClick = () => {
-    if (sortPriceRef.current?.checked) {
+  const handleSortPriceBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _sort: 'price'});
-      setSortByPrice(true);
     }
   };
 
-  const handleSortPopularBtnClick = () => {
-    if (sortPopularRef.current?.checked) {
+  const handleSortPopularBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _sort: 'rating'});
-      setSortByPrice(false);
     }
   };
 
-  const handleSortUpBtnClick = () => {
-    if (sortUpRef.current?.checked) {
+  const handleSortUpBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _order: 'asc'});
-      setIsSortedUp(true);
     }
   };
 
-  const handleSortDownBtnClick = () => {
-    if (sortDownRef.current?.checked) {
+  const handleSortDownBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    if (evt.target.checked) {
       setParams({...params, _order: 'desc'});
-      setIsSortedUp(false);
     }
-  };
-
-  // ---Обработчики взаимодействия с элементами формы фильтрации---
-
-  // Запрет ввода нуля первым значением и любых символов кроме цифр
-  const handlePriceFromInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    evt.preventDefault();
-    const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
-
-    setPriceFromInputValue(currentValue);
-  };
-
-  const handlePriceToInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    evt.preventDefault();
-    const currentValue = evt.target.value.replace(/^0/, '').replace(/\D/g,'').substring(PriceLength.Min, PriceLength.Max);
-
-    setPriceToInputValue(currentValue);
-  };
-
-  const handlePriceFromInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-    const isPriceFromValueEmpty = (priceFromRef.current as HTMLInputElement).value === '';
-    const isPriceToValueEmpty = (priceToRef.current as HTMLInputElement).value === '';
-    const targetValue = Number(evt.target.value);
-    const closestMinPriceValue = getClosestMinPriceValue(camerasList, Number(targetValue));
-    const closestMinPriceValueImmutable = getClosestMinPriceValue(immutableCamerasList, Number(targetValue));
-    const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
-    const maxPriceInImmutableCamerasList = Number(getMaxPrice(immutableCamerasList));
-    if (!isPriceFromValueEmpty) {
-      // Если полученное значение меньше минимального значения цены из всех товаров
-      if (targetValue < Number(closestMinPriceValue)) {
-        setPriceFromInputValue(String(closestMinPriceValue));
-        setParams({...params, 'price_gte': String(closestMinPriceValue)});
-      }
-
-      // Если в поле "от" значение уже было записано и получено новое значение, которое меньше предыдущего
-      if (targetValue < Number(params.price_gte)) {
-        setPriceFromInputValue(closestMinPriceValueImmutable);
-        setParams({...params, 'price_gte': closestMinPriceValueImmutable});
-      }
-
-      // Если полученное значение попадает в диапазон от минимальной цены до максимальной
-      if (targetValue > Number(getMinPrice(camerasList)) && targetValue < Number(getMaxPrice(camerasList))) {
-        setPriceFromInputValue(closestMinPriceValue);
-        setParams({...params, 'price_gte': closestMinPriceValue});
-      }
-
-      // Если полученное значение больше максимальной цены из всех товаров
-      if (targetValue > maxPriceInImmutableCamerasList) {
-        setPriceFromInputValue(closestMaxPriceValueImmutable);
-        setParams({...params, 'price_gte': String(closestMaxPriceValueImmutable)});
-      }
-
-      // Если в поле "до" значение было уже записано, а полученное в поле "от" больше него
-      if (!isPriceToValueEmpty && Number(priceToInputValue) < targetValue) {
-        setPriceFromInputValue(priceToInputValue);
-        setParams({...params, 'price_gte': priceToInputValue});
-      }
-    }
-  };
-
-  const handlePriceToInputBlur = (evt: React.FocusEvent<HTMLInputElement>) => {
-    const isPriceFromValueEmpty = priceFromRef.current?.value === '';
-    const isPriceToValueEmpty = priceToRef.current?.value === '';
-    const targetValue = Number(evt.target.value);
-    const closestMaxPriceValue = getClosestMaxPriceValue(camerasList, Number(targetValue));
-    const closestMaxPriceValueImmutable = getClosestMaxPriceValue(immutableCamerasList, Number(targetValue));
-    const maxPriceInCamerasList = Number(getMaxPrice(camerasList));
-    const minPriceInCamerasList = Number(getMinPrice(camerasList));
-    const maxPriceInImmutableCamerasList = Number(getMaxPrice(immutableCamerasList));
-    if (!isPriceToValueEmpty) {
-      // Если значение в поле "от" больше, чем в поле "до"
-      if (Number(priceFromInputValue) > Number(priceToInputValue)) {
-        setPriceToInputValue(priceFromInputValue);
-        setParams({...params, 'price_lte': priceFromInputValue});
-      } else {
-        setPriceToInputValue(closestMaxPriceValue);
-        setParams({...params, 'price_lte': closestMaxPriceValue});
-      }
-
-      if (Number(getMinPrice(camerasList)) < targetValue && targetValue < maxPriceInCamerasList) {
-        setPriceToInputValue(closestMaxPriceValue);
-        setParams({...params, 'price_lte': closestMaxPriceValue});
-      }
-
-      // Если в поле "до" значение уже было записано и получено нововое значение, которое больше предыдущего
-      if (targetValue > Number(params.price_lte)) {
-        setPriceToInputValue(closestMaxPriceValueImmutable);
-        setParams({...params, 'price_lte': String(closestMaxPriceValueImmutable)});
-      }
-
-      // Если поле "от" не заполнено и полученное значение меньше минимальной цены из всех товаров
-      // записывается минимальное значение цены из всех товаров
-      if (isPriceFromValueEmpty && targetValue < minPriceInCamerasList) {
-        setPriceToInputValue(String(minPriceInCamerasList));
-      }
-
-      // Если полученное значение больше максимальной цены товаров в каталоге
-      if (targetValue > Number(maxPriceInImmutableCamerasList)) {
-        setPriceToInputValue(closestMaxPriceValueImmutable);
-        setParams({...params, 'price_lte': String(closestMaxPriceValueImmutable)});
-      }
-    }
-  };
-
-  // Обработчики подтверждения ввода чисел посредством нажатия на клавишу "Enter"
-  const handlePriceFromInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isEnterKeyPressed(evt)) {
-      priceToRef.current?.focus();
-    }
-  };
-
-  const handlePriceToInputEnterKeydown = (evt: React.KeyboardEvent<HTMLInputElement>) => {
-    if (isEnterKeyPressed(evt)) {
-      photocameraRef.current?.focus();
-    }
-  };
-
-  // Обработчик нажатия на кнопку "Сбросить фильтры"
-  const handleResetBtnClick = () => {
-    setPriceFromInputValue('');
-    setPriceToInputValue('');
-    setParams(START_PARAMS);
-    setIsFilmCheckboxChecked(false);
-    setIsSnapshotCheckboxChecked(false);
-  };
-
-  // Обработчики нажатий на каждый из чекбоксов фильтрации
-  const handlePhotocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newCategory = [...params.category];
-
-    if (Array.isArray(params.category)){
-      if (isChecked) {
-        newCategory?.push(Filter.Photocamera);
-      } else {
-        const nameIndex = params.category.findIndex((category) => category === Filter.Photocamera);
-        newCategory?.splice(nameIndex, 1);
-      }
-    }
-
-    setParams(Object.assign({}, params, {category: newCategory}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleVideocameraCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newCategory = [...params.category];
-    const newType = [...params.type];
-
-    if (isChecked) {
-      newCategory.push(Filter.Videocamera);
-      setIsFilmCheckboxChecked(false);
-      setIsSnapshotCheckboxChecked(false);
-
-      const nameFilmIndex = params.type.findIndex((type) => type === Filter.Film);
-      newType.splice(nameFilmIndex, 1);
-
-      const nameSnapshotIndex = params.type.findIndex((type) => type === Filter.Snapshot);
-      newType.splice(nameSnapshotIndex, 1);
-    } else {
-      const nameIndex = params.category.findIndex((category) => category === Filter.Videocamera);
-      newCategory?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {category: newCategory, type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleDigitalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Digital);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Digital);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleFilmCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Film);
-      setIsFilmCheckboxChecked(true);
-    } else {
-      setIsFilmCheckboxChecked(false);
-      const nameIndex = params.type.findIndex((type) => type === Filter.Film);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleSnapshotCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Snapshot);
-      setIsSnapshotCheckboxChecked(true);
-    } else {
-      setIsSnapshotCheckboxChecked(false);
-      const nameIndex = params.type.findIndex((type) => type === Filter.Snapshot);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleCollectionCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.type];
-    if (isChecked) {
-      newType.push(Filter.Collection);
-    } else {
-      const nameIndex = params.type.findIndex((type) => type === Filter.Collection);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {type: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleZeroCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
-    if (isChecked) {
-      newType.push(Filter.Zero);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.Zero);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleNonProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
-    if (isChecked) {
-      newType.push(Filter.NonProfessional);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.NonProfessional);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
-  };
-
-  const handleProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
-    const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
-    if (isChecked) {
-      newType.push(Filter.Professional);
-    } else {
-      const nameIndex = params.level.findIndex((level) => level === Filter.Professional);
-      newType?.splice(nameIndex, 1);
-    }
-
-    setParams(Object.assign({}, params, {level: newType}));
-    navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
-    setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   return (
@@ -490,157 +170,14 @@ function CatalogScreen(): JSX.Element {
                 <h1 className="title title--h2">Каталог фото- и видеотехники</h1>
                 <div className="page-content__columns">
                   <div className="catalog__aside">
-                    <div className="catalog-filter">
-                      <form action="#">
-                        <h2 className="visually-hidden">Фильтр</h2>
-                        <fieldset className="catalog-filter__block">
-                          <legend className="title title--h5">Цена, ₽</legend>
-                          <div className="catalog-filter__price-range">
-                            <div className="custom-input">
-                              <label>
-                                <input
-                                  type="text"
-                                  name="price"
-                                  placeholder={getMinPrice(camerasList)}
-                                  onChange={handlePriceFromInputChange}
-                                  ref={priceFromRef}
-                                  value={priceFromInputValue}
-                                  onBlur={handlePriceFromInputBlur}
-                                  onKeyDown={handlePriceFromInputEnterKeydown}
-                                  data-testid="price-from"
-                                />
-                              </label>
-                            </div>
-                            <div className="custom-input">
-                              <label>
-                                <input
-                                  type="text"
-                                  name="priceUp"
-                                  placeholder={getMaxPrice(camerasList)}
-                                  onChange={handlePriceToInputChange}
-                                  ref={priceToRef}
-                                  value={priceToInputValue}
-                                  onBlur={handlePriceToInputBlur}
-                                  onKeyDown={handlePriceToInputEnterKeydown}
-                                  data-testid="price-to"
-                                />
-                              </label>
-                            </div>
-                          </div>
-                        </fieldset>
-                        <fieldset className="catalog-filter__block">
-                          <legend className="title title--h5">Категория</legend>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="photocamera"
-                                onChange={handlePhotocameraCheckboxClick}
-                                ref={photocameraRef}
-                                data-testid="photocamera-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="videocamera"
-                                onChange={handleVideocameraCheckboxClick}
-                                ref={videocameraRef}
-                                data-testid="videocamera-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
-                            </label>
-                          </div>
-                        </fieldset>
-                        <fieldset className="catalog-filter__block">
-                          <legend className="title title--h5">Тип камеры</legend>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="digital"
-                                onChange={handleDigitalCheckboxClick}
-                                data-testid="digital-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="film"
-                                onChange={handleFilmCheckboxClick}
-                                disabled={videocameraRef.current?.checked}
-                                checked={isFilmCheckboxChecked}
-                                data-testid="film-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="snapshot"
-                                onChange={handleSnapshotCheckboxClick}
-                                disabled={videocameraRef.current?.checked}
-                                checked={isSnapshotCheckboxChecked}
-                                data-testid="snapshot-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="collection"
-                                onChange={handleCollectionCheckboxClick}
-                                data-testid="collection-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
-                            </label>
-                          </div>
-                        </fieldset>
-                        <fieldset className="catalog-filter__block">
-                          <legend className="title title--h5">Уровень</legend>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="zero"
-                                onChange={handleZeroCheckboxClick}
-                                data-testid="zero-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="non-professional"
-                                onChange={handleNonProfessionalCheckboxClick}
-                                data-testid="non-professional-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Любительский</span>
-                            </label>
-                          </div>
-                          <div className="custom-checkbox catalog-filter__item">
-                            <label>
-                              <input
-                                type="checkbox"
-                                name="professional"
-                                onChange={handleProfessionalCheckboxClick}
-                                data-testid="professional-checkbox"
-                              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Профессиональный</span>
-                            </label>
-                          </div>
-                        </fieldset>
-                        <button
-                          className="btn catalog-filter__reset-btn"
-                          type="reset"
-                          onClick={handleResetBtnClick}
-                        >Сбросить фильтры
-                        </button>
-                      </form>
-                    </div>
+
+                    <Filter
+                      params={params}
+                      cameras={camerasList}
+                      onSetParams={setParams}
+                      onSetCurrentPage={setCurrentPage}
+                    />
+
                   </div>
                   <div className="catalog__content">
                     <div className="catalog-sort">
@@ -653,9 +190,8 @@ function CatalogScreen(): JSX.Element {
                                 type="radio"
                                 id="sortPrice"
                                 name="sort"
-                                ref={sortPriceRef}
                                 onChange={handleSortPriceBtnClick}
-                                checked={isSortByPrice}
+                                checked={params._sort === 'price'}
                               />
                               <label htmlFor="sortPrice">по цене</label>
                             </div>
@@ -664,9 +200,8 @@ function CatalogScreen(): JSX.Element {
                                 type="radio"
                                 id="sortPopular"
                                 name="sort"
-                                ref={sortPopularRef}
                                 onChange={handleSortPopularBtnClick}
-                                checked={!isSortByPrice}
+                                checked={!(params._sort === 'price')}
                               />
                               <label htmlFor="sortPopular">по популярности</label>
                             </div>
@@ -678,9 +213,8 @@ function CatalogScreen(): JSX.Element {
                                 id="up"
                                 name="sort-icon"
                                 aria-label="По возрастанию"
-                                ref={sortUpRef}
                                 onChange={handleSortUpBtnClick}
-                                checked={isSortedUp}
+                                checked={params._order === 'asc'}
                               />
                               <label htmlFor="up">
                                 <svg width="16" height="14" aria-hidden="true">
@@ -694,9 +228,8 @@ function CatalogScreen(): JSX.Element {
                                 id="down"
                                 name="sort-icon"
                                 aria-label="По убыванию"
-                                ref={sortDownRef}
                                 onChange={handleSortDownBtnClick}
-                                checked={!isSortedUp}
+                                checked={!(params._order === 'asc')}
                               />
                               <label htmlFor="down">
                                 <svg width="16" height="14" aria-hidden="true">
