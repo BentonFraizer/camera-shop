@@ -57,17 +57,18 @@ function CatalogScreen(): JSX.Element {
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-  const [isSortByPrice, setSortByPrice] = useState(true);
-  const [isSortedUp, setIsSortedUp] = useState(true);
   const [priceFromInputValue, setPriceFromInputValue] = useState<string | undefined>('');
   const [priceToInputValue, setPriceToInputValue] = useState<string | undefined>('');
   const [, setSearchParams] = useSearchParams(params);
-  const [isFilmCheckboxChecked, setIsFilmCheckboxChecked] = useState<boolean>(false);
-  const [isSnapshotCheckboxChecked, setIsSnapshotCheckboxChecked] = useState<boolean>(false);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+
+  const isSortByPrice = params._sort === 'price';
+  const isSortedUp = params._order === 'asc';
   const isVideocameraChecked = params.category.includes(Filter.Videocamera);
+  const isFilmCheckboxChecked = params.type.includes(Filter.Film);
+  const isSnapshotCheckboxChecked = params.type.includes(Filter.Snapshot);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
@@ -148,28 +149,24 @@ function CatalogScreen(): JSX.Element {
   const handleSortPriceBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.checked) {
       setParams({...params, _sort: 'price'});
-      setSortByPrice(true);
     }
   };
 
   const handleSortPopularBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.checked) {
       setParams({...params, _sort: 'rating'});
-      setSortByPrice(false);
     }
   };
 
   const handleSortUpBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.checked) {
       setParams({...params, _order: 'asc'});
-      setIsSortedUp(true);
     }
   };
 
   const handleSortDownBtnClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     if (evt.target.checked) {
       setParams({...params, _order: 'desc'});
-      setIsSortedUp(false);
     }
   };
 
@@ -299,8 +296,6 @@ function CatalogScreen(): JSX.Element {
     setPriceFromInputValue('');
     setPriceToInputValue('');
     setParams(START_PARAMS);
-    setIsFilmCheckboxChecked(false);
-    setIsSnapshotCheckboxChecked(false);
   };
 
   // Обработчики нажатий на каждый из чекбоксов фильтрации
@@ -342,8 +337,6 @@ function CatalogScreen(): JSX.Element {
       }
 
       setParams(Object.assign({}, params, {category: newCategory, type: newType}));
-      setIsFilmCheckboxChecked(false);
-      setIsSnapshotCheckboxChecked(false);
     } else {
       const nameIndex = params.category.findIndex((category) => category === Filter.Videocamera);
       newCategory?.splice(nameIndex, 1);
@@ -375,11 +368,9 @@ function CatalogScreen(): JSX.Element {
     const newType = [...params.type];
     if (isChecked) {
       newType.push(Filter.Film);
-      setIsFilmCheckboxChecked(true);
     } else {
       const nameIndex = params.type.findIndex((type) => type === Filter.Film);
       newType?.splice(nameIndex, 1);
-      setIsFilmCheckboxChecked(false);
     }
 
     setParams(Object.assign({}, params, {type: newType}));
@@ -392,11 +383,9 @@ function CatalogScreen(): JSX.Element {
     const newType = [...params.type];
     if (isChecked) {
       newType.push(Filter.Snapshot);
-      setIsSnapshotCheckboxChecked(true);
     } else {
       const nameIndex = params.type.findIndex((type) => type === Filter.Snapshot);
       newType?.splice(nameIndex, 1);
-      setIsSnapshotCheckboxChecked(false);
     }
 
     setParams(Object.assign({}, params, {type: newType}));
@@ -422,45 +411,45 @@ function CatalogScreen(): JSX.Element {
   // -------Фильтры Уровень-------
   const handleZeroCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
+    const newLevel = [...params.level];
     if (isChecked) {
-      newType.push(Filter.Zero);
+      newLevel.push(Filter.Zero);
     } else {
       const nameIndex = params.level.findIndex((level) => level === Filter.Zero);
-      newType?.splice(nameIndex, 1);
+      newLevel?.splice(nameIndex, 1);
     }
 
-    setParams(Object.assign({}, params, {level: newType}));
+    setParams(Object.assign({}, params, {level: newLevel}));
     navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
     setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleNonProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
+    const newLevel = [...params.level];
     if (isChecked) {
-      newType.push(Filter.NonProfessional);
+      newLevel.push(Filter.NonProfessional);
     } else {
       const nameIndex = params.level.findIndex((level) => level === Filter.NonProfessional);
-      newType?.splice(nameIndex, 1);
+      newLevel?.splice(nameIndex, 1);
     }
 
-    setParams(Object.assign({}, params, {level: newType}));
+    setParams(Object.assign({}, params, {level: newLevel}));
     navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
     setCurrentPage(FIRST_PAGE_NUMBER);
   };
 
   const handleProfessionalCheckboxClick = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const isChecked = ((evt.target as HTMLInputElement).checked);
-    const newType = [...params.level];
+    const newLevel = [...params.level];
     if (isChecked) {
-      newType.push(Filter.Professional);
+      newLevel.push(Filter.Professional);
     } else {
       const nameIndex = params.level.findIndex((level) => level === Filter.Professional);
-      newType?.splice(nameIndex, 1);
+      newLevel?.splice(nameIndex, 1);
     }
 
-    setParams(Object.assign({}, params, {level: newType}));
+    setParams(Object.assign({}, params, {level: newLevel}));
     navigate(`/catalog/page_${FIRST_PAGE_NUMBER}`);
     setCurrentPage(FIRST_PAGE_NUMBER);
   };
