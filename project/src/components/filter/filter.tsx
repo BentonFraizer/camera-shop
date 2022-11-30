@@ -85,6 +85,8 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
         setPriceFromInputValue(priceToInputValue);
         onSetParams({...params, 'price_gte': priceToInputValue});
       }
+    } else {
+      onSetParams({...params, 'price_gte': undefined});
     }
   };
 
@@ -129,6 +131,8 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
         setPriceToInputValue(closestMaxPriceValueImmutable);
         onSetParams({...params, 'price_lte': String(closestMaxPriceValueImmutable)});
       }
+    } else {
+      onSetParams({...params, 'price_lte': undefined});
     }
   };
 
