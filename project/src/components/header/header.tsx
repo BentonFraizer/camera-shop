@@ -105,7 +105,7 @@ function Header(): JSX.Element {
                 data-testid="search-input"
               />
             </label>
-            <ul className="form-search__select-list">
+            <ul className="form-search__select-list scroller">
               {
                 searchedCamerasList.map((camera) =>
                   (
