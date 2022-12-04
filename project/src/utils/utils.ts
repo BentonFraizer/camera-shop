@@ -1,4 +1,5 @@
-import { Camera, FiltersType, FilterTypeItem } from '../types';
+import { Camera, FiltersType, FilterTypeItem, Order } from '../types';
+const NEW_ITEMS_AMOUNT = 1;
 
 export const separateNumbers = (priceToCheck: number): string => {
   const MIN_VALUE_TO_SEPARATE_ZEROS = 1000;
@@ -154,5 +155,29 @@ export const getPropertiesForCurrentChecbox = (checboxName:string, checboxes: Fi
       result = value;
     }
   }
+  return result;
+};
+
+export const refreshOrderData = (currentId:number, currentDataForOrder: Order) => {
+  const copiedIdentifiers = [...currentDataForOrder.identifiers];
+  const copiedAmounts = [...currentDataForOrder.amounts];
+  const isIdExistsInCurrentOrder = copiedIdentifiers.includes(currentId);
+
+  if (isIdExistsInCurrentOrder) {
+    const indexOfId = copiedIdentifiers.indexOf(currentId);
+    const newAmount = copiedAmounts[indexOfId] + 1;
+    copiedAmounts.splice(indexOfId, 1, newAmount);
+    const result = {
+      identifiers: [...currentDataForOrder.identifiers],
+      amounts: [...copiedAmounts]
+    };
+    return result;
+  }
+
+  const result = {
+    identifiers: [...currentDataForOrder.identifiers, currentId],
+    amounts: [...currentDataForOrder.amounts, NEW_ITEMS_AMOUNT]
+  };
+
   return result;
 };

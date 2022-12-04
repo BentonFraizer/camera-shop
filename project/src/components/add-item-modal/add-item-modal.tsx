@@ -4,7 +4,7 @@ import { useRef, useEffect } from 'react';
 import { isTabKeyPressed } from '../../utils/utils';
 
 type AddItemModalProps = {
-  dataForAddItemModal?: Camera;
+  dataForAddItemModal?: Camera | null;
   onCloseBtnOrOverlayClick: () => void;
   isModalOpened: boolean;
   onAddToBasketBtnClick?: (id: number) => void;
@@ -39,7 +39,7 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
     }
   };
 
-  if (dataForAddItemModal === undefined || onAddToBasketBtnClick === undefined) {
+  if (dataForAddItemModal === undefined || dataForAddItemModal === null || onAddToBasketBtnClick === undefined) {
     return null;
   }
 

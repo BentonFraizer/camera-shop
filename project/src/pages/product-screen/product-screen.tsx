@@ -2,18 +2,19 @@ import Icons from '../../components/icons/icons';
 import Footer from '../../components/footer/footer';
 import Header from '../../components/header/header';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { fetchCameraAction, fetchReviewsAction, fetchSimilarCamerasAction, fetchCamerasAction } from '../../store/api-actions';
-import { getCamera, getCameras, getReviews, getSimilarCamerasList, getIsPostSendingStatus } from '../../store/site-data/selectors';
+import { getCamera, getCameras, getReviews, getSimilarCamerasList, getIsPostSendingStatus, getOrderData } from '../../store/site-data/selectors';
 import { RATING_NUMBERS } from '../../consts';
-import { separateNumbers, isEscKeyPressed } from '../../utils/utils';
-import { resetCameraData, resetPostSentSuccessful } from '../../store/site-data/site-data';
+import { separateNumbers, isEscKeyPressed, refreshOrderData } from '../../utils/utils';
+import { resetCameraData, resetPostSentSuccessful, setOrderData } from '../../store/site-data/site-data';
 import Slider from '../../components/slider/slider';
 import Reviews from '../../components/reviews/reviews';
 import ReviewModal from '../../components/product/review-modal/review-modal';
 import ReviewSuccessModal from '../../components/product/review-success-modal/review-success-modal';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
+import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 import LoadingScreen from '../loading-screen/loading-screen';
 
 const TAB_SEARCH_PARAM = 'tab';
@@ -29,16 +30,18 @@ function ProductScreen(): JSX.Element {
   const isPostSentSuccessfully = useAppSelector(getIsPostSendingStatus);
   const similarCamerasList = useAppSelector(getSimilarCamerasList);
   const camerasList = useAppSelector(getCameras);
+  const currentOrderData = useAppSelector(getOrderData);
   const [isSpecsLinkActive, setIsSpecsLinkActive] = useState(true);
   const [isDescriptionLinkActive, setIsDescriptionLinkActive] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const [isSendReviewModalOpened, setIsSendReviewModalOpened] = useState(false);
   const [isReviewSuccessModalOpened, setIsReviewSuccessModalOpened] = useState(false);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
+  const [isAddItemSuccessModalOpened, setIsAddItemSuccessModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
-  const dataForAddItemModal = isIdExists ? camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal) : undefined;
+  const dataForAddItemModal = isIdExists ? camerasList.find((currentCamera) => currentCamera.id === idForAddItemModal) : camera;
 
   // Обработка параметров поиска адресной строки для корретной работы Табов "Характеристики" и "Описание"
   useEffect(() => {
@@ -135,6 +138,8 @@ function ProductScreen(): JSX.Element {
     setIsSendReviewModalOpened(false);
     setIsReviewSuccessModalOpened(false);
     setIsAddItemModalOpened(false);
+    setIsAddItemSuccessModalOpened(false);
+    setIdForAddItemModal(NON_EXISTENT_ID);
     document.body.style.overflowY = '';
     document.body.style.paddingRight = '0';
   };
@@ -152,9 +157,28 @@ function ProductScreen(): JSX.Element {
     }
     if (isAddItemModalOpened && isEscKeyPressed(evt)) {
       setIsAddItemModalOpened(false);
+      setIdForAddItemModal(NON_EXISTENT_ID);
       document.body.style.overflowY = '';
       document.body.style.paddingRight = '0';
     }
+    if (isAddItemSuccessModalOpened && isEscKeyPressed(evt)) {
+      setIsAddItemSuccessModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
+  };
+
+  const handleAddToBasketBtnClick = () => {
+    setIsAddItemModalOpened(true);
+    document.body.style.overflowY = 'hidden';
+    document.body.style.paddingRight = '17px';
+  };
+
+  const onAddToBasketBtnClick = (gettedId: number) => {
+    dispatch(setOrderData(refreshOrderData(gettedId, currentOrderData)));
+    setIsAddItemModalOpened(false);
+    setIsAddItemSuccessModalOpened(true);
+    setIdForAddItemModal(NON_EXISTENT_ID);
   };
 
   return (
@@ -211,7 +235,11 @@ function ProductScreen(): JSX.Element {
                       <p className="rate__count"><span className="visually-hidden">Всего оценок:</span>{reviewCount}</p>
                     </div>
                     <p className="product__price"><span className="visually-hidden">Цена:</span>{separateNumbers(price)} ₽</p>
-                    <button className="btn btn--purple" type="button">
+                    <button
+                      className="btn btn--purple"
+                      type="button"
+                      onClick={() => handleAddToBasketBtnClick()}
+                    >
                       <svg width="24" height="16" aria-hidden="true">
                         <use xlinkHref="#icon-add-basket"></use>
                       </svg>Добавить в корзину
@@ -266,6 +294,7 @@ function ProductScreen(): JSX.Element {
                 <Slider
                   similarCameras={similarCamerasList}
                   onBuyButtonClick={onBuyButtonClick}
+                  basketProductsIdentifiers={currentOrderData.identifiers}
                 />}
 
             </div>
@@ -297,8 +326,13 @@ function ProductScreen(): JSX.Element {
               dataForAddItemModal={dataForAddItemModal}
               onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
+              onAddToBasketBtnClick={onAddToBasketBtnClick}
             /> }
-
+          { isAddItemSuccessModalOpened &&
+            <AddItemSuccessModal
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
+              isModalOpened={isAddItemSuccessModalOpened}
+            /> }
         </main>
 
         <Footer/>
