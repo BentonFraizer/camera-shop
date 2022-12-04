@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import {Routes, Route} from 'react-router-dom';
 import { createMemoryHistory } from 'history';
-import HistoryRouter from '../../components/history-router/history-router';
+import HistoryRouter from '../history-router/history-router';
 import ProductCard from './product-card';
 import { Provider } from 'react-redux';
 import userEvent from '@testing-library/user-event';

@@ -1,5 +1,5 @@
 import { store } from '../store/index';
-import { Camera, PromoCamera, Review } from './index';
+import { Camera, PromoCamera, Review, Order } from './index';
 
 export type SiteData = {
   camerasList: Camera[];
@@ -11,6 +11,7 @@ export type SiteData = {
   isDataLoaded: boolean;
   sortedAndFilteredCamerasList: Camera[];
   searchedCameras: Camera[];
+  orderData: Order;
 }
 
 export type State = ReturnType<typeof store.getState>;
