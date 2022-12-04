@@ -3,14 +3,21 @@ import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import './not-found-screen.css';
 import { Link } from 'react-router-dom';
+import { useAppSelector } from '../../hooks';
+import { getOrderData } from '../../store/site-data/selectors';
+import { summarizeNumbers } from '../../utils/utils';
 
 function NotFoundScreen(): JSX.Element {
+  const currentOrderData = useAppSelector(getOrderData);
+
   return (
     <>
       <Icons/>
       <div className="wrapper">
 
-        <Header/>
+        <Header
+          basketCount={summarizeNumbers(currentOrderData.amounts)}
+        />
 
         <main>
           <div className="page-message">

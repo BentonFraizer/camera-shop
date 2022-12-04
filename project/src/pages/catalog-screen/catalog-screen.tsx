@@ -11,7 +11,7 @@ import { fetchPromoCameraAction, fetchSortedAndFilteredCamerasAction } from '../
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
-import { isEscKeyPressed, makeURL } from '../../utils/utils';
+import { isEscKeyPressed, makeURL, summarizeNumbers } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
@@ -163,7 +163,9 @@ function CatalogScreen(): JSX.Element {
       <Icons/>
       <div className="wrapper">
 
-        <Header/>
+        <Header
+          basketCount={summarizeNumbers(currentOrderData.amounts)}
+        />
 
         <main onKeyDown={handleEscBtnKeydown} >
 

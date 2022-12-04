@@ -7,7 +7,7 @@ import { useAppSelector, useAppDispatch } from '../../hooks';
 import { fetchCameraAction, fetchReviewsAction, fetchSimilarCamerasAction, fetchCamerasAction } from '../../store/api-actions';
 import { getCamera, getCameras, getReviews, getSimilarCamerasList, getIsPostSendingStatus, getOrderData } from '../../store/site-data/selectors';
 import { RATING_NUMBERS } from '../../consts';
-import { separateNumbers, isEscKeyPressed, refreshOrderData } from '../../utils/utils';
+import { separateNumbers, isEscKeyPressed, refreshOrderData, summarizeNumbers } from '../../utils/utils';
 import { resetCameraData, resetPostSentSuccessful, setOrderData } from '../../store/site-data/site-data';
 import Slider from '../../components/slider/slider';
 import Reviews from '../../components/reviews/reviews';
@@ -186,7 +186,9 @@ function ProductScreen(): JSX.Element {
       <Icons/>
       <div className="wrapper">
 
-        <Header/>
+        <Header
+          basketCount={summarizeNumbers(currentOrderData.amounts)}
+        />
 
         <main onKeyDown={handleEscBtnKeydown} >
           <div className="page-content" >

@@ -20,7 +20,11 @@ const START_PARAMS: StartParams = {
   'name_like': DOES_NOT_EXIST_NAME,
 };
 
-function Header(): JSX.Element {
+type HeaderProps = {
+  basketCount: number;
+}
+
+function Header({ basketCount }:HeaderProps): JSX.Element {
   const dispatch = useAppDispatch();
   const searchedCamerasList = useAppSelector(getSearchedCameras);
   const navigate = useNavigate();
@@ -126,7 +130,6 @@ function Header(): JSX.Element {
                 <li
                   className="form-search__select-item form-search__select-item-warning"
                   tabIndex={TABINDEX_VALUE}
-                  style={{cursor: 'default'}}
                 >Измените параметры поиска
                 </li>
               }
@@ -145,7 +148,11 @@ function Header(): JSX.Element {
         <Link className="header__basket-link" to={AppRoute.Basket}>
           <svg width="16" height="16" aria-hidden="true">
             <use xlinkHref="#icon-basket"></use>
-          </svg><span className="header__basket-count">2</span>
+          </svg>
+          {
+            basketCount !== 0 &&
+            <span className="header__basket-count">{basketCount}</span>
+          }
         </Link>
       </div>
     </header>
