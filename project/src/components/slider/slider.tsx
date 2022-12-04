@@ -11,9 +11,10 @@ const enum SliderElement {
 type SliderProps = {
   similarCameras: Camera[];
   onBuyButtonClick?: (id:number) => void;
+  basketProductsIdentifiers: number[];
 }
 
-function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
+function Slider({similarCameras, onBuyButtonClick, basketProductsIdentifiers}: SliderProps): JSX.Element {
   const [activeCards, setActiveCards] = useState([0, 1, 2]);
 
   const handleNextBtnClick = () => {
@@ -45,6 +46,7 @@ function Slider({similarCameras, onBuyButtonClick}: SliderProps): JSX.Element {
                     cameraData={camera}
                     isActive={activeCards.includes(idx)}
                     onClick={onBuyButtonClick}
+                    basketProductsIdentifiers={basketProductsIdentifiers}
                   />
                 )
               )

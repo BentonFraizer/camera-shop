@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import HistoryRouter from '../../components/history-router/history-router';
+import HistoryRouter from '../history-router/history-router';
 import Slider from './slider';
 import { camerasList } from '../../mockForTests';
 

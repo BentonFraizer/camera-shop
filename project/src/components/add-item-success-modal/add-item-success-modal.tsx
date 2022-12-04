@@ -11,7 +11,7 @@ type AddItemSuccessModalProps = {
 }
 
 function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemSuccessModalProps): JSX.Element {
-  const continueButtonRef = useRef<HTMLButtonElement | null>(null);
+  const continueButtonRef = useRef<HTMLAnchorElement | null>(null);
   const goToBasketRef = useRef<HTMLAnchorElement | null>(null);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -69,16 +69,16 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
             <use xlinkHref="#icon-success"></use>
           </svg>
           <div className="modal__buttons">
-            <button
+            <Link
+              to={AppRoute.Catalog}
               className="btn btn--transparent modal__btn"
-              onClick={(evt) => {
-                evt.preventDefault();
-                onCloseBtnOrOverlayClick();
-              }}
               ref={continueButtonRef}
               onKeyDown={handleShiftTabBtnsKeydown}
+              onClick={() => {
+                onCloseBtnOrOverlayClick();
+              }}
             >Продолжить покупки
-            </button>
+            </Link>
             <Link
               className="btn btn--purple modal__btn modal__btn--fit-width"
               ref={goToBasketRef}
