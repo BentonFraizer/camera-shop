@@ -4,6 +4,7 @@ import { Camera } from '../../types';
 type ProductsListProps = {
   productsList: Camera[];
   onClick:(id:number) => void;
+  basketProductsIdentifiers: number[];
 }
 
 function ProductsList(props: ProductsListProps): JSX.Element {
@@ -19,6 +20,7 @@ function ProductsList(props: ProductsListProps): JSX.Element {
               key={product.id}
               cameraData={product}
               onClick={props.onClick}
+              basketProductsIdentifiers={props.basketProductsIdentifiers}
             />
           )
         )

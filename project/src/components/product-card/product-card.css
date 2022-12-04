@@ -1,0 +1,11 @@
+.btn .product-card__btn-icon {
+  position: absolute;
+  left: 22px;
+  top: 10px;
+}
+
+.btn>span {
+  padding: 0px 1px 0px 25px;
+}
+
+

@@ -5,3 +5,4 @@ export type {default as ReviewData} from './review-data';
 export type {default as FiltersType} from './filters-type';
 export type {default as FilterTypeItem} from './filters-type-item';
 export type {default as StartParams} from './start-params';
+export type {default as Order} from './order';

@@ -7,9 +7,10 @@ type AddItemModalProps = {
   dataForAddItemModal?: Camera;
   onCloseBtnOrOverlayClick: () => void;
   isModalOpened: boolean;
+  onAddToBasketBtnClick?: (id: number) => void;
 }
 
-function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpened}: AddItemModalProps): JSX.Element | null {
+function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpened, onAddToBasketBtnClick}: AddItemModalProps): JSX.Element | null {
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const addInBasketButtonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -38,11 +39,11 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
     }
   };
 
-  if (dataForAddItemModal === undefined) {
+  if (dataForAddItemModal === undefined || onAddToBasketBtnClick === undefined) {
     return null;
   }
 
-  const { name, vendorCode, price, type, category, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = dataForAddItemModal;
+  const { id, name, vendorCode, price, type, category, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = dataForAddItemModal;
 
   return (
     <div className="modal is-active">
@@ -81,6 +82,7 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
               type="button"
               ref={addInBasketButtonRef}
               onKeyDown={handleTabBtnKeydown}
+              onClick={() => onAddToBasketBtnClick(id)}
             >
               <svg width="24" height="16" aria-hidden="true">
                 <use xlinkHref="#icon-add-basket"></use>

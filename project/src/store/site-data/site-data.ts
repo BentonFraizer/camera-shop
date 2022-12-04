@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { NameSpace } from '../../consts';
+import { Order } from '../../types';
 import { SiteData } from '../../types/state';
 import {
   fetchCamerasAction,
@@ -22,6 +23,10 @@ const initialState: SiteData = {
   isDataLoaded: true,
   sortedAndFilteredCamerasList: [],
   searchedCameras: [],
+  orderData: {
+    identifiers: [],
+    amounts: [],
+  },
 };
 
 export const siteData = createSlice({
@@ -33,6 +38,9 @@ export const siteData = createSlice({
     },
     resetPostSentSuccessful: (state) => {
       state.isPostSentSuccessful = false;
+    },
+    setOrderData: (state, action) => {
+      state.orderData = action.payload as Order;
     }
   },
   extraReducers(builder) {
@@ -72,4 +80,4 @@ export const siteData = createSlice({
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful, setOrderData } = siteData.actions;

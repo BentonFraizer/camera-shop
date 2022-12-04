@@ -5,10 +5,12 @@ import Banner from '../../components/banner/banner';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import React, { useEffect, useState } from 'react';
-import { getIsDataLoadedStatus, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
+import { getIsDataLoadedStatus, getOrderData, getPromoCamera, getSortedAndFilteredCameras } from '../../store/site-data/selectors';
+import { setOrderData } from '../../store/site-data/site-data';
 import { fetchPromoCameraAction, fetchSortedAndFilteredCamerasAction } from '../../store/api-actions';
 import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
+import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 import { isEscKeyPressed, makeURL } from '../../utils/utils';
 import { Camera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
@@ -21,6 +23,7 @@ const BEGIN_OF_PAGE_COORDINATE = 0;
 const EMPTY_ARRAY_LENGTH = 0;
 const PRODUCTS_PER_PAGE = 9;
 const NON_EXISTENT_ID = 0;
+const NEW_ITEMS_AMOUNT = 1;
 
 function CatalogScreen(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -28,11 +31,12 @@ function CatalogScreen(): JSX.Element {
   const navigate = useNavigate();
   const camerasList = useAppSelector(getSortedAndFilteredCameras);
   const isDataLoading = useAppSelector(getIsDataLoadedStatus);
+  const currentOrderData = useAppSelector(getOrderData);
   const [params, setParams] = useState(START_PARAMS);
   const [isAddItemModalOpened, setIsAddItemModalOpened] = useState(false);
+  const [isAddItemSuccessModalOpened, setIsAddItemSuccessModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
-
   const [, setSearchParams] = useSearchParams(params);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
@@ -86,6 +90,7 @@ function CatalogScreen(): JSX.Element {
   // Обработчики закрытия модальных окон по нажатию Кнопки закрытия, нажатия на overlay, нажатия на Esc
   const onCloseBtnOrOverlayClick = () => {
     setIsAddItemModalOpened(false);
+    setIsAddItemSuccessModalOpened(false);
     document.body.style.overflowY = '';
     document.body.style.paddingRight = '0';
   };
@@ -93,6 +98,12 @@ function CatalogScreen(): JSX.Element {
   const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
     if (isAddItemModalOpened && isEscKeyPressed(evt)) {
       setIsAddItemModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
+
+    if (isAddItemSuccessModalOpened && isEscKeyPressed(evt)) {
+      setIsAddItemSuccessModalOpened(false);
       document.body.style.overflowY = '';
       document.body.style.paddingRight = '0';
     }
@@ -136,6 +147,15 @@ function CatalogScreen(): JSX.Element {
     if (evt.target.checked) {
       setParams({...params, _order: 'desc'});
     }
+  };
+
+  const onAddToBasketBtnClick = (gettedId: number) => {
+    dispatch(setOrderData({
+      identifiers: [...currentOrderData.identifiers, gettedId],
+      amounts: [...currentOrderData.amounts, NEW_ITEMS_AMOUNT]
+    }));
+    setIsAddItemModalOpened(false);
+    setIsAddItemSuccessModalOpened(true);
   };
 
   return (
@@ -249,6 +269,7 @@ function CatalogScreen(): JSX.Element {
                       <ProductsList
                         productsList={productsToRender}
                         onClick={onBuyButtonClick}
+                        basketProductsIdentifiers={currentOrderData.identifiers}
                       /> }
 
                     { (isPaginationVisible && !isDataLoading) &&
@@ -272,6 +293,14 @@ function CatalogScreen(): JSX.Element {
               dataForAddItemModal={dataForAddItemModal}
               onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
               isModalOpened={isAddItemModalOpened}
+              onAddToBasketBtnClick={onAddToBasketBtnClick}
+            />
+          }
+          {
+            isAddItemSuccessModalOpened &&
+            <AddItemSuccessModal
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
+              isModalOpened={isAddItemSuccessModalOpened}
             />
           }
         </main>

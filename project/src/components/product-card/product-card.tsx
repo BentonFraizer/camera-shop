@@ -2,15 +2,18 @@ import { Camera } from '../../types';
 import { Link } from 'react-router-dom';
 import { separateNumbers } from '../../utils/utils';
 import { RATING_NUMBERS } from '../../consts';
+import './product-card.css';
 
 type ProductCardProps = {
   cameraData: Camera;
   onClick?:(id:number) => void;
   isActive?: boolean;
+  basketProductsIdentifiers?: number[];
 }
 
 function ProductCard(props: ProductCardProps):JSX.Element {
   const { id, name, rating, price, category, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x, reviewCount } = props.cameraData;
+  const isCameraInBasket = props.basketProductsIdentifiers?.includes(id);
 
   return (
     <div className={props.isActive ? 'product-card is-active' : 'product-card'}>
@@ -37,13 +40,27 @@ function ProductCard(props: ProductCardProps):JSX.Element {
         </p>
       </div>
       <div className="product-card__buttons">
+        {!isCameraInBasket &&
         <button
           className="btn btn--purple product-card__btn"
           type="button"
           onClick={() => props.onClick ? props.onClick(id) : null}
         >
           Купить
-        </button>
+        </button>}
+        {isCameraInBasket &&
+        <button
+          className="btn btn--purple-border product-card__btn"
+          type="button"
+        >
+          <span>В корзине</span>
+          <img
+            src='../img/sprite/icon-basket-purple.svg'
+            alt='icon-basket'
+            className='product-card__btn-icon'
+          >
+          </img>
+        </button>}
         <Link className="btn btn--transparent" to={`/product/${id}?tab=specifications`}>Подробнее
         </Link>
       </div>
