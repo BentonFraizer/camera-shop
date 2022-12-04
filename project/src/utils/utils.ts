@@ -181,3 +181,5 @@ export const refreshOrderData = (currentId:number, currentDataForOrder: Order) =
 
   return result;
 };
+
+export const summarizeNumbers = (numbers: number[]) => numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
