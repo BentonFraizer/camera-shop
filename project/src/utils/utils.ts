@@ -159,6 +159,7 @@ export const getPropertiesForCurrentChecbox = (checboxName:string, checboxes: Fi
 };
 
 export const refreshOrderData = (currentId:number, currentDataForOrder: Order) => {
+  const AMOUNT_ITEMS_TO_CUT = 1;
   const copiedIdentifiers = [...currentDataForOrder.identifiers];
   const copiedAmounts = [...currentDataForOrder.amounts];
   const isIdExistsInCurrentOrder = copiedIdentifiers.includes(currentId);
@@ -166,7 +167,7 @@ export const refreshOrderData = (currentId:number, currentDataForOrder: Order) =
   if (isIdExistsInCurrentOrder) {
     const indexOfId = copiedIdentifiers.indexOf(currentId);
     const newAmount = copiedAmounts[indexOfId] + 1;
-    copiedAmounts.splice(indexOfId, 1, newAmount);
+    copiedAmounts.splice(indexOfId, AMOUNT_ITEMS_TO_CUT, newAmount);
     const result = {
       identifiers: [...currentDataForOrder.identifiers],
       amounts: [...copiedAmounts]

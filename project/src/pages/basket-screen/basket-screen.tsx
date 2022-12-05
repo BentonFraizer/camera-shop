@@ -2,12 +2,76 @@ import Icons from '../../components/icons/icons';
 import Header from '../../components/header/header';
 import Footer from '../../components/footer/footer';
 import { Link } from 'react-router-dom';
-import { useAppSelector } from '../../hooks';
+import { useAppSelector, useAppDispatch } from '../../hooks';
 import { getOrderData } from '../../store/site-data/selectors';
-import { summarizeNumbers } from '../../utils/utils';
+import { summarizeNumbers, isEscKeyPressed } from '../../utils/utils';
+import { getCameras } from '../../store/site-data/selectors';
+import { fetchCamerasAction } from '../../store/api-actions';
+import { useEffect,useState } from 'react';
+import BasketItem from '../../components/basket-item/basket-item';
+import DeleteItemModal from '../../components/delete-item-modal/delete-item-modal';
+import { setOrderData } from '../../store/site-data/site-data';
+import './basket-screen.css';
+
+const NON_EXISTENT_ID = 0;
+const ITEMS_AMOUNT_FOR_SCROLL = 2;
+const ITEMS_AMOUNT_TO_DELETE = 1;
 
 function BasketScreen(): JSX.Element {
+  const dispatch = useAppDispatch();
   const currentOrderData = useAppSelector(getOrderData);
+  const camerasList = useAppSelector(getCameras);
+  const [isDeleteItemModalOpened, setIsDeleteItemModalOpened] = useState(false);
+  const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
+  const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
+  const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+
+  useEffect(() => {
+    dispatch(fetchCamerasAction());
+  }, [dispatch]);
+
+  const onDeleteItemBtnClick = (gettedId:number) => {
+    if (gettedId !== undefined) {
+      setIdForAddItemModal(gettedId);
+    }
+
+    setIsDeleteItemModalOpened(true);
+    if(currentOrderData.amounts.length > ITEMS_AMOUNT_FOR_SCROLL) {
+      document.body.style.overflowY = 'hidden';
+      document.body.style.paddingRight = '17px';
+    }
+  };
+
+  const onCloseBtnOrOverlayClick = () => {
+    setIsDeleteItemModalOpened(false);
+    document.body.style.overflowY = '';
+    document.body.style.paddingRight = '0';
+  };
+
+  const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
+    if (isDeleteItemModalOpened && isEscKeyPressed(evt)) {
+      setIsDeleteItemModalOpened(false);
+      document.body.style.overflowY = '';
+      document.body.style.paddingRight = '0';
+    }
+  };
+
+  const onDeleteModalBtnClick = () => {
+    const indexToDelete = currentOrderData.identifiers.indexOf(idForAddItemModal);
+    const copiedAmounts = [...currentOrderData.amounts];
+    const copiedIdentifiers = [...currentOrderData.identifiers];
+    copiedAmounts.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
+    copiedIdentifiers.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
+
+    dispatch(setOrderData({
+      amounts: [...copiedAmounts],
+      identifiers: [...copiedIdentifiers],
+    }));
+
+    setIsDeleteItemModalOpened(false);
+    document.body.style.overflowY = '';
+    document.body.style.paddingRight = '0';
+  };
 
   return (
     <>
@@ -18,7 +82,7 @@ function BasketScreen(): JSX.Element {
           basketCount={summarizeNumbers(currentOrderData.amounts)}
         />
 
-        <main>
+        <main onKeyDown={handleEscBtnKeydown} className="main">
           <div className="page-content">
             <div className="breadcrumbs">
               <div className="container">
@@ -46,82 +110,19 @@ function BasketScreen(): JSX.Element {
               <div className="container">
                 <h1 className="title title--h2" data-testid="basket">Корзина</h1>
                 <ul className="basket__list">
-                  <li className="basket-item">
-                    <div className="basket-item__img">
-                      <picture>
-                        <source type="image/webp" srcSet="img/content/click-pro.webp, img/content/click-pro@2x.webp 2x"/>
-                        <img src="img/content/click-pro.jpg" srcSet="img/content/click-pro@2x.jpg 2x" width="140" height="120" alt="Фотоаппарат «Орлёнок»"/>
-                      </picture>
-                    </div>
-                    <div className="basket-item__description">
-                      <p className="basket-item__title">Фотоаппарат «Орлёнок»</p>
-                      <ul className="basket-item__list">
-                        <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">O78DFGSD832</span>
-                        </li>
-                        <li className="basket-item__list-item">Плёночная фотокамера</li>
-                        <li className="basket-item__list-item">Любительский уровень</li>
-                      </ul>
-                    </div>
-                    <p className="basket-item__price"><span className="visually-hidden">Цена:</span>18 970 ₽</p>
-                    <div className="quantity">
-                      <button className="btn-icon btn-icon--prev" aria-label="уменьшить количество товара">
-                        <svg width="7" height="12" aria-hidden="true">
-                          <use xlinkHref="#icon-arrow"></use>
-                        </svg>
-                      </button>
-                      <label className="visually-hidden" htmlFor="counter1"></label>
-                      <input type="number" id="counter1" defaultValue="2" min="1" max="99" aria-label="количество товара"/>
-                      <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                        <svg width="7" height="12" aria-hidden="true">
-                          <use xlinkHref="#icon-arrow"></use>
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>37 940 ₽</div>
-                    <button className="cross-btn" type="button" aria-label="Удалить товар">
-                      <svg width="10" height="10" aria-hidden="true">
-                        <use xlinkHref="#icon-close"></use>
-                      </svg>
-                    </button>
-                  </li>
-                  <li className="basket-item">
-                    <div className="basket-item__img">
-                      <picture>
-                        <source type="image/webp" srcSet="img/content/das-auge.webp, img/content/das-auge@2x.webp 2x"/>
-                        <img src="img/content/das-auge.jpg" srcSet="img/content/das-auge@2x.jpg 2x" width="140" height="120" alt="Ретрокамера «Das Auge IV»"/>
-                      </picture>
-                    </div>
-                    <div className="basket-item__description">
-                      <p className="basket-item__title">Ретрокамера «Das Auge IV»</p>
-                      <ul className="basket-item__list">
-                        <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">DA4IU67AD5</span>
-                        </li>
-                        <li className="basket-item__list-item">Коллекционная видеокамера</li>
-                        <li className="basket-item__list-item">Любительский уровень</li>
-                      </ul>
-                    </div>
-                    <p className="basket-item__price"><span className="visually-hidden">Цена:</span>73 450 ₽</p>
-                    <div className="quantity">
-                      <button className="btn-icon btn-icon--prev" disabled aria-label="уменьшить количество товара">
-                        <svg width="7" height="12" aria-hidden="true">
-                          <use xlinkHref="#icon-arrow"></use>
-                        </svg>
-                      </button>
-                      <label className="visually-hidden" htmlFor="counter2"></label>
-                      <input type="number" id="counter2" defaultValue="1" min="1" max="99" aria-label="количество товара"/>
-                      <button className="btn-icon btn-icon--next" aria-label="увеличить количество товара">
-                        <svg width="7" height="12" aria-hidden="true">
-                          <use xlinkHref="#icon-arrow"></use>
-                        </svg>
-                      </button>
-                    </div>
-                    <div className="basket-item__total-price"><span className="visually-hidden">Общая цена:</span>73 450 ₽</div>
-                    <button className="cross-btn" type="button" aria-label="Удалить товар">
-                      <svg width="10" height="10" aria-hidden="true">
-                        <use xlinkHref="#icon-close"></use>
-                      </svg>
-                    </button>
-                  </li>
+
+                  {camerasList.map((product) =>
+                    currentOrderData.identifiers.includes(product.id) &&
+                      (
+                        <BasketItem
+                          key={product.id}
+                          cameraData={product}
+                          orderData={currentOrderData}
+                          onClick={onDeleteItemBtnClick}
+                        />
+                      )
+                  )}
+
                 </ul>
                 <div className="basket__summary">
                   <div className="basket__promo">
@@ -151,6 +152,15 @@ function BasketScreen(): JSX.Element {
               </div>
             </section>
           </div>
+          {
+            isDeleteItemModalOpened &&
+            <DeleteItemModal
+              dataForAddItemModal={dataForAddItemModal}
+              onCloseBtnOrOverlayClick={onCloseBtnOrOverlayClick}
+              isModalOpened={isDeleteItemModalOpened}
+              onDeleteBtnClick={onDeleteModalBtnClick}
+            />
+          }
         </main>
 
         <Footer/>
