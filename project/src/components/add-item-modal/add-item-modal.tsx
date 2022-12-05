@@ -66,11 +66,11 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
               </picture>
             </div>
             <div className="basket-item__description">
-              <p className="basket-item__title">{`${category} ${name}`}</p>
+              <p className="basket-item__title">{`${category} «${name}»`}</p>
               <ul className="basket-item__list">
                 <li className="basket-item__list-item"><span className="basket-item__article">Артикул:</span> <span className="basket-item__number">{vendorCode}</span>
                 </li>
-                <li className="basket-item__list-item">{type}</li>
+                <li className="basket-item__list-item">{type} {category.toLowerCase() === 'фотоаппарат' ? 'фотокамера' : 'видеокамера'}</li>
                 <li className="basket-item__list-item">{level} уровень</li>
               </ul>
               <p className="basket-item__price"><span className="visually-hidden">Цена:</span>{separateNumbers(price)} ₽</p>

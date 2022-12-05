@@ -2756,6 +2756,7 @@ button,
   padding: 60px 180px;
   background-color: #f4f4fc;
   border-radius: 8px;
+  min-width: 1199px;
 }
 
 .basket__summary-order {
@@ -3321,13 +3322,14 @@ button,
   display: flex;
   -webkit-box-pack: end;
   -ms-flex-pack: end;
-  justify-content: flex-end;
+  justify-content: center;
   -webkit-box-align: center;
   -ms-flex-align: center;
   align-items: center;
   font-weight: 700;
   font-size: 24px;
   line-height: 32px;
+  min-width: 142px;
 }
 
 .basket-item__price {
@@ -3345,6 +3347,7 @@ button,
   grid-column-gap: 0;
   padding-bottom: 20px;
   border-bottom: none;
+  min-width: 419px;
 }
 
 .basket-item--short .basket-item__description {
