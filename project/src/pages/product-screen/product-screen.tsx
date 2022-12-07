@@ -175,7 +175,7 @@ function ProductScreen(): JSX.Element {
   };
 
   const onAddToBasketBtnClick = (gettedId: number) => {
-    dispatch(setOrderData(refreshOrderData(gettedId, currentOrderData)));
+    dispatch(setOrderData(refreshOrderData(gettedId, currentOrderData, camerasList)));
     setIsAddItemModalOpened(false);
     setIsAddItemSuccessModalOpened(true);
     setIdForAddItemModal(NON_EXISTENT_ID);

@@ -150,9 +150,13 @@ function CatalogScreen(): JSX.Element {
   };
 
   const onAddToBasketBtnClick = (gettedId: number) => {
+    const gettedCamera = camerasList.find((product) => product.id === gettedId);
+    const price = gettedCamera?.price;
+
     dispatch(setOrderData({
       identifiers: [...currentOrderData.identifiers, gettedId],
-      amounts: [...currentOrderData.amounts, NEW_ITEMS_AMOUNT]
+      amounts: [...currentOrderData.amounts, NEW_ITEMS_AMOUNT],
+      prices:  [...currentOrderData.prices, price],
     }));
     setIsAddItemModalOpened(false);
     setIsAddItemSuccessModalOpened(true);

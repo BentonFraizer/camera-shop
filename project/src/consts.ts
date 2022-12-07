@@ -16,7 +16,8 @@ export enum APIRoute {
   Cameras = '/cameras',
   Promo = '/promo',
   Camera = '/cameras/',
-  Review = '/reviews'
+  Review = '/reviews',
+  Coupons = '/coupons',
 }
 
 export const RATING_NUMBERS = [1,2,3,4,5];

@@ -12,6 +12,7 @@ export type SiteData = {
   sortedAndFilteredCamerasList: Camera[];
   searchedCameras: Camera[];
   orderData: Order;
+  discountValue: number;
 }
 
 export type State = ReturnType<typeof store.getState>;

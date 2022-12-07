@@ -12,4 +12,5 @@ export const getIsDataLoadedStatus = (state: State):boolean => state[NameSpace.D
 export const getSortedAndFilteredCameras = (state: State):Camera[] => state[NameSpace.Data].sortedAndFilteredCamerasList;
 export const getSearchedCameras = (state: State):Camera[] => state[NameSpace.Data].searchedCameras;
 export const getOrderData = (state: State):Order => state[NameSpace.Data].orderData;
+export const getDiscountValue = (state: State):number => state[NameSpace.Data].discountValue;
 

@@ -10,8 +10,10 @@ import {
   fetchReviewsAction,
   reviewPostAction,
   fetchSortedAndFilteredCamerasAction,
-  fetchSearchedCamerasAction
+  fetchSearchedCamerasAction,
 } from '../api-actions';
+
+const START_DISCOUNT_VALUE = 0;
 
 const initialState: SiteData = {
   camerasList: [],
@@ -26,7 +28,9 @@ const initialState: SiteData = {
   orderData: {
     identifiers: [],
     amounts: [],
+    prices: [],
   },
+  discountValue: START_DISCOUNT_VALUE,
 };
 
 export const siteData = createSlice({
@@ -41,6 +45,9 @@ export const siteData = createSlice({
     },
     setOrderData: (state, action) => {
       state.orderData = action.payload as Order;
+    },
+    setDiscountValue: (state, action) => {
+      state.discountValue = action.payload as number;
     }
   },
   extraReducers(builder) {
@@ -80,4 +87,4 @@ export const siteData = createSlice({
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful, setOrderData } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValue } = siteData.actions;

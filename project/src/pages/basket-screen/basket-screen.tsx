@@ -6,16 +6,25 @@ import { useAppSelector, useAppDispatch } from '../../hooks';
 import { getOrderData } from '../../store/site-data/selectors';
 import { summarizeNumbers, isEscKeyPressed } from '../../utils/utils';
 import { getCameras } from '../../store/site-data/selectors';
-import { fetchCamerasAction } from '../../store/api-actions';
-import { useEffect,useState } from 'react';
+import { fetchCamerasAction, couponPostAction } from '../../store/api-actions';
+import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import BasketItem from '../../components/basket-item/basket-item';
 import DeleteItemModal from '../../components/delete-item-modal/delete-item-modal';
 import { setOrderData } from '../../store/site-data/site-data';
+import { getTotalPrice, separateNumbers } from '../../utils/utils';
+import { getDiscountValue, dropDiscountValue } from '../../services/discount';
 import './basket-screen.css';
 
 const NON_EXISTENT_ID = 0;
 const ITEMS_AMOUNT_FOR_SCROLL = 2;
 const ITEMS_AMOUNT_TO_DELETE = 1;
+const BEGIN_OF_PAGE_COORDINATE = 0;
+
+enum Promocode {
+  Camera333 = 'camera-333',
+  Camera444 = 'camera-444',
+  Camera555 = 'camera-555',
+}
 
 function BasketScreen(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -23,12 +32,36 @@ function BasketScreen(): JSX.Element {
   const camerasList = useAppSelector(getCameras);
   const [isDeleteItemModalOpened, setIsDeleteItemModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
+  const [promocodeInputValue, setPromocodeInputValue] = useState('');
+  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isInvalid, setIsInvalid] = useState<boolean>(false);
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+  const totalPrice = getTotalPrice(currentOrderData);
+  const discountValue = Number(getDiscountValue());
+
+  console.log('discountValue', discountValue);
+  // console.log('currentBasketData', currentOrderData);
+  // console.log('isValid', isValid);
+  // console.log('isInvalid', isInvalid);
 
   useEffect(() => {
     dispatch(fetchCamerasAction());
   }, [dispatch]);
+
+  // Поднятие страницы в начало
+  useEffect(() => {
+    window.scrollTo({
+      top: BEGIN_OF_PAGE_COORDINATE,
+      behavior: 'smooth'
+    });
+  }, []);
+
+  useEffect(() => {
+    window.onunload = () => {
+      dropDiscountValue();
+    };
+  }, []);
 
   const onDeleteItemBtnClick = (gettedId:number) => {
     if (gettedId !== undefined) {
@@ -60,17 +93,59 @@ function BasketScreen(): JSX.Element {
     const indexToDelete = currentOrderData.identifiers.indexOf(idForAddItemModal);
     const copiedAmounts = [...currentOrderData.amounts];
     const copiedIdentifiers = [...currentOrderData.identifiers];
+    const copiedPrices = [...currentOrderData.prices];
     copiedAmounts.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
     copiedIdentifiers.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
+    copiedPrices.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
 
     dispatch(setOrderData({
       amounts: [...copiedAmounts],
       identifiers: [...copiedIdentifiers],
+      prices: [...copiedPrices],
     }));
 
     setIsDeleteItemModalOpened(false);
     document.body.style.overflowY = '';
     document.body.style.paddingRight = '0';
+  };
+
+  const handlePromoInputOnInput = (evt: ChangeEvent<HTMLInputElement>) => {
+    const correctedValue = (evt.target.value).replaceAll(' ', '');
+    setPromocodeInputValue(correctedValue);
+  };
+
+  const handleInputFocus = () => {
+    setIsValid(false);
+    setIsInvalid(false);
+    setPromocodeInputValue('');
+  };
+
+  const handleSubmit = (evt: FormEvent<HTMLFormElement>) => {
+    evt.preventDefault();
+    const isPromocodeValid = promocodeInputValue === Promocode.Camera333 || promocodeInputValue === Promocode.Camera444 || promocodeInputValue === Promocode.Camera555;
+    if (isPromocodeValid) {
+      setIsValid(true);
+      setIsInvalid(false);
+      dispatch(couponPostAction({
+        coupon: promocodeInputValue,
+      }));
+      setPromocodeInputValue('');
+    } else {
+      setIsInvalid(true);
+      setIsValid(false);
+    }
+  };
+
+  const getClassForInput = (valid: boolean, invalid: boolean) => {
+    if (!valid && !invalid) {
+      return 'custom-input';
+    }
+
+    if (valid && !invalid) {
+      return 'custom-input is-valid';
+    }
+
+    return 'custom-input is-invalid';
   };
 
   return (
@@ -128,22 +203,35 @@ function BasketScreen(): JSX.Element {
                   <div className="basket__promo">
                     <p className="title title--h4">Если у вас есть промокод на скидку, примените его в этом поле</p>
                     <div className="basket-form">
-                      <form action="#">
-                        <div className="custom-input">
+                      <form
+                        action="#"
+                        onSubmit={handleSubmit}
+                        onFocus={handleInputFocus}
+                      >
+                        <div className={getClassForInput(isValid, isInvalid)}>
                           <label><span className="custom-input__label">Промокод</span>
-                            <input type="text" name="promo" placeholder="Введите промокод"/>
+                            <input
+                              type="text"
+                              name="promo"
+                              placeholder="Введите промокод"
+                              onInput={handlePromoInputOnInput}
+                              value={promocodeInputValue}
+                            />
                           </label>
-                          <p className="custom-input__error">Промокод неверный</p>
+                          <p className="custom-input__error is-invalid">Промокод неверный</p>
                           <p className="custom-input__success">Промокод принят!</p>
                         </div>
-                        <button className="btn" type="submit">Применить
+                        <button
+                          className="btn"
+                          type="submit"
+                        >Применить
                         </button>
                       </form>
                     </div>
                   </div>
                   <div className="basket__summary-order">
-                    <p className="basket__summary-item"><span className="basket__summary-text">Всего:</span><span className="basket__summary-value">111 390 ₽</span></p>
-                    <p className="basket__summary-item"><span className="basket__summary-text">Скидка:</span><span className="basket__summary-value basket__summary-value--bonus">0 ₽</span></p>
+                    <p className="basket__summary-item"><span className="basket__summary-text">Всего:</span><span className="basket__summary-value">{separateNumbers(totalPrice)} ₽</span></p>
+                    <p className="basket__summary-item"><span className="basket__summary-text">Скидка:</span><span className={discountValue !== 0 ? 'basket__summary-value basket__summary-value--bonus' : 'basket__summary-value'}>0 ₽</span></p>
                     <p className="basket__summary-item"><span className="basket__summary-text basket__summary-text--total">К оплате:</span><span className="basket__summary-value basket__summary-value--total">111 390 ₽</span></p>
                     <button className="btn btn--purple" type="submit">Оформить заказ
                     </button>
