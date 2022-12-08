@@ -12,6 +12,7 @@ import { fetchCamerasAction,
 import { resetCameraData, resetPostSentSuccessful } from './site-data';
 
 describe('Reduser: siteData', () => {
+  const START_DISCOUNT_VALUE = 0;
   let state = {
     camerasList: [],
     camera: null,
@@ -22,6 +23,14 @@ describe('Reduser: siteData', () => {
     isDataLoaded: true,
     sortedAndFilteredCamerasList: [],
     searchedCameras: [],
+    orderData: {
+      identifiers: [1, 2],
+      amounts: [1, 1],
+      prices: [1000, 2000],
+    },
+    discountValueInPercent: START_DISCOUNT_VALUE,
+    isOrderSentError: false,
+    isOrderSentSuccessful: false,
   };
 
   beforeEach(() => {
@@ -35,6 +44,14 @@ describe('Reduser: siteData', () => {
       isDataLoaded: true,
       sortedAndFilteredCamerasList: [],
       searchedCameras: [],
+      orderData: {
+        identifiers: [],
+        amounts: [],
+        prices: [],
+      },
+      discountValueInPercent: START_DISCOUNT_VALUE,
+      isOrderSentError: false,
+      isOrderSentSuccessful: false,
     };
   });
 
@@ -84,6 +101,14 @@ describe('Reduser: siteData', () => {
       isDataLoaded: true,
       sortedAndFilteredCamerasList: [],
       searchedCameras: [],
+      orderData: {
+        identifiers: [],
+        amounts: [],
+        prices: [],
+      },
+      discountValueInPercent: START_DISCOUNT_VALUE,
+      isOrderSentError: false,
+      isOrderSentSuccessful: false,
     };
 
     expect(siteData.reducer(previousState, resetCameraData())).toEqual(state);
@@ -100,6 +125,14 @@ describe('Reduser: siteData', () => {
       isDataLoaded: true,
       sortedAndFilteredCamerasList: [],
       searchedCameras: [],
+      orderData: {
+        identifiers: [],
+        amounts: [],
+        prices: [],
+      },
+      discountValueInPercent: START_DISCOUNT_VALUE,
+      isOrderSentError: false,
+      isOrderSentSuccessful: false,
     };
 
     expect(siteData.reducer(previousState, resetPostSentSuccessful())).toEqual(state);

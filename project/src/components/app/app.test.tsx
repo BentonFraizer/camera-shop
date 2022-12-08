@@ -5,13 +5,14 @@ import { configureMockStore } from '@jedmao/redux-mock-store';
 import HistoryRouter from '../history-router/history-router';
 import { AppRoute } from '../../consts';
 import App from './app';
-import { camerasList, cameraData, promoCameraData, reviewsList } from '../../mockForTests';
+import { camerasList, cameraData, promoCameraData, reviewsList, mockOrderData } from '../../mockForTests';
 import thunk from 'redux-thunk';
 
 window.scrollTo = jest.fn();
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
+const START_DISCOUNT_VALUE = 0;
 
 const store = mockStore({
   DATA: {
@@ -24,6 +25,10 @@ const store = mockStore({
     isDataLoaded: true,
     sortedAndFilteredCamerasList: camerasList,
     searchedCameras: camerasList,
+    orderData: mockOrderData,
+    discountValueInPercent: START_DISCOUNT_VALUE,
+    isOrderSentError: false,
+    isOrderSentSuccessful: false,
   },
 });
 

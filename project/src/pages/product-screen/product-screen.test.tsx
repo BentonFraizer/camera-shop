@@ -4,7 +4,7 @@ import HistoryRouter from '../../components/history-router/history-router';
 import { Provider } from 'react-redux';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import ProductScreen from './product-screen';
-import { camerasList, reviewsList, cameraData } from '../../mockForTests';
+import { camerasList, reviewsList, cameraData, mockOrderData } from '../../mockForTests';
 import thunk from 'redux-thunk';
 
 window.scrollTo = jest.fn();
@@ -18,6 +18,7 @@ const store = mockStore({
     reviews: reviewsList,
     camera: cameraData,
     searchedCameras: camerasList,
+    orderData: mockOrderData,
   },
 });
 
