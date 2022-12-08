@@ -1,4 +1,5 @@
 import { Camera, FiltersType, FilterTypeItem, Order } from '../types';
+import { Promocode } from '../consts';
 const NEW_ITEMS_AMOUNT = 1;
 const START_COUNTER_VALUE = 0;
 
@@ -8,9 +9,10 @@ export const separateNumbers = (priceToCheck: number): string => {
     return String(priceToCheck);
   }
 
-  //решение взято с ресурса: https://www.tune-it.ru/web/bleizard/blog/-/blogs/1371611
-  const correctPrice = priceToCheck.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 ');
-  return correctPrice;
+  //решение взято с ресурса: https://ru.stackoverflow.com/questions/874794/Разделение-числа-на-разряды-js
+  const parts = priceToCheck.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return parts.join('.');
 };
 
 //Функция определения нажатия клавиши Escape
@@ -201,4 +203,23 @@ export const getTotalPrice = (orderData: Order) => {
   const totalPrice = multipliedPrices.reduce((accumulator, currentValue) => accumulator + currentValue, START_COUNTER_VALUE);
 
   return totalPrice;
+};
+
+export const convertPercentToCouponValue = (percent: number) => {
+  enum Percent {
+    Low = 15,
+    Middle = 25,
+    High = 35,
+  }
+  switch (percent) {
+    case Percent.Low:
+      return Promocode.Camera333;
+    case Percent.Middle:
+      return Promocode.Camera444;
+    case Percent.High:
+      return Promocode.Camera555;
+
+    default:
+      return null;
+  }
 };

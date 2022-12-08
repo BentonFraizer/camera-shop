@@ -13,6 +13,8 @@ export type SiteData = {
   searchedCameras: Camera[];
   orderData: Order;
   discountValue: number;
+  isOrderSentError: boolean;
+  isOrderSentSuccessful: boolean;
 }
 
 export type State = ReturnType<typeof store.getState>;

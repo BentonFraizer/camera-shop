@@ -11,6 +11,7 @@ import {
   reviewPostAction,
   fetchSortedAndFilteredCamerasAction,
   fetchSearchedCamerasAction,
+  orderPostAction,
 } from '../api-actions';
 
 const START_DISCOUNT_VALUE = 0;
@@ -31,6 +32,8 @@ const initialState: SiteData = {
     prices: [],
   },
   discountValue: START_DISCOUNT_VALUE,
+  isOrderSentError: false,
+  isOrderSentSuccessful: false,
 };
 
 export const siteData = createSlice({
@@ -48,6 +51,12 @@ export const siteData = createSlice({
     },
     setDiscountValue: (state, action) => {
       state.discountValue = action.payload as number;
+    },
+    resetIsOrderSentSuccessful: (state) => {
+      state.isOrderSentSuccessful = false;
+    },
+    resetIsOrderSentError: (state) => {
+      state.isOrderSentError = false;
     }
   },
   extraReducers(builder) {
@@ -83,8 +92,14 @@ export const siteData = createSlice({
       })
       .addCase(fetchSearchedCamerasAction.fulfilled, (state, action) => {
         state.searchedCameras = action.payload;
+      })
+      .addCase(orderPostAction.fulfilled, (state) => {
+        state.isOrderSentSuccessful = true;
+      })
+      .addCase(orderPostAction.rejected, (state) => {
+        state.isOrderSentError = true;
       });
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValue } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValue, resetIsOrderSentSuccessful, resetIsOrderSentError } = siteData.actions;

@@ -1,8 +1,8 @@
 import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '../types/state';
-import { Camera, PromoCamera, Review, ReviewData, Coupon } from '../types';
-import { redirectToRoute, postReview, postCoupon } from './action';
+import { Camera, PromoCamera, Review, ReviewData, Coupon, OrderPostData } from '../types';
+import { redirectToRoute, postReview, postCoupon, postOrder } from './action';
 import { APIRoute, AppRoute } from '../consts';
 import { saveDiscountValue } from '../services/discount';
 // import { setDiscountValue } from '../store/site-data/site-data';
@@ -129,5 +129,18 @@ export const couponPostAction = createAsyncThunk<void, Coupon, {
       saveDiscountValue(String(data));
     }
     dispatch(postCoupon(data));
+  }
+);
+
+// Отправка заказа на сервер
+export const orderPostAction = createAsyncThunk<void, OrderPostData, {
+  dispatch: AppDispatch;
+  state: State;
+  extra: AxiosInstance;
+}>(
+  'site/postOrder',
+  async ({camerasIds, coupon}, {dispatch, extra: api}) => {
+    const {data} = await api.post<OrderPostData>(APIRoute.Orders, {camerasIds, coupon});
+    dispatch(postOrder(data));
   }
 );
