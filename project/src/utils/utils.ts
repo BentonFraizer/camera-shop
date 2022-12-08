@@ -1,5 +1,7 @@
 import { Camera, FiltersType, FilterTypeItem, Order } from '../types';
+import { Promocode } from '../consts';
 const NEW_ITEMS_AMOUNT = 1;
+const START_COUNTER_VALUE = 0;
 
 export const separateNumbers = (priceToCheck: number): string => {
   const MIN_VALUE_TO_SEPARATE_ZEROS = 1000;
@@ -7,9 +9,10 @@ export const separateNumbers = (priceToCheck: number): string => {
     return String(priceToCheck);
   }
 
-  //решение взято с ресурса: https://www.tune-it.ru/web/bleizard/blog/-/blogs/1371611
-  const correctPrice = priceToCheck.toString().replace(/(\d)(?=(\d{3})+$)/g, '$1 ');
-  return correctPrice;
+  //решение взято с ресурса: https://ru.stackoverflow.com/questions/874794/Разделение-числа-на-разряды-js
+  const parts = priceToCheck.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+  return parts.join('.');
 };
 
 //Функция определения нажатия клавиши Escape
@@ -158,7 +161,7 @@ export const getPropertiesForCurrentChecbox = (checboxName:string, checboxes: Fi
   return result;
 };
 
-export const refreshOrderData = (currentId:number, currentDataForOrder: Order) => {
+export const refreshOrderData = (currentId:number, currentDataForOrder: Order, allCameras: Camera[]) => {
   const AMOUNT_ITEMS_TO_CUT = 1;
   const copiedIdentifiers = [...currentDataForOrder.identifiers];
   const copiedAmounts = [...currentDataForOrder.amounts];
@@ -170,17 +173,53 @@ export const refreshOrderData = (currentId:number, currentDataForOrder: Order) =
     copiedAmounts.splice(indexOfId, AMOUNT_ITEMS_TO_CUT, newAmount);
     const result = {
       identifiers: [...currentDataForOrder.identifiers],
-      amounts: [...copiedAmounts]
+      amounts: [...copiedAmounts],
+      prices: [...currentDataForOrder.prices],
     };
     return result;
   }
 
+  const currentCameraData = allCameras.find((camera) => camera.id === currentId);
+  const currentCameraPrice = currentCameraData?.price;
+
   const result = {
     identifiers: [...currentDataForOrder.identifiers, currentId],
-    amounts: [...currentDataForOrder.amounts, NEW_ITEMS_AMOUNT]
+    amounts: [...currentDataForOrder.amounts, NEW_ITEMS_AMOUNT],
+    prices: [...currentDataForOrder.prices, currentCameraPrice],
   };
 
   return result;
 };
 
-export const summarizeNumbers = (numbers: number[]) => numbers.reduce((accumulator, currentValue) => accumulator + currentValue, 0);
+export const summarizeNumbers = (numbers: number[]) => numbers.reduce((accumulator, currentValue) => accumulator + currentValue, START_COUNTER_VALUE);
+
+export const getTotalPrice = (orderData: Order) => {
+  const multipliedPrices = [];
+  const { prices, amounts } = orderData;
+  for (let i = 0; i <= prices.length - 1; i++) {
+    const multipliedPrice = prices[i] * amounts[i];
+    multipliedPrices.push(multipliedPrice);
+  }
+  const totalPrice = multipliedPrices.reduce((accumulator, currentValue) => accumulator + currentValue, START_COUNTER_VALUE);
+
+  return totalPrice;
+};
+
+export const convertPercentToCouponValue = (percent: number) => {
+  enum Percent {
+    Low = 15,
+    Middle = 25,
+    High = 35,
+  }
+  switch (percent) {
+    case Percent.Low:
+      return Promocode.Camera333;
+    case Percent.Middle:
+      return Promocode.Camera444;
+    case Percent.High:
+      return Promocode.Camera555;
+
+    default:
+      return null;
+  }
+};

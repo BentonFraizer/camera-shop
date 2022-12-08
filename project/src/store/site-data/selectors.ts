@@ -12,4 +12,7 @@ export const getIsDataLoadedStatus = (state: State):boolean => state[NameSpace.D
 export const getSortedAndFilteredCameras = (state: State):Camera[] => state[NameSpace.Data].sortedAndFilteredCamerasList;
 export const getSearchedCameras = (state: State):Camera[] => state[NameSpace.Data].searchedCameras;
 export const getOrderData = (state: State):Order => state[NameSpace.Data].orderData;
+export const getDiscountValueInPercent = (state: State):number => state[NameSpace.Data].discountValueInPercent;
+export const getIsOrderSentError = (state: State):boolean => state[NameSpace.Data].isOrderSentError;
+export const getIsOrderSentSuccessful = (state: State):boolean => state[NameSpace.Data].isOrderSentSuccessful;
 

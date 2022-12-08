@@ -10,8 +10,11 @@ import {
   fetchReviewsAction,
   reviewPostAction,
   fetchSortedAndFilteredCamerasAction,
-  fetchSearchedCamerasAction
+  fetchSearchedCamerasAction,
+  orderPostAction,
 } from '../api-actions';
+
+const START_DISCOUNT_VALUE = 0;
 
 const initialState: SiteData = {
   camerasList: [],
@@ -26,7 +29,11 @@ const initialState: SiteData = {
   orderData: {
     identifiers: [],
     amounts: [],
+    prices: [],
   },
+  discountValueInPercent: START_DISCOUNT_VALUE,
+  isOrderSentError: false,
+  isOrderSentSuccessful: false,
 };
 
 export const siteData = createSlice({
@@ -41,6 +48,18 @@ export const siteData = createSlice({
     },
     setOrderData: (state, action) => {
       state.orderData = action.payload as Order;
+    },
+    setDiscountValueInPercent: (state, action) => {
+      state.discountValueInPercent = action.payload as number;
+    },
+    resetDiscountValueInPercent: (state) => {
+      state.discountValueInPercent = START_DISCOUNT_VALUE;
+    },
+    resetIsOrderSentSuccessful: (state) => {
+      state.isOrderSentSuccessful = false;
+    },
+    resetIsOrderSentError: (state) => {
+      state.isOrderSentError = false;
     }
   },
   extraReducers(builder) {
@@ -76,8 +95,14 @@ export const siteData = createSlice({
       })
       .addCase(fetchSearchedCamerasAction.fulfilled, (state, action) => {
         state.searchedCameras = action.payload;
+      })
+      .addCase(orderPostAction.fulfilled, (state) => {
+        state.isOrderSentSuccessful = true;
+      })
+      .addCase(orderPostAction.rejected, (state) => {
+        state.isOrderSentError = true;
       });
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful, setOrderData } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValueInPercent, resetDiscountValueInPercent, resetIsOrderSentSuccessful, resetIsOrderSentError } = siteData.actions;

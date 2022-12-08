@@ -6,3 +6,5 @@ export type {default as FiltersType} from './filters-type';
 export type {default as FilterTypeItem} from './filters-type-item';
 export type {default as StartParams} from './start-params';
 export type {default as Order} from './order';
+export type {default as Coupon} from './coupon';
+export type {default as OrderPostData} from './order-post-data';

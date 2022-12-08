@@ -8,6 +8,7 @@ import BasketScreen from '../../pages/basket-screen/basket-screen';
 import NotFoundScreen from '../../pages/not-found-screen/not-found-screen';
 import OfflineScreen from '../../pages/offline-screen/offline-screen';
 import LoadingScreen from '../../pages/loading-screen/loading-screen';
+import FailedOrderScreen from '../../pages/failed-order-screen/failed-order-screen';
 import { fetchCamerasAction } from '../../store/api-actions';
 import { useEffect } from 'react';
 
@@ -51,6 +52,11 @@ function App(): JSX.Element {
       <Route
         path={AppRoute.Offline}
         element={<OfflineScreen/>}
+      >
+      </Route>
+      <Route
+        path={AppRoute.FailedOrder}
+        element={<FailedOrderScreen/>}
       >
       </Route>
       <Route

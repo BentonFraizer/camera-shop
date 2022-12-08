@@ -6,6 +6,7 @@ export enum AppRoute {
   Product = '/product/:id',
   Basket = '/basket',
   Offline = '/offline',
+  FailedOrder = '/failed-order',
 }
 
 export enum NameSpace {
@@ -16,7 +17,9 @@ export enum APIRoute {
   Cameras = '/cameras',
   Promo = '/promo',
   Camera = '/cameras/',
-  Review = '/reviews'
+  Review = '/reviews',
+  Coupons = '/coupons',
+  Orders = '/orders',
 }
 
 export const RATING_NUMBERS = [1,2,3,4,5];
@@ -42,3 +45,9 @@ export const FILTERS: FiltersType = {
   NonProfessional: { name: 'Любительский', option: 'level' },
   Professional: { name: 'Профессиональный', option: 'level' }
 };
+
+export enum Promocode {
+  Camera333 = 'camera-333',
+  Camera444 = 'camera-444',
+  Camera555 = 'camera-555',
+}

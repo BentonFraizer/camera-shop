@@ -25,7 +25,7 @@ const AMOUNT_ITEMS_TO_CUT = 1;
 
 function BasketItem(props: BasketItemProps):JSX.Element {
   const { id, name, vendorCode, level, type, price, category, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = props.cameraData;
-  const { amounts, identifiers } = props.orderData;
+  const { amounts, identifiers, prices } = props.orderData;
   const dispatch = useAppDispatch();
   const itemsAmount = amounts[identifiers.indexOf(id)];
   const [amountCounterInputValue, setAmountCounterInputValue] = useState<string | undefined>('');
@@ -56,6 +56,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
       dispatch(setOrderData({
         amounts: [...copiedAmounts],
         identifiers: [...identifiers],
+        prices: [...prices],
       }));
     }
   };
@@ -73,6 +74,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
     dispatch(setOrderData({
       amounts: [...copiedAmounts],
       identifiers: [...identifiers],
+      prices: [...prices],
     }));
     setAmountCounterInputValue(String(newAmount));
   };
@@ -86,6 +88,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
     dispatch(setOrderData({
       amounts: [...copiedAmounts],
       identifiers: [...identifiers],
+      prices: [...prices],
     }));
     setAmountCounterInputValue(String(newAmount));
   };
