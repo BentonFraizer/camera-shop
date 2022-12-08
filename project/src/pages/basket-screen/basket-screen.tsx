@@ -5,15 +5,14 @@ import { Link } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '../../hooks';
 import { getOrderData } from '../../store/site-data/selectors';
 import { summarizeNumbers, isEscKeyPressed } from '../../utils/utils';
-import { getCameras, getIsOrderSentSuccessful, getIsOrderSentError } from '../../store/site-data/selectors';
+import { getCameras, getIsOrderSentSuccessful, getIsOrderSentError, getDiscountValueInPercent } from '../../store/site-data/selectors';
 import { fetchCamerasAction, couponPostAction, orderPostAction } from '../../store/api-actions';
 import { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import BasketItem from '../../components/basket-item/basket-item';
 import DeleteItemModal from '../../components/delete-item-modal/delete-item-modal';
 import GratitudeModal from '../../components/gratitude-modal/gratitude-modal';
-import { setOrderData, resetIsOrderSentSuccessful, resetIsOrderSentError } from '../../store/site-data/site-data';
+import { setOrderData, resetIsOrderSentSuccessful, resetIsOrderSentError, resetDiscountValueInPercent } from '../../store/site-data/site-data';
 import { getTotalPrice, separateNumbers, convertPercentToCouponValue } from '../../utils/utils';
-import { getDiscountValue, dropDiscountValue } from '../../services/discount';
 import { AppRoute, Promocode } from '../../consts';
 import './basket-screen.css';
 import { redirectToRoute } from '../../store/action';
@@ -33,6 +32,7 @@ function BasketScreen(): JSX.Element {
   const camerasList = useAppSelector(getCameras);
   const isOrderSentSuccessful = useAppSelector(getIsOrderSentSuccessful);
   const isOrderSentError = useAppSelector(getIsOrderSentError);
+  const discountValueInPercent = useAppSelector(getDiscountValueInPercent);
   const [isDeleteItemModalOpened, setIsDeleteItemModalOpened] = useState(false);
   const [isGratitudeModalOpened, setIsGratitudeModalOpened] = useState(false);
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
@@ -42,16 +42,10 @@ function BasketScreen(): JSX.Element {
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
   const totalPrice = getTotalPrice(currentOrderData);
-  const discountValueInPercent = Number(getDiscountValue());
   const discountFromTotalnRubles = (totalPrice * discountValueInPercent) / MAX_PERCENTAGE_VALUE;
   const costForPayment = totalPrice - discountFromTotalnRubles;
   const isApplyBtnDisabled = Number(promocodeInputValue) === SYMBOLS_IN_EMPTY_STRING;
   const isOrderBtnDisabled = currentOrderData.amounts.length === EMPTY_BASKET_ITEMS_AMOUTN;
-
-  console.log('discountValue', discountValueInPercent);
-  // console.log('promocodeInputValue', promocodeInputValue);
-  // console.log('isValid', isValid);
-  // console.log('isInvalid', isInvalid);
 
   useEffect(() => {
     if (isOrderSentSuccessful) {
@@ -76,12 +70,6 @@ function BasketScreen(): JSX.Element {
       top: BEGIN_OF_PAGE_COORDINATE,
       behavior: 'smooth'
     });
-  }, []);
-
-  useEffect(() => {
-    window.onunload = () => {
-      dropDiscountValue();
-    };
   }, []);
 
   const onDeleteItemBtnClick = (gettedId:number) => {
@@ -114,6 +102,8 @@ function BasketScreen(): JSX.Element {
         identifiers: [],
         prices: [],
       }));
+      dispatch(resetDiscountValueInPercent());
+      setIsValid(false);
     }
   };
 
@@ -135,6 +125,8 @@ function BasketScreen(): JSX.Element {
         identifiers: [],
         prices: [],
       }));
+      dispatch(resetDiscountValueInPercent());
+      setIsValid(false);
     }
   };
 
@@ -220,6 +212,8 @@ function BasketScreen(): JSX.Element {
       identifiers: [],
       prices: [],
     }));
+    dispatch(resetDiscountValueInPercent());
+    setIsValid(false);
   };
 
   return (

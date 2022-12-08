@@ -2,10 +2,9 @@ import { AxiosInstance } from 'axios';
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { AppDispatch, State } from '../types/state';
 import { Camera, PromoCamera, Review, ReviewData, Coupon, OrderPostData } from '../types';
-import { redirectToRoute, postReview, postCoupon, postOrder } from './action';
+import { redirectToRoute, postReview, postOrder } from './action';
 import { APIRoute, AppRoute } from '../consts';
-import { saveDiscountValue } from '../services/discount';
-// import { setDiscountValue } from '../store/site-data/site-data';
+import { setDiscountValueInPercent } from '../store/site-data/site-data';
 
 // Запрос всех камер
 export const fetchCamerasAction = createAsyncThunk<Camera[], undefined, {
@@ -116,19 +115,16 @@ export const fetchSearchedCamerasAction = createAsyncThunk<Camera[], object, {
 );
 
 // Отправка купона на сервер
-export const couponPostAction = createAsyncThunk<void, Coupon, {
+export const couponPostAction = createAsyncThunk<Coupon, Coupon, {
   dispatch: AppDispatch;
   state: State;
   extra: AxiosInstance;
 }>(
   'site/postCoupon',
-  async (coupon, {dispatch, extra: api}) => {
+  async (coupon, {dispatch,extra: api}) => {
     const {data} = await api.post<Coupon>(APIRoute.Coupons, coupon);
-    console.log('нужны эти данные -->', data);
-    if (data) {
-      saveDiscountValue(String(data));
-    }
-    dispatch(postCoupon(data));
+    dispatch(setDiscountValueInPercent(data));
+    return data;
   }
 );
 

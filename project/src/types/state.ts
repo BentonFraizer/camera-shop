@@ -12,7 +12,7 @@ export type SiteData = {
   sortedAndFilteredCamerasList: Camera[];
   searchedCameras: Camera[];
   orderData: Order;
-  discountValue: number;
+  discountValueInPercent: number;
   isOrderSentError: boolean;
   isOrderSentSuccessful: boolean;
 }

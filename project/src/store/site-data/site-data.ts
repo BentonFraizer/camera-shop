@@ -31,7 +31,7 @@ const initialState: SiteData = {
     amounts: [],
     prices: [],
   },
-  discountValue: START_DISCOUNT_VALUE,
+  discountValueInPercent: START_DISCOUNT_VALUE,
   isOrderSentError: false,
   isOrderSentSuccessful: false,
 };
@@ -49,8 +49,11 @@ export const siteData = createSlice({
     setOrderData: (state, action) => {
       state.orderData = action.payload as Order;
     },
-    setDiscountValue: (state, action) => {
-      state.discountValue = action.payload as number;
+    setDiscountValueInPercent: (state, action) => {
+      state.discountValueInPercent = action.payload as number;
+    },
+    resetDiscountValueInPercent: (state) => {
+      state.discountValueInPercent = START_DISCOUNT_VALUE;
     },
     resetIsOrderSentSuccessful: (state) => {
       state.isOrderSentSuccessful = false;
@@ -102,4 +105,4 @@ export const siteData = createSlice({
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValue, resetIsOrderSentSuccessful, resetIsOrderSentError } = siteData.actions;
+export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValueInPercent, resetDiscountValueInPercent, resetIsOrderSentSuccessful, resetIsOrderSentError } = siteData.actions;
