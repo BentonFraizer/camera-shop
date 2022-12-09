@@ -55,6 +55,7 @@ function GratitudeModal({ onCloseBtnOrOverlayClick, isModalOpened, onBackToShopp
             evt.preventDefault();
             onCloseBtnOrOverlayClick();
           }}
+          data-testid={'modal-overlay'}
         >
         </div>
         <div className="modal__content">
@@ -70,6 +71,7 @@ function GratitudeModal({ onCloseBtnOrOverlayClick, isModalOpened, onBackToShopp
               ref={continueButtonRef}
               onClick={onBackToShoppingBtnClick}
               onKeyDown={handleShiftTabBtnsKeydown}
+              data-testid={'back-to-shopping-btn'}
             >Вернуться к покупкам
             </Link>
           </div>
@@ -83,6 +85,7 @@ function GratitudeModal({ onCloseBtnOrOverlayClick, isModalOpened, onBackToShopp
             }}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
+            data-testid={'close-btn'}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>

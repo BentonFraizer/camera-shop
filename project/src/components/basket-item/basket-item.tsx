@@ -139,6 +139,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
           aria-label="увеличить количество товара"
           disabled={disableincreaseBtn}
           onClick={handleNextBtnClick}
+          data-testid={'increase-btn'}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -151,6 +152,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
         type="button"
         aria-label="Удалить товар"
         onClick={() => props.onClick(id)}
+        data-testid={'delete-item-btn'}
       >
         <svg width="10" height="10" aria-hidden="true">
           <use xlinkHref="#icon-close"></use>

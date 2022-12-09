@@ -680,7 +680,7 @@ export const searchedCameras: Camera[] = [
 ];
 
 export const mockOrderData: Order = {
-  identifiers: [1, 2],
-  amounts: [1, 1],
-  prices: [1000, 2000],
+  identifiers: [1],
+  amounts: [1],
+  prices: [73450],
 };

@@ -62,6 +62,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
             evt.preventDefault();
             onCloseBtnOrOverlayClick();
           }}
+          data-testid={'modal-overlay'}
         >
         </div>
         <div className="modal__content">
@@ -90,6 +91,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
               ref={deleteButtonRef}
               onClick={onDeleteBtnClick}
               onKeyDown={handleShiftTabBtnsKeydown}
+              data-testid={'delete-btn'}
             >Удалить
             </button>
             <button
@@ -98,6 +100,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
                 evt.preventDefault();
                 onCloseBtnOrOverlayClick();
               }}
+              data-testid={'close-btn'}
             >Продолжить покупки
             </button>
           </div>
@@ -111,6 +114,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
             }}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
+            data-testid={'continue-btn'}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>
