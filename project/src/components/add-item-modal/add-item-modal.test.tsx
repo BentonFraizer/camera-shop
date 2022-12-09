@@ -16,12 +16,13 @@ describe('Component: AddItemModal', () => {
           dataForAddItemModal={cameraData}
           onCloseBtnOrOverlayClick={jest.fn()}
           isModalOpened
+          onAddToBasketBtnClick={jest.fn()}
         />
       </HistoryRouter>,
     );
 
-    expect(screen.getByText('Добавить товар в корзину')).toBeInTheDocument();
-    expect(screen.getByText('Добавить в корзину')).toHaveClass('modal__btn');
+    expect(screen.getByText(/Добавить товар в корзину/i)).toBeInTheDocument();
+    expect(screen.getByText(/Добавить в корзину/i)).toBeInTheDocument();
   });
 
   it('should be closed when close button click', async () => {
@@ -32,12 +33,13 @@ describe('Component: AddItemModal', () => {
           dataForAddItemModal={cameraData}
           onCloseBtnOrOverlayClick={closeButtonClickHandle}
           isModalOpened
+          onAddToBasketBtnClick={jest.fn()}
         />
       </HistoryRouter>,
     );
 
-    expect(screen.getByText('Добавить товар в корзину')).toBeInTheDocument();
-    expect(screen.getByText('Добавить в корзину')).toHaveClass('modal__btn');
+    expect(screen.getByText(/Добавить товар в корзину/i)).toBeInTheDocument();
+    expect(screen.getByText(/Добавить в корзину/i)).toBeInTheDocument();
 
     await userEvent.click(screen.getByTestId('close-btn'));
 
