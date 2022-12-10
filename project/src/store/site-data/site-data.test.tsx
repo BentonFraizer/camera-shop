@@ -1,5 +1,12 @@
-import { siteData } from './site-data';
-import { camerasList, cameraData, promoCameraData, reviewsList, sortedAndFilteredCamerasList, searchedCameras } from '../../mockForTests';
+import { setOrderData, siteData } from './site-data';
+import { camerasList,
+  cameraData,
+  promoCameraData,
+  reviewsList,
+  sortedAndFilteredCamerasList,
+  searchedCameras
+} from '../../mockForTests';
+
 import { fetchCamerasAction,
   fetchCameraAction,
   fetchPromoCameraAction,
@@ -7,9 +14,17 @@ import { fetchCamerasAction,
   fetchSimilarCamerasAction,
   reviewPostAction,
   fetchSortedAndFilteredCamerasAction,
-  fetchSearchedCamerasAction
+  fetchSearchedCamerasAction,
+  orderPostAction,
 } from '../api-actions';
-import { resetCameraData, resetPostSentSuccessful } from './site-data';
+
+import { resetCameraData,
+  resetPostSentSuccessful,
+  setDiscountValueInPercent,
+  resetDiscountValueInPercent,
+  resetIsOrderSentSuccessful,
+  resetIsOrderSentError
+} from './site-data';
 
 describe('Reduser: siteData', () => {
   const START_DISCOUNT_VALUE = 0;
@@ -24,9 +39,9 @@ describe('Reduser: siteData', () => {
     sortedAndFilteredCamerasList: [],
     searchedCameras: [],
     orderData: {
-      identifiers: [1, 2],
-      amounts: [1, 1],
-      prices: [1000, 2000],
+      identifiers: [],
+      amounts: [],
+      prices: [],
     },
     discountValueInPercent: START_DISCOUNT_VALUE,
     isOrderSentError: false,
@@ -147,6 +162,62 @@ describe('Reduser: siteData', () => {
     expect(siteData.reducer(state, {type: fetchSearchedCamerasAction.fulfilled.type, payload: searchedCameras}))
       .toEqual({...state, searchedCameras: searchedCameras});
   });
+
+  it('should update isOrderSentSuccessful by successfully sent orderPostAction', () => {
+    expect(siteData.reducer(state, {type: orderPostAction.fulfilled.type, payload: true}))
+      .toEqual({...state, isOrderSentSuccessful: true});
+  });
+
+  it('should update isOrderSentError by sent orderPostAction with error', () => {
+    expect(siteData.reducer(state, {type: orderPostAction.rejected.type, payload: true}))
+      .toEqual({...state, isOrderSentError: true});
+  });
+
+  it('should update orderData by setOrderData', () => {
+    const nextState = {
+      ...state,
+      orderData: {
+        identifiers: [1, 2],
+        amounts: [1, 1],
+        prices: [73450, 18970],
+      },};
+
+    expect(siteData.reducer(state, setOrderData({
+      identifiers: [1, 2],
+      amounts: [1, 1],
+      prices: [73450, 18970],
+    }))).toEqual(nextState);
+  });
+
+  it('should update discountValueInPercent by setDiscountValueInPercent', () => {
+    const nextState = {...state, discountValueInPercent: 25};
+
+    expect(siteData.reducer(state, setDiscountValueInPercent(25)))
+      .toEqual(nextState);
+  });
+
+  it('should reset discountValueInPercent by resetDiscountValueInPercent', () => {
+    const previousState = {...state, discountValueInPercent: 25};
+
+    expect(siteData.reducer(previousState, resetDiscountValueInPercent()))
+      .toEqual(state);
+  });
+
+  it('should reset isOrderSentSuccessful by resetIsOrderSentSuccessful', () => {
+    const previousState = {...state, isOrderSentSuccessful: true};
+
+    expect(siteData.reducer(previousState, resetIsOrderSentSuccessful()))
+      .toEqual(state);
+  });
+
+  it('should reset isOrderSentError by resetIsOrderSentError', () => {
+    const previousState = {...state, isOrderSentError: true};
+
+    expect(siteData.reducer(previousState, resetIsOrderSentError()))
+      .toEqual(state);
+  });
+
+
 });
 
 

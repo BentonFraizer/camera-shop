@@ -105,4 +105,11 @@ export const siteData = createSlice({
   },
 });
 
-export const { resetCameraData, resetPostSentSuccessful, setOrderData, setDiscountValueInPercent, resetDiscountValueInPercent, resetIsOrderSentSuccessful, resetIsOrderSentError } = siteData.actions;
+export const { resetCameraData,
+  resetPostSentSuccessful,
+  setOrderData,
+  setDiscountValueInPercent,
+  resetDiscountValueInPercent,
+  resetIsOrderSentSuccessful,
+  resetIsOrderSentError
+} = siteData.actions;

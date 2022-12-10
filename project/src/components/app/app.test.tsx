@@ -80,6 +80,16 @@ describe('Application Routing', () => {
     expect(screen.getByText(/Попробуйте ещё раз позднее/i)).toBeInTheDocument();
   });
 
+  it('should render "FailedOrderScreen" when use navigate to "/failed-order"', () => {
+    history.push(AppRoute.FailedOrder);
+
+    render(fakeApp);
+
+    expect(screen.getByText(/Оформить заказ не удалось/i)).toBeInTheDocument();
+    expect(screen.getByText(/Попробуйте ещё раз позднее/i)).toBeInTheDocument();
+    expect(screen.getByText(/Вернуться на страницу каталога/i)).toBeInTheDocument();
+  });
+
   it('should render "NotFoundScreen" when use navigate to "*"', () => {
     history.push('/fakeRoute');
 

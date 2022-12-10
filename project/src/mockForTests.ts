@@ -1,4 +1,4 @@
-import { Camera, Order, Review, ReviewData } from './types/index';
+import { Camera, Order, Review, ReviewData, OrderPostData } from './types/index';
 
 export const promoCameraData = {
   id: 7,
@@ -683,4 +683,9 @@ export const mockOrderData: Order = {
   identifiers: [1],
   amounts: [1],
   prices: [73450],
+};
+
+export const mockOrderForSent: OrderPostData = {
+  camerasIds: [1],
+  coupon: 'camera-444'
 };
