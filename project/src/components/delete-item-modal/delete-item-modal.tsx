@@ -13,7 +13,6 @@ const TAB_EVENT_CODE = 'Tab';
 
 function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpened, onDeleteBtnClick}: DeleteItemModalProps): JSX.Element | null {
   const deleteButtonRef = useRef<HTMLButtonElement | null>(null);
-
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
