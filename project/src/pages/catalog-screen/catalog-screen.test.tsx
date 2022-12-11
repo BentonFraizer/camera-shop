@@ -4,7 +4,7 @@ import HistoryRouter from '../../components/history-router/history-router';
 import { Provider } from 'react-redux';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import CatalogScreen from './catalog-screen';
-import { camerasList, promoCameraData } from '../../mockForTests';
+import { camerasList, mockOrderData, promoCameraData } from '../../mockForTests';
 import thunk from 'redux-thunk';
 import userEvent from '@testing-library/user-event';
 
@@ -18,7 +18,8 @@ const store = mockStore({
     promoCamera: promoCameraData,
     camerasList: camerasList,
     sortedAndFilteredCamerasList: camerasList,
-    searchedCameras: camerasList
+    searchedCameras: camerasList,
+    orderData: mockOrderData
   },
 });
 

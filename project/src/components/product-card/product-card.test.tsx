@@ -22,6 +22,7 @@ describe('Component: ProductCard', ()=> {
             cameraData={cameraData}
             onClick={jest.fn()}
             isActive={false}
+            basketProductsIdentifiers={[]}
           />
         </HistoryRouter>
       </Provider>
@@ -42,6 +43,7 @@ describe('Component: ProductCard', ()=> {
             cameraData={cameraData}
             onClick={buyButtonClickHandler}
             isActive={false}
+            basketProductsIdentifiers={[]}
           />
         </HistoryRouter>
       </Provider>
@@ -64,6 +66,7 @@ describe('Component: ProductCard', ()=> {
                   cameraData={cameraData}
                   onClick={jest.fn()}
                   isActive={false}
+                  basketProductsIdentifiers={[]}
                 />
               }
             />

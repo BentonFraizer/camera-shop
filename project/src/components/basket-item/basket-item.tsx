@@ -27,8 +27,8 @@ function BasketItem(props: BasketItemProps):JSX.Element {
   const { id, name, vendorCode, level, type, price, category, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = props.cameraData;
   const { amounts, identifiers, prices } = props.orderData;
   const dispatch = useAppDispatch();
-  const itemsAmount = amounts[identifiers.indexOf(id)];
   const [amountCounterInputValue, setAmountCounterInputValue] = useState<string | undefined>('');
+  const itemsAmount = amounts[identifiers.indexOf(id)];
   const disableReduceBtn = itemsAmount === ProductsAmount.Min;
   const disableincreaseBtn = itemsAmount === ProductsAmount.Max;
 
@@ -65,7 +65,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
     setAmountCounterInputValue(String(itemsAmount));
   };
 
-  const handlePrevBtnClick = () => {
+  const handleDecrementBtnClick = () => {
     const copiedAmounts = [...amounts];
     const indexOfAmount = identifiers.indexOf(id);
     const newAmount = copiedAmounts[indexOfAmount] - 1;
@@ -79,7 +79,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
     setAmountCounterInputValue(String(newAmount));
   };
 
-  const handleNextBtnClick = () => {
+  const handleIncrementBtnClick = () => {
     const copiedAmounts = [...amounts];
     const indexOfAmount = identifiers.indexOf(id);
     const newAmount = copiedAmounts[indexOfAmount] + 1;
@@ -116,7 +116,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
           className="btn-icon btn-icon--prev"
           aria-label="уменьшить количество товара"
           disabled={disableReduceBtn}
-          onClick={handlePrevBtnClick}
+          onClick={handleDecrementBtnClick}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -138,7 +138,8 @@ function BasketItem(props: BasketItemProps):JSX.Element {
           className="btn-icon btn-icon--next"
           aria-label="увеличить количество товара"
           disabled={disableincreaseBtn}
-          onClick={handleNextBtnClick}
+          onClick={handleIncrementBtnClick}
+          data-testid={'increase-btn'}
         >
           <svg width="7" height="12" aria-hidden="true">
             <use xlinkHref="#icon-arrow"></use>
@@ -151,6 +152,7 @@ function BasketItem(props: BasketItemProps):JSX.Element {
         type="button"
         aria-label="Удалить товар"
         onClick={() => props.onClick(id)}
+        data-testid={'delete-item-btn'}
       >
         <svg width="10" height="10" aria-hidden="true">
           <use xlinkHref="#icon-close"></use>

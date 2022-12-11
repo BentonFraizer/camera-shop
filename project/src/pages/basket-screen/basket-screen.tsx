@@ -193,7 +193,7 @@ function BasketScreen(): JSX.Element {
     }
   };
 
-  const getClassForInput = (valid: boolean, invalid: boolean) => {
+  const getClassForPromocodeInput = (valid: boolean, invalid: boolean) => {
     if (!valid && !invalid) {
       return 'custom-input';
     }
@@ -275,7 +275,7 @@ function BasketScreen(): JSX.Element {
                         action="#"
                         onSubmit={handlePromocodeFormSubmit}
                       >
-                        <div className={getClassForInput(isValid, isInvalid)}>
+                        <div className={getClassForPromocodeInput(isValid, isInvalid)}>
                           <label><span className="custom-input__label">Промокод</span>
                             <input
                               type="text"

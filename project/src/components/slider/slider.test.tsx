@@ -13,6 +13,7 @@ describe('Component: Icons', () => {
         <Slider
           similarCameras={camerasList}
           onBuyButtonClick={jest.fn()}
+          basketProductsIdentifiers={[]}
         />
       </HistoryRouter>
     );

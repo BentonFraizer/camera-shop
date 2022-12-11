@@ -7,23 +7,31 @@ import Header from './header';
 import { AppRoute } from '../../consts';
 import userEvent from '@testing-library/user-event';
 import BasketScreen from '../../pages/basket-screen/basket-screen';
-import { camerasList } from '../../mockForTests';
+import { camerasList, mockOrderData} from '../../mockForTests';
 import thunk from 'redux-thunk';
 import { configureMockStore } from '@jedmao/redux-mock-store';
+
+window.scrollTo = jest.fn();
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const history = createMemoryHistory();
 const store = mockStore({
-  DATA: {searchedCameras: camerasList},
+  DATA: {
+    camerasList: camerasList,
+    searchedCameras: camerasList,
+    orderData: mockOrderData,
+  },
 });
+
+const AMOUNT_ITEMS_IN_BASKET = 1;
 
 describe('Component: Header', () => {
   it('should render correctly', () => {
     render(
       <Provider store={store}>
         <HistoryRouter history={history}>
-          <Header />
+          <Header basketCount={AMOUNT_ITEMS_IN_BASKET}/>
         </HistoryRouter>,
       </Provider>
     );
@@ -64,7 +72,7 @@ describe('Component: Header', () => {
     render(
       <Provider store={store}>
         <HistoryRouter history={history}>
-          <Header />
+          <Header basketCount={AMOUNT_ITEMS_IN_BASKET}/>
         </HistoryRouter>,
       </Provider>
     );
@@ -80,7 +88,7 @@ describe('Component: Header', () => {
     render(
       <Provider store={store}>
         <HistoryRouter history={history}>
-          <Header />
+          <Header basketCount={AMOUNT_ITEMS_IN_BASKET}/>
         </HistoryRouter>,
       </Provider>
     );

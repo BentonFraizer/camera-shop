@@ -5,13 +5,16 @@ import OfflineScreen from './offline-screen';
 import { Provider } from 'react-redux';
 import { configureMockStore } from '@jedmao/redux-mock-store';
 import thunk from 'redux-thunk';
-import { camerasList } from '../../mockForTests';
+import { camerasList, mockOrderData } from '../../mockForTests';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 const history = createMemoryHistory();
 const store = mockStore({
-  DATA: {searchedCameras: camerasList},
+  DATA: {
+    searchedCameras: camerasList,
+    orderData: mockOrderData,
+  },
 });
 
 describe('Page: OfflineScreen', () => {

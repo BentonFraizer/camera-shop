@@ -149,6 +149,7 @@ function CatalogScreen(): JSX.Element {
     }
   };
 
+  // Обработчик нажатия кнопки "Добавить в корзину" на модальном окне AddItemModal
   const onAddToBasketBtnClick = (gettedId: number) => {
     const gettedCamera = camerasList.find((product) => product.id === gettedId);
     const price = gettedCamera?.price;

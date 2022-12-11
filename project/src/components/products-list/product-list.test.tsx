@@ -13,6 +13,7 @@ describe('Component: Logo', () => {
         <ProductList
           productsList={camerasList}
           onClick={jest.fn()}
+          basketProductsIdentifiers={[]}
         />
       </HistoryRouter>);
 

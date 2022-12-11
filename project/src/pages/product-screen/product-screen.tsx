@@ -168,12 +168,14 @@ function ProductScreen(): JSX.Element {
     }
   };
 
+  // Обработчик нажатия на кнопку "Добавить в корзину"
   const handleAddToBasketBtnClick = () => {
     setIsAddItemModalOpened(true);
     document.body.style.overflowY = 'hidden';
     document.body.style.paddingRight = '17px';
   };
 
+  // Обработчик нажатия на кнопку "Добавить в корзину" на модальном окне AddItemModal
   const onAddToBasketBtnClick = (gettedId: number) => {
     dispatch(setOrderData(refreshOrderData(gettedId, currentOrderData, camerasList)));
     setIsAddItemModalOpened(false);

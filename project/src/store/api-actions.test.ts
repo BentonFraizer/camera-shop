@@ -3,6 +3,7 @@ import thunk, { ThunkDispatch } from 'redux-thunk';
 import MockAdapter from 'axios-mock-adapter';
 import { configureMockStore }from '@jedmao/redux-mock-store';
 import { createAPI } from '../services/api';
+import { Promocode } from '../consts';
 import { fetchCamerasAction,
   fetchCameraAction,
   fetchSimilarCamerasAction,
@@ -11,10 +12,20 @@ import { fetchCamerasAction,
   reviewPostAction,
   fetchSortedAndFilteredCamerasAction,
   fetchSearchedCamerasAction,
+  couponPostAction,
+  orderPostAction
 } from './api-actions';
 import { APIRoute } from '../consts';
 import { State } from '../types/state';
-import { camerasList, cameraData, promoCameraData, reviewData, sortedAndFilteredCamerasList, searchedCameras } from '../mockForTests';
+import { camerasList,
+  cameraData,
+  promoCameraData,
+  reviewData,
+  sortedAndFilteredCamerasList,
+  searchedCameras,
+  mockOrderForSent
+} from '../mockForTests';
+import { siteData } from './site-data/site-data';
 
 describe('Async actions', () => {
   const api = createAPI();
@@ -143,5 +154,41 @@ describe('Async actions', () => {
     const actions = store.getActions();
 
     expect(actions[1].type).toEqual(fetchSearchedCamerasAction.fulfilled.type);
+  });
+
+  it('should dispatch couponPostAction when POST /coupons', async () => {
+    mockAPI
+      .onPost('/coupons')
+      .reply(200);
+
+    const store = mockStore();
+
+    await store.dispatch(couponPostAction({coupon: Promocode.Camera444}));
+
+    const actions = store.getActions().map(({type}:Action<string>) => type);
+
+    expect(actions).toEqual([
+      couponPostAction.pending.type,
+      siteData.actions.setDiscountValueInPercent.type,
+      couponPostAction.fulfilled.type
+    ]);
+  });
+
+  it('should dispatch orderPostAction when POST /orders', async () => {
+    mockAPI
+      .onPost('/orders')
+      .reply(201);
+
+    const store = mockStore();
+
+    await store.dispatch(orderPostAction(mockOrderForSent));
+
+    const actions = store.getActions().map(({type}:Action<string>) => type);
+
+    expect(actions).toEqual([
+      orderPostAction.pending.type,
+      'site/postOrder',
+      orderPostAction.fulfilled.type
+    ]);
   });
 });

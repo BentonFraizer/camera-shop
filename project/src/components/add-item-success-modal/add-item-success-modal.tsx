@@ -77,6 +77,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
               onClick={() => {
                 onCloseBtnOrOverlayClick();
               }}
+              data-testid="continue-shopping-btn"
             >Продолжить покупки
             </Link>
             <Link
@@ -86,7 +87,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
               onClick={() => {
                 onCloseBtnOrOverlayClick();
               }}
-
+              data-testid="go-to-basket"
             >Перейти в корзину
             </Link>
           </div>
@@ -100,6 +101,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
             }}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
+            data-testid="close-btn"
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>
