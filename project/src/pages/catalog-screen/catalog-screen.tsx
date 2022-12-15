@@ -96,14 +96,10 @@ function CatalogScreen(): JSX.Element {
   };
 
   const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
-    if (isAddItemModalOpened && isEscKeyPressed(evt)) {
-      setIsAddItemModalOpened(false);
-      document.body.style.overflowY = '';
-      document.body.style.paddingRight = '0';
-    }
+    if (isEscKeyPressed(evt)) {
+      isAddItemModalOpened && setIsAddItemModalOpened(false);
+      isAddItemSuccessModalOpened && setIsAddItemSuccessModalOpened(false);
 
-    if (isAddItemSuccessModalOpened && isEscKeyPressed(evt)) {
-      setIsAddItemSuccessModalOpened(false);
       document.body.style.overflowY = '';
       document.body.style.paddingRight = '0';
     }

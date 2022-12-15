@@ -145,24 +145,15 @@ function ProductScreen(): JSX.Element {
   };
 
   const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
-    if (isSendReviewModalOpened && isEscKeyPressed(evt)) {
-      setIsSendReviewModalOpened(false);
-      document.body.style.overflowY = '';
-      document.body.style.paddingRight = '0';
-    }
-    if (isReviewSuccessModalOpened && isEscKeyPressed(evt)) {
-      setIsReviewSuccessModalOpened(false);
-      document.body.style.overflowY = '';
-      document.body.style.paddingRight = '0';
-    }
-    if (isAddItemModalOpened && isEscKeyPressed(evt)) {
-      setIsAddItemModalOpened(false);
-      setIdForAddItemModal(NON_EXISTENT_ID);
-      document.body.style.overflowY = '';
-      document.body.style.paddingRight = '0';
-    }
-    if (isAddItemSuccessModalOpened && isEscKeyPressed(evt)) {
-      setIsAddItemSuccessModalOpened(false);
+    if(isEscKeyPressed(evt)) {
+      isSendReviewModalOpened && setIsSendReviewModalOpened(false);
+      isReviewSuccessModalOpened && setIsSendReviewModalOpened(false);
+      isAddItemSuccessModalOpened && setIsAddItemSuccessModalOpened(false);
+      if (isAddItemModalOpened) {
+        setIsAddItemModalOpened(false);
+        setIdForAddItemModal(NON_EXISTENT_ID);
+      }
+
       document.body.style.overflowY = '';
       document.body.style.paddingRight = '0';
     }

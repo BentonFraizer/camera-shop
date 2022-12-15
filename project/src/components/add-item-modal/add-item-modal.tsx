@@ -1,6 +1,6 @@
 import { Camera } from '../../types';
 import { separateNumbers } from '../../utils/utils';
-import { useRef, useEffect } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { isTabKeyPressed } from '../../utils/utils';
 
 type AddItemModalProps = {
@@ -45,15 +45,17 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
 
   const { id, name, vendorCode, price, type, category, level, previewImg, previewImg2x, previewImgWebp, previewImgWebp2x } = dataForAddItemModal;
 
+  const handleCloseBtnOrOverlayClick = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    onCloseBtnOrOverlayClick();
+  };
+
   return (
     <div className="modal is-active">
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={(evt) => {
-            evt.preventDefault();
-            onCloseBtnOrOverlayClick();
-          }}
+          onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
         >
         </div>
         <div className="modal__content">
@@ -96,10 +98,7 @@ function AddItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModalOpe
             type="button"
             aria-label="Закрыть попап"
             data-testid="close-btn"
-            onClick={(evt) => {
-              evt.preventDefault();
-              onCloseBtnOrOverlayClick();
-            }}
+            onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
           >
             <svg width="10" height="10" aria-hidden="true">
               <use xlinkHref="#icon-close"></use>
