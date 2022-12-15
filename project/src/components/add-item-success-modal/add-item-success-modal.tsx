@@ -52,15 +52,17 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
     }
   };
 
+  const handleCloseBtnOrOverlayClick = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    onCloseBtnOrOverlayClick();
+  };
+
   return (
     <div className="modal is-active modal--narrow">
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={(evt) => {
-            evt.preventDefault();
-            onCloseBtnOrOverlayClick();
-          }}
+          onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
         >
         </div>
         <div className="modal__content">
@@ -74,9 +76,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
               className="btn btn--transparent modal__btn"
               ref={continueButtonRef}
               onKeyDown={handleShiftTabBtnsKeydown}
-              onClick={() => {
-                onCloseBtnOrOverlayClick();
-              }}
+              onClick={() => onCloseBtnOrOverlayClick()}
               data-testid="continue-shopping-btn"
             >Продолжить покупки
             </Link>
@@ -84,9 +84,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
               className="btn btn--purple modal__btn modal__btn--fit-width"
               ref={goToBasketRef}
               to={AppRoute.Basket}
-              onClick={() => {
-                onCloseBtnOrOverlayClick();
-              }}
+              onClick={() => onCloseBtnOrOverlayClick()}
               data-testid="go-to-basket"
             >Перейти в корзину
             </Link>
@@ -95,10 +93,7 @@ function AddItemSuccessModal({onCloseBtnOrOverlayClick, isModalOpened}: AddItemS
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={(evt) => {
-              evt.preventDefault();
-              onCloseBtnOrOverlayClick();
-            }}
+            onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
             data-testid="close-btn"

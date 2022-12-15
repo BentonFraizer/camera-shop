@@ -10,7 +10,7 @@ import {
   isEnterKeyPressed,
   getPropertiesForCurrentChecbox
 } from '../../utils/utils';
-import { FILTERS, START_PARAMS, FIRST_PAGE_NUMBER } from '../../consts';
+import { FILTERS, START_PARAMS, FIRST_PAGE_NUMBER, CATEGORIES, TYPES, LEVELS } from '../../consts';
 import { Camera, StartParams } from '../../types';
 
 enum PriceLength {
@@ -31,6 +31,7 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
   const camerasList = cameras;
   const [priceFromInputValue, setPriceFromInputValue] = useState<string | undefined>('');
   const [priceToInputValue, setPriceToInputValue] = useState<string | undefined>('');
+  const isFilmSnapshotCheckboxesDisabled = !params.category.includes(FILTERS.Photocamera.name) && params.category.includes(FILTERS.Videocamera.name);
 
   // Запрет ввода нуля первым значением и любых символов кроме цифр
   const handlePriceFromInputChange = (evt: React.ChangeEvent<HTMLInputElement>) => {
@@ -286,113 +287,58 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
         </fieldset>
         <fieldset className="catalog-filter__block">
           <legend className="title title--h5">Категория</legend>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="photocamera"
-                onChange={handlePhotocameraCheckboxClick}
-                checked={params.category.includes(FILTERS.Photocamera.name)}
-                data-testid="photocamera-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Фотокамера</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="videocamera"
-                onChange={handleVideocameraCheckboxClick}
-                checked={params.category.includes(FILTERS.Videocamera.name)}
-                data-testid="videocamera-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Видеокамера</span>
-            </label>
-          </div>
+          {
+            CATEGORIES.map((item)=> (
+              <div key={item.name} className="custom-checkbox catalog-filter__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name={item.name}
+                    onChange={item.name === 'photocamera' ? handlePhotocameraCheckboxClick : handleVideocameraCheckboxClick}
+                    checked={params.category.includes(item.label)}
+                    data-testid={`${item.name}-checkbox`}
+                  /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">{item.label}</span>
+                </label>
+              </div>
+            ))
+          }
         </fieldset>
         <fieldset className="catalog-filter__block">
           <legend className="title title--h5">Тип камеры</legend>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="digital"
-                onChange={handleTypeorLevelCheckboxesClick}
-                checked={params.type.includes(FILTERS.Digital.name)}
-                data-testid="digital-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Цифровая</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="film"
-                onChange={handleTypeorLevelCheckboxesClick}
-                disabled={params.category.includes(FILTERS.Videocamera.name)}
-                checked={params.type.includes(FILTERS.Film.name)}
-                data-testid="film-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="snapshot"
-                onChange={handleTypeorLevelCheckboxesClick}
-                disabled={params.category.includes(FILTERS.Videocamera.name)}
-                checked={params.type.includes(FILTERS.Snapshot.name)}
-                data-testid="snapshot-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="collection"
-                onChange={handleTypeorLevelCheckboxesClick}
-                checked={params.type.includes(FILTERS.Collection.name)}
-                data-testid="collection-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Коллекционная</span>
-            </label>
-          </div>
+          {
+            TYPES.map((item) => (
+              <div key={item.name} className="custom-checkbox catalog-filter__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name={item.name}
+                    onChange={handleTypeorLevelCheckboxesClick}
+                    disabled={(item.name === 'film' || item.name === 'snapshot') && isFilmSnapshotCheckboxesDisabled}
+                    checked={params.type.includes(item.label)}
+                    data-testid={`${item.name}-checkbox`}
+                  /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">{item.label}</span>
+                </label>
+              </div>
+            ))
+          }
         </fieldset>
         <fieldset className="catalog-filter__block">
           <legend className="title title--h5">Уровень</legend>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="zero"
-                onChange={handleTypeorLevelCheckboxesClick}
-                checked={params.level.includes(FILTERS.Zero.name)}
-                data-testid="zero-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Нулевой</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="non-professional"
-                onChange={handleTypeorLevelCheckboxesClick}
-                checked={params.level.includes(FILTERS.NonProfessional.name)}
-                data-testid="non-professional-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Любительский</span>
-            </label>
-          </div>
-          <div className="custom-checkbox catalog-filter__item">
-            <label>
-              <input
-                type="checkbox"
-                name="professional"
-                onChange={handleTypeorLevelCheckboxesClick}
-                checked={params.level.includes(FILTERS.Professional.name)}
-                data-testid="professional-checkbox"
-              /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Профессиональный</span>
-            </label>
-          </div>
+          {
+            LEVELS.map((item) => (
+              <div key={item.name} className="custom-checkbox catalog-filter__item">
+                <label>
+                  <input
+                    type="checkbox"
+                    name={item.name}
+                    onChange={handleTypeorLevelCheckboxesClick}
+                    checked={params.level.includes(item.label)}
+                    data-testid={`${item.name}-checkbox`}
+                  /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">{item.label}</span>
+                </label>
+              </div>
+            ))
+          }
         </fieldset>
         <button
           className="btn catalog-filter__reset-btn"

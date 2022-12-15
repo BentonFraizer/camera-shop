@@ -35,8 +35,8 @@ export const START_PARAMS: StartParams = {
 };
 
 export const FILTERS: FiltersType = {
-  Photocamera: { name: 'Фотоаппарат', option: 'type' },
-  Videocamera: { name: 'Видеокамера', option: 'type' },
+  Photocamera: { name: 'Фотоаппарат', option: 'category' },
+  Videocamera: { name: 'Видеокамера', option: 'category' },
   Digital: { name: 'Цифровая', option: 'type' },
   Film: { name: 'Плёночная', option: 'type' },
   Snapshot: { name: 'Моментальная', option: 'type' },
@@ -45,6 +45,24 @@ export const FILTERS: FiltersType = {
   NonProfessional: { name: 'Любительский', option: 'level' },
   Professional: { name: 'Профессиональный', option: 'level' }
 };
+
+export const CATEGORIES = [
+  { name: 'photocamera', label: 'Фотоаппарат' },
+  { name: 'videocamera', label: 'Видеокамера' },
+];
+
+export const TYPES = [
+  { name: 'digital', label: 'Цифровая' },
+  { name: 'film', label: 'Плёночная' },
+  { name: 'snapshot', label: 'Моментальная' },
+  { name: 'collection', label: 'Коллекционная' },
+];
+
+export const LEVELS = [
+  { name: 'zero', label: 'Нулевой' },
+  { name: 'non-professional', label: 'Любительский' },
+  { name: 'professional', label: 'Профессиональный' }
+];
 
 export enum Promocode {
   Camera333 = 'camera-333',

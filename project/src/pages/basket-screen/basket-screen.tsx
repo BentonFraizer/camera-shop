@@ -18,13 +18,16 @@ import './basket-screen.css';
 import { redirectToRoute } from '../../store/action';
 
 const NON_EXISTENT_ID = 0;
-const ITEMS_AMOUNT_FOR_SCROLL = 2;
-const ITEMS_AMOUNT_TO_DELETE = 1;
 const BEGIN_OF_PAGE_COORDINATE = 0;
 const MAX_PERCENTAGE_VALUE = 100;
-const EMPTY_BASKET_ITEMS_AMOUTN = 0;
 const SYMBOLS_IN_EMPTY_STRING = 0;
 const ZERO_PERCENT_VALUE = 0;
+
+enum ItemsAmount {
+  ForScroll = 2,
+  ToDelete = 1,
+  EmptyBasket = 0,
+}
 
 function BasketScreen(): JSX.Element {
   const dispatch = useAppDispatch();
@@ -45,7 +48,7 @@ function BasketScreen(): JSX.Element {
   const discountFromTotalnRubles = (totalPrice * discountValueInPercent) / MAX_PERCENTAGE_VALUE;
   const costForPayment = totalPrice - discountFromTotalnRubles;
   const isApplyBtnDisabled = Number(promocodeInputValue) === SYMBOLS_IN_EMPTY_STRING;
-  const isOrderBtnDisabled = currentOrderData.amounts.length === EMPTY_BASKET_ITEMS_AMOUTN;
+  const isOrderBtnDisabled = currentOrderData.amounts.length === ItemsAmount.EmptyBasket;
 
   useEffect(() => {
     if (isOrderSentSuccessful) {
@@ -78,7 +81,7 @@ function BasketScreen(): JSX.Element {
     }
 
     setIsDeleteItemModalOpened(true);
-    if(currentOrderData.amounts.length > ITEMS_AMOUNT_FOR_SCROLL) {
+    if(currentOrderData.amounts.length > ItemsAmount.ForScroll) {
       document.body.style.overflowY = 'hidden';
       document.body.style.paddingRight = '17px';
     }
@@ -108,25 +111,23 @@ function BasketScreen(): JSX.Element {
   };
 
   const handleEscBtnKeydown = (evt: React.KeyboardEvent<Element>) => {
-    if (isDeleteItemModalOpened && isEscKeyPressed(evt)) {
-      setIsDeleteItemModalOpened(false);
+    if (isEscKeyPressed(evt)) {
+      isDeleteItemModalOpened && setIsDeleteItemModalOpened(false);
+
+      if (isGratitudeModalOpened) {
+        setIsGratitudeModalOpened(false);
+        dispatch(resetIsOrderSentSuccessful());
+        dispatch(setOrderData({
+          amounts: [],
+          identifiers: [],
+          prices: [],
+        }));
+        dispatch(resetDiscountValueInPercent());
+        setIsValid(false);
+      }
+
       document.body.style.overflowY = '';
       document.body.style.paddingRight = '0';
-    }
-
-    if (isGratitudeModalOpened && isEscKeyPressed(evt)) {
-      setIsGratitudeModalOpened(false);
-      dispatch(resetIsOrderSentSuccessful());
-      document.body.style.overflowY = '';
-      document.body.style.paddingRight = '0';
-
-      dispatch(setOrderData({
-        amounts: [],
-        identifiers: [],
-        prices: [],
-      }));
-      dispatch(resetDiscountValueInPercent());
-      setIsValid(false);
     }
   };
 
@@ -135,9 +136,9 @@ function BasketScreen(): JSX.Element {
     const copiedAmounts = [...currentOrderData.amounts];
     const copiedIdentifiers = [...currentOrderData.identifiers];
     const copiedPrices = [...currentOrderData.prices];
-    copiedAmounts.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
-    copiedIdentifiers.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
-    copiedPrices.splice(indexToDelete, ITEMS_AMOUNT_TO_DELETE);
+    copiedAmounts.splice(indexToDelete, ItemsAmount.ToDelete);
+    copiedIdentifiers.splice(indexToDelete, ItemsAmount.ToDelete);
+    copiedPrices.splice(indexToDelete, ItemsAmount.ToDelete);
 
     dispatch(setOrderData({
       amounts: [...copiedAmounts],

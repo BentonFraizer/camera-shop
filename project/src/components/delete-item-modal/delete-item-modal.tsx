@@ -52,15 +52,17 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
     }
   };
 
+  const handleCloseBtnOrOverlayClick = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    onCloseBtnOrOverlayClick();
+  };
+
   return (
     <div className="modal is-active">
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={(evt) => {
-            evt.preventDefault();
-            onCloseBtnOrOverlayClick();
-          }}
+          onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
           data-testid={'modal-overlay'}
         >
         </div>
@@ -95,10 +97,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
             </button>
             <button
               className="btn btn--transparent modal__btn modal__btn--half-width"
-              onClick={(evt) => {
-                evt.preventDefault();
-                onCloseBtnOrOverlayClick();
-              }}
+              onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
               data-testid={'close-btn'}
             >Продолжить покупки
             </button>
@@ -107,10 +106,7 @@ function DeleteItemModal({dataForAddItemModal, onCloseBtnOrOverlayClick, isModal
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={(evt) => {
-              evt.preventDefault();
-              onCloseBtnOrOverlayClick();
-            }}
+            onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
             data-testid={'continue-btn'}

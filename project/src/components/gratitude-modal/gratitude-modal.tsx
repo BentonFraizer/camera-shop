@@ -46,15 +46,17 @@ function GratitudeModal({ onCloseBtnOrOverlayClick, isModalOpened, onBackToShopp
     }
   };
 
+  const handleCloseBtnOrOverlayClick = (evt: React.MouseEvent) => {
+    evt.preventDefault();
+    onCloseBtnOrOverlayClick();
+  };
+
   return (
     <div className="modal is-active modal--narrow">
       <div className="modal__wrapper">
         <div
           className="modal__overlay"
-          onClick={(evt) => {
-            evt.preventDefault();
-            onCloseBtnOrOverlayClick();
-          }}
+          onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
           data-testid={'modal-overlay'}
         >
         </div>
@@ -79,10 +81,7 @@ function GratitudeModal({ onCloseBtnOrOverlayClick, isModalOpened, onBackToShopp
             className="cross-btn"
             type="button"
             aria-label="Закрыть попап"
-            onClick={(evt) => {
-              evt.preventDefault();
-              onCloseBtnOrOverlayClick();
-            }}
+            onClick={(evt) => handleCloseBtnOrOverlayClick(evt)}
             ref={closeButtonRef}
             onKeyDown={handleTabBtnKeydown}
             data-testid={'close-btn'}
