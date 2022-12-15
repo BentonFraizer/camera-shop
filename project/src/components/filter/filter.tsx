@@ -328,7 +328,7 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
                 type="checkbox"
                 name="film"
                 onChange={handleTypeorLevelCheckboxesClick}
-                disabled={params.category.includes(FILTERS.Videocamera.name)}
+                disabled={!params.category.includes(FILTERS.Photocamera.name) && params.category.includes(FILTERS.Videocamera.name)}
                 checked={params.type.includes(FILTERS.Film.name)}
                 data-testid="film-checkbox"
               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Плёночная</span>
@@ -340,7 +340,7 @@ function Filter({ params, cameras, onSetParams, onSetCurrentPage }: FilterProps)
                 type="checkbox"
                 name="snapshot"
                 onChange={handleTypeorLevelCheckboxesClick}
-                disabled={params.category.includes(FILTERS.Videocamera.name)}
+                disabled={!params.category.includes(FILTERS.Photocamera.name) && params.category.includes(FILTERS.Videocamera.name)}
                 checked={params.type.includes(FILTERS.Snapshot.name)}
                 data-testid="snapshot-checkbox"
               /><span className="custom-checkbox__icon"></span><span className="custom-checkbox__label">Моментальная</span>

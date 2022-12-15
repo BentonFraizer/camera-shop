@@ -47,19 +47,15 @@ function ProductScreen(): JSX.Element {
   useEffect(() => {
     if (searchParams.get(TAB_SEARCH_PARAM) === null) {
       setSearchParams({tab: 'specifications'});
-      setIsSpecsLinkActive(true);
-      setIsDescriptionLinkActive(false);
     }
-    if (searchParams.get(TAB_SEARCH_PARAM) === 'specifications') {
-      setIsSpecsLinkActive(true);
-      setIsDescriptionLinkActive(false);
-    }
-    if (searchParams.get(TAB_SEARCH_PARAM) === 'description') {
-      setIsSpecsLinkActive(false);
-      setIsDescriptionLinkActive(true);
-    }
+  });
 
-  },[searchParams, setSearchParams]);
+  useEffect(() => {
+    const isSearchParamIsSpecifications = searchParams.get(TAB_SEARCH_PARAM) === 'specifications';
+
+    setIsSpecsLinkActive(isSearchParamIsSpecifications);
+    setIsDescriptionLinkActive(!isSearchParamIsSpecifications);
+  },[searchParams]);
 
   useEffect(() => {
     window.scrollTo({top: BEGIN_OF_PAGE_COORDINATE});
