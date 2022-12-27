@@ -43,3 +43,13 @@ npm install
 ```
 npm start
 ```
+
+**Warning**
+To correctly work with project need to add one option to the package.json:
+```
+"parserOptions": {
+  "tsconfigRootDir": "./project/",
+  //other options
+},
+```
+and delete with option before deploying.
