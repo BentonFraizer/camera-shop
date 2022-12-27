@@ -11,7 +11,7 @@ The app allows to:
 - **paginate** between pages;
 - **search** products by name;
 - **add** products in the basket;
-- **allow** promocodes on the basket page;
+- **allow** promocodes on the basket page (camera-333, camera-444, camera-555);
 - **calculate** total cost, or cost with discount;
 - **make an order** from the basket page;
 
