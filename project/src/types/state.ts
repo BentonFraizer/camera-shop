@@ -4,7 +4,7 @@ import { Camera, PromoCamera, Review, Order } from './index';
 export type SiteData = {
   camerasList: Camera[];
   camera: Camera | null;
-  promoCamera: PromoCamera | null;
+  promoCamera: PromoCamera[] | null;
   similarCamerasList: Camera[];
   reviews: Review[];
   isPostSentSuccessful: boolean;

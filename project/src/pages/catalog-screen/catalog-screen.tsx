@@ -12,7 +12,7 @@ import ProductsList from '../../components/products-list/products-list';
 import AddItemModal from '../../components/add-item-modal/add-item-modal';
 import AddItemSuccessModal from '../../components/add-item-success-modal/add-item-success-modal';
 import { isEscKeyPressed, makeURL, summarizeNumbers } from '../../utils/utils';
-import { Camera } from '../../types';
+import { Camera, PromoCamera } from '../../types';
 import Pagination from '../../components/pagination/pagination';
 import Loader from '../../components/loader/loader';
 import EmptyQuery from '../../components/empty-query/empty-query';
@@ -38,9 +38,16 @@ function CatalogScreen(): JSX.Element {
   const [idForAddItemModal, setIdForAddItemModal] = useState(NON_EXISTENT_ID);
   const [currentPage, setCurrentPage] = useState(FIRST_PAGE_NUMBER);
   const [, setSearchParams] = useSearchParams(params);
+  const [singlePromoCamera, setSinglePromoCamera] = useState<PromoCamera | null>(null);
   // Получение данных по конкретному продукту для заполнения полей модального окна "Добавить товар в корзину"
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
+
+useEffect(() => {
+  if (promoCamera !== null) {
+    setSinglePromoCamera(promoCamera[0]);
+  }
+}, [promoCamera])
 
   useEffect(() => {
     setSearchParams(makeURL(params));
@@ -170,7 +177,7 @@ function CatalogScreen(): JSX.Element {
 
         <main onKeyDown={handleEscBtnKeydown} >
 
-          <Banner promoCamera={promoCamera}/>
+          <Banner promoCamera={singlePromoCamera}/>
 
           <div className="page-content">
             <div className="breadcrumbs">
