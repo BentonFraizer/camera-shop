@@ -43,11 +43,11 @@ function CatalogScreen(): JSX.Element {
   const isIdExists = idForAddItemModal !== NON_EXISTENT_ID;
   const dataForAddItemModal = isIdExists ? camerasList.find((camera) => camera.id === idForAddItemModal) : undefined;
 
-useEffect(() => {
-  if (promoCamera !== null) {
-    setSinglePromoCamera(promoCamera[0]);
-  }
-}, [promoCamera])
+  useEffect(() => {
+    if (promoCamera !== null) {
+      setSinglePromoCamera(promoCamera[0]);
+    }
+  }, [promoCamera]);
 
   useEffect(() => {
     setSearchParams(makeURL(params));
