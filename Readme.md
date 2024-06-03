@@ -15,7 +15,7 @@ The app allows to:
 - **calculate** total cost, or cost with discount;
 - **make an order** from the basket page;
 
-[**Check the Demo**](https://external.ink?to=/1-axr-camera-shop-lopukhin.vercel.app/)
+[**Check the Demo**](https://1-axr-camera-shop-lopukhin.vercel.app/)
 
 <img src="https://github.com/BentonFraizer/camera-shop/blob/master/.github/workflows/camera-shop.png" width="769" />
 
